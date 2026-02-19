@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClickMaster Pro | Elite Precision Trainer</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Great+Vibes&display=swap');
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #020617;
+      color: white;
+      overflow: hidden;
+      user-select: none;
+      margin: 0;
+    }
+
+    .glass {
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .target {
+      position: absolute;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.1s ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
+      z-index: 10;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .target:active {
+      transform: scale(0.85);
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7);
+      }
+
+      70% {
+        box-shadow: 0 0 0 15px rgba(56, 189, 248, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+      }
+    }
+
+    @keyframes glow {
+
+      0%,
+      100% {
+        filter: brightness(1) drop-shadow(0 0 5px currentColor);
+      }
+
+      50% {
+        filter: brightness(1.3) drop-shadow(0 0 20px currentColor);
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-5px) rotate(-5deg);
+      }
+
+      75% {
+        transform: translateX(5px) rotate(5deg);
+      }
+    }
+
+    @keyframes particleBurst {
+      0% {
+        transform: scale(0);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
+
+    .pulse-animation {
+      animation: pulse 2s infinite;
+    }
+
+    .glow-animation {
+      animation: glow 2s ease-in-out infinite;
+    }
+
+    .float-animation {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .shake-animation {
+      animation: shake 0.5s ease-in-out;
+    }
+
+    #game-canvas {
+      width: 100vw;
+      height: calc(100vh - 80px - 34px);
+      position: relative;
+      cursor: crosshair;
+      background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+      overflow: hidden;
+    }
+
+    /* Enhanced particle effects */
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: particleBurst 0.8s ease-out forwards;
+    }
+
+    .trail {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0.6;
+      animation: fadeOut 1s ease-out forwards;
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: scale(0);
+      }
+    }
+
+    .certificate-bg {
+      background: linear-gradient(135deg, #1e293b 0%, #020617 100%);
+      border: 12px solid #38bdf8;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(56, 189, 248, 0.5);
+    }
+
+    .certificate-border {
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      margin: 8px;
+      height: calc(100% - 16px);
+    }
+
+    .signature {
+      font-family: 'Great Vibes', cursive;
+    }
+
+    .site-footer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: rgba(148, 163, 184, 0.8);
+      background: #020617;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      z-index: 80;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .btn-pop-in {
+      animation: fadeInUp 0.5s ease-out forwards;
+    }
+
+    /* Certificate screen responsive fixes */
+    #certificate-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(2, 6, 23, 0.95);
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+
+    #certificate-card {
+      width: 100%;
+      max-width: 800px;
+      aspect-ratio: 1.6 / 1;
+      margin-bottom: 30px;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+      #certificate-card {
+        transform: scale(0.7);
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #certificate-card {
+        transform: scale(0.5);
+      }
+    }
+
+    #cert-buttons {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    #cert-buttons.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Combo multiplier styles */
+    .combo-text {
+      position: absolute;
+      font-weight: 800;
+      font-size: 24px;
+      pointer-events: none;
+      animation: comboFloat 1s ease-out forwards;
+      text-shadow: 0 0 10px currentColor;
+      z-index: 100;
+    }
+
+    @keyframes comboFloat {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-50px) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    /* Level indicator */
+    .level-indicator {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.9);
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      font-weight: 600;
+      z-index: 20;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Enhanced target styles by level */
+    .target-level-high {
+      background: linear-gradient(135deg, #f59e0b 0%, #dc2626 100%);
+      border-color: #fbbf24;
+      box-shadow: 0 0 30px rgba(245, 158, 11, 0.6);
+    }
+
+    .target-level-extreme {
+      background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+      border-color: #f87171;
+      box-shadow: 0 0 40px rgba(220, 38, 38, 0.8);
+      animation: pulse 1s infinite, glow 1.5s ease-in-out infinite;
+    }
+
+    /* Background grid animation */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Scanline effect */
+    .scanlines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom,
+          transparent 50%,
+          rgba(0, 0, 0, 0.1) 50%);
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.3;
+    }
+  </style>
+  <base target="_blank">
+</head>
+
+<body class="h-screen flex flex-col">
+
+  <!-- Nav -->
+  <nav class="h-20 glass px-8 flex items-center justify-between z-50">
+    <div class="flex items-center gap-4">
+      <div class="bg-sky-500 p-2 rounded-lg shadow-lg shadow-sky-500/20 glow-animation">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+        </svg>
+      </div>
+      <h1 class="text-xl font-extrabold tracking-tight">CLICK<span class="text-sky-400">MASTER</span> <span
+          class="text-xs text-slate-500 font-normal">PRO</span></h1>
+    </div>
+
+    <div id="stats-bar" class="hidden md:flex items-center gap-8">
+      <div class="text-center">
+        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Pilot</p>
+        <p id="player-name-display" class="text-sm font-bold text-white">---</p>
+      </div>
+      <div class="text-center">
+        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Rank</p>
+        <p id="level-display" class="text-sm font-bold text-sky-400">1 / 20</p>
+      </div>
+      <div class="text-center">
+        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Score</p>
+        <p id="score-display" class="text-sm font-bold">0000</p>
+      </div>
+      <div class="text-center">
+        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Combo</p>
+        <p id="combo-display" class="text-sm font-bold text-amber-400">x1</p>
+      </div>
+      <div class="w-40 bg-slate-900 h-2 rounded-full overflow-hidden border border-white/5">
+        <div id="progress-bar" class="h-full bg-sky-500 transition-all duration-700" style="width: 0%"></div>
+      </div>
+    </div>
+    <button onclick="togglePause()"
+      class="hidden md:block p-2 text-slate-400 hover:text-white transition-colors ml-4 z-50">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="w-8 h-8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
+      </svg>
+    </button>
+
+    <!-- Mobile Pause Button (Absolute Position) -->
+    <button onclick="togglePause()"
+      class="md:hidden absolute top-6 right-8 text-slate-400 hover:text-white transition-colors z-[60]">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="w-8 h-8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
+      </svg>
+    </button>
+
+  </nav>
+
+  <!-- This persistent layer holds global UI elements that should not be cleared by loadLevel -->
+  <div id="ui-layer" class="relative z-[60]">
+    <!-- Setup Screen -->
+    <div id="setup-screen" class="absolute inset-0 h-screen w-screen flex items-center justify-center bg-slate-950">
+      <div class="text-center max-w-sm p-10 glass rounded-3xl border border-white/10 float-animation">
+        <h2 class="text-3xl font-black mb-4">Initialize <span class="text-sky-400">Profile</span></h2>
+        <input type="text" id="username-input" maxlength="15" placeholder="Enter Callsign"
+          class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 mb-6 focus:border-sky-500 outline-none text-center font-bold text-white">
+
+        <div
+          class="mb-6 flex items-center justify-center gap-3 text-sm text-slate-400 bg-slate-900/50 p-3 rounded-xl border border-white/5">
+          <input type="checkbox" id="half-speed-toggle" class="w-4 h-4 rounded accent-sky-500 cursor-pointer">
+          <label for="half-speed-toggle" class="cursor-pointer">Training Mode (Half Speed)</label>
+        </div>
+
+        <button onclick="saveName()"
+          class="w-full bg-sky-600 hover:bg-sky-500 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-sky-900/40 hover:scale-105 active:scale-95">
+          START MISSION
+        </button>
+      </div>
+    </div>
+
+    <!-- Pause Screen -->
+    <div id="pause-screen"
+      class="hidden absolute inset-0 h-screen w-screen flex items-center justify-center bg-slate-950/80 backdrop-blur-sm z-[70]">
+      <div class="text-center p-10 glass rounded-3xl border border-white/10 min-w-[300px]">
+        <h2 class="text-3xl font-black mb-8 tracking-wider">GAME <span class="text-sky-400">PAUSED</span></h2>
+        <div class="flex flex-col gap-4">
+          <button onclick="togglePause()"
+            class="bg-sky-600 hover:bg-sky-500 text-white py-3 rounded-xl font-bold transition-all shadow-lg shadow-sky-900/20">RESUME</button>
+          <button onclick="retryLevel()"
+            class="bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-bold transition-all">RETRY
+            SECTOR</button>
+          <button onclick="quitToMenu()"
+            class="bg-rose-600/20 text-rose-400 border border-rose-500/30 hover:bg-rose-600 hover:text-white py-3 rounded-xl font-bold transition-all">QUIT
+            TO MENU</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Start Screen -->
+    <div id="start-screen"
+      class="hidden absolute inset-0 h-screen w-screen flex items-center justify-center bg-slate-950/90">
+      <div class="text-center max-w-4xl p-8">
+        <h2 class="text-4xl font-black mb-8 leading-tight">Sector <span class="text-sky-400">Selection</span></h2>
+
+        <div class="mb-10 p-6 bg-slate-900/50 rounded-2xl border border-white/5">
+          <div id="level-grid" class="grid grid-cols-5 md:grid-cols-10 gap-2"></div>
+        </div>
+
+        <button onclick="startGame(1)"
+          class="bg-white text-black px-12 py-4 rounded-full font-bold text-lg hover:bg-sky-400 hover:text-white transition-all hover:scale-105 active:scale-95">
+          BEGIN AT SECTOR 1
+        </button>
+      </div>
+    </div>
+
+    <!-- Level Complete -->
+    <div id="level-complete"
+      class="hidden absolute inset-0 h-screen w-screen flex items-center justify-center bg-slate-950/80 backdrop-blur-sm z-[60]">
+      <div class="text-center animate__animated animate__fadeInUp">
+        <h2 class="text-5xl font-black mb-2 text-sky-400">SECURED</h2>
+        <p id="level-summary" class="text-slate-400 mb-8 uppercase tracking-widest text-sm">Sector 1 Verified</p>
+        <button onclick="nextLevel()"
+          class="bg-sky-500 text-white px-12 py-4 rounded-full font-bold text-lg hover:scale-105 transition-all shadow-lg shadow-sky-500/30">
+          NEXT MISSION
+        </button>
+      </div>
+    </div>
+
+    <!-- Certificate Screen - Fixed and Responsive -->
+    <div id="certificate-screen">
+      <div id="certificate-card" class="certificate-bg rounded-sm p-3 text-center text-white shrink-0">
+        <div class="certificate-border flex flex-col items-center justify-center h-full" style="padding: 20px 30px;">
+          <div class="text-sky-400 mb-2 animate__animated animate__bounceIn">
+            <svg class="w-8 h-8 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          </div>
+          <h3 class="text-sm md:text-lg font-bold tracking-[0.2em] text-sky-400 uppercase mb-2">Certificate of
+            Completion</h3>
+          <p class="text-[8px] text-slate-500 uppercase tracking-widest mb-2">UID: <span id="cert-id"
+              class="text-sky-200">---</span></p>
+          <p class="text-[10px] md:text-xs text-slate-400 italic mb-2">This recognizes the elite precision of</p>
+          <h4 id="cert-name"
+            class="text-xl md:text-3xl font-black mb-4 border-b border-white/10 pb-2 px-6 uppercase animate__animated animate__fadeIn">
+            PLAYER</h4>
+          <p class="text-[10px] md:text-sm text-slate-300 max-w-[90%] mx-auto mb-6 leading-relaxed">
+            For mastering all 20 sectors of the <span class="text-sky-400 font-bold">ClickMaster Pro</span>
+            curriculum with exceptional response time and accuracy.
+          </p>
+          <div class="flex justify-between w-full text-[9px] md:text-xs mt-auto">
+            <div class="text-left">
+              <p id="cert-date" class="font-bold">2026</p>
+              <p class="text-slate-500">DATE</p>
+            </div>
+            <div class="text-right">
+              <p class="signature text-base text-sky-400">Joyal</p>
+              <p class="text-slate-500">EVALUATOR</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="cert-buttons">
+        <button onclick="claimCertificate()"
+          class="bg-sky-600 px-8 py-3 rounded-full font-bold text-sm hover:bg-sky-500 transition-colors shadow-lg shadow-sky-900/40 transform hover:scale-105 active:scale-95">
+          SAVE AS IMAGE
+        </button>
+        <button onclick="restartGame()"
+          class="bg-white/10 px-8 py-3 rounded-full font-bold text-sm hover:bg-white/20 transition-colors transform hover:scale-105 active:scale-95">
+          PLAY AGAIN
+        </button>
+        <button onclick="quitGame()"
+          class="bg-rose-600/20 text-rose-400 border border-rose-500/30 px-8 py-3 rounded-full font-bold text-sm hover:bg-rose-600 hover:text-white transition-all transform hover:scale-105 active:scale-95">
+          QUIT GAME
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main id="game-canvas">
+    <div class="bg-grid"></div>
+    <div class="scanlines"></div>
+    <div id="level-indicator" class="level-indicator hidden">
+      SECTOR <span id="current-sector">1</span> // <span id="sector-difficulty">BASIC</span>
+    </div>
+  </main>
+
+  <footer class="site-footer">All rights reserved &copy; R. J. Roshan | ClickMaster Pro v2.0</footer>
+
+  <script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let playerName = "";
+    let currentLevel = 1;
+    let score = 0;
+    let targetsRemaining = 0;
+    let gameActive = false;
+    let isPaused = false;
+    let levelStartScore = 0;
+    let combo = 0;
+    let comboTimer = null;
+    const totalLevels = 20;
+
+    // Enhanced level configuration with difficulty tiers
+    const levelConfig = {
+      1: { count: 3, size: 120, speed: 0, color: 'bg-sky-500', difficulty: 'BASIC', points: 15 },
+      2: { count: 3, size: 110, speed: 0, color: 'bg-sky-500', difficulty: 'BASIC', points: 15 },
+      3: { count: 4, size: 100, speed: 0, color: 'bg-sky-500', difficulty: 'BASIC', points: 20 },
+      4: { count: 4, size: 90, speed: 0, color: 'bg-sky-400', difficulty: 'BASIC', points: 20 },
+      5: { count: 5, size: 90, speed: 0, color: 'bg-sky-400', difficulty: 'INTERMEDIATE', points: 25 },
+      6: { count: 3, size: 110, speed: 0.8, color: 'bg-indigo-500', difficulty: 'INTERMEDIATE', points: 30 },
+      7: { count: 4, size: 100, speed: 1.0, color: 'bg-indigo-500', difficulty: 'INTERMEDIATE', points: 30 },
+      8: { count: 5, size: 95, speed: 1.2, color: 'bg-indigo-400', difficulty: 'ADVANCED', points: 35 },
+      9: { count: 4, size: 90, speed: 1.5, color: 'bg-violet-500', difficulty: 'ADVANCED', points: 35 },
+      10: { count: 5, size: 85, speed: 1.8, color: 'bg-violet-400', difficulty: 'ADVANCED', points: 40 },
+      11: { count: 5, size: 85, speed: 2.1, color: 'bg-amber-500', difficulty: 'EXPERT', points: 45 },
+      12: { count: 6, size: 80, speed: 2.4, color: 'bg-amber-500', difficulty: 'EXPERT', points: 45 },
+      13: { count: 5, size: 80, speed: 2.6, color: 'bg-orange-500', difficulty: 'EXPERT', points: 50 },
+      14: { count: 7, size: 75, speed: 2.8, color: 'bg-orange-500', difficulty: 'ELITE', points: 50 },
+      15: { count: 6, size: 75, speed: 3.1, color: 'bg-rose-500', difficulty: 'ELITE', points: 55 },
+      16: { count: 7, size: 70, speed: 3.3, color: 'bg-rose-500', difficulty: 'ELITE', points: 55 },
+      17: { count: 6, size: 75, speed: 3.5, color: 'bg-rose-600', difficulty: 'MASTER', points: 60 },
+      18: { count: 8, size: 70, speed: 3.8, color: 'bg-red-500', difficulty: 'MASTER', points: 60 },
+      19: { count: 7, size: 70, speed: 4.0, color: 'bg-red-600', difficulty: 'LEGENDARY', points: 70 },
+      20: { count: 10, size: 75, speed: 4.5, color: 'bg-red-700', difficulty: 'LEGENDARY', points: 80 }
+    };
+
+    function playSound(f, t, d) {
+      try {
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = t; o.frequency.setValueAtTime(f, audioCtx.currentTime);
+        g.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + d);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(); o.stop(audioCtx.currentTime + d);
+      } catch (e) { }
+    }
+
+    const sfx = {
+      pop: () => playSound(600, 'sine', 0.1),
+      fail: () => playSound(120, 'sawtooth', 0.15),
+      win: () => {
+        [523, 659, 783].forEach((f, i) => setTimeout(() => playSound(f, 'sine', 0.3), i * 100));
+      },
+      combo: (multiplier) => {
+        const baseFreq = 400;
+        playSound(baseFreq * multiplier, 'sine', 0.15);
+      }
+    };
+
+    function saveName() {
+      const val = document.getElementById('username-input').value.trim();
+      if (!val) return;
+      playerName = val;
+      document.getElementById('player-name-display').innerText = playerName;
+      document.getElementById('setup-screen').classList.add('hidden');
+      document.getElementById('start-screen').classList.remove('hidden');
+      document.getElementById('stats-bar').classList.remove('hidden');
+      populateGrid();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function populateGrid() {
+      const g = document.getElementById('level-grid');
+      g.innerHTML = "";
+      for (let i = 1; i <= 20; i++) {
+        const b = document.createElement('button');
+        const cfg = levelConfig[i];
+        let colorClass = 'bg-white/5 border-white/10 hover:border-sky-500';
+        if (i >= 15) colorClass = 'bg-rose-500/20 border-rose-500/30 hover:border-rose-500';
+        else if (i >= 10) colorClass = 'bg-violet-500/20 border-violet-500/30 hover:border-violet-500';
+        else if (i >= 6) colorClass = 'bg-indigo-500/20 border-indigo-500/30 hover:border-indigo-500';
+
+        b.className = `p-3 rounded ${colorClass} text-xs font-bold transition-all hover:scale-105`;
+        b.innerText = i;
+        b.onclick = () => startGame(i);
+        g.appendChild(b);
+      }
+    }
+
+    function startGame(lvl) {
+      currentLevel = lvl;
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('certificate-screen').style.display = 'none';
+      document.getElementById('cert-buttons').classList.remove('visible');
+      document.getElementById('level-complete').classList.add('hidden');
+      document.getElementById('level-indicator').classList.remove('hidden');
+      gameActive = true;
+      combo = 0;
+      updateComboDisplay();
+      loadLevel();
+    }
+
+    function loadLevel() {
+      const canvas = document.getElementById('game-canvas');
+      levelStartScore = score;
+
+      // Clear only targets, keep background effects
+      const targets = canvas.querySelectorAll('.target');
+      targets.forEach(t => t.remove());
+
+      const cfg = levelConfig[currentLevel];
+      document.getElementById('level-display').innerText = `${currentLevel} / 20`;
+      document.getElementById('current-sector').innerText = currentLevel;
+      document.getElementById('sector-difficulty').innerText = cfg.difficulty;
+      document.getElementById('progress-bar').style.width = `${((currentLevel - 1) / 20) * 100}%`;
+      targetsRemaining = cfg.count;
+
+      // Change indicator color based on difficulty
+      const indicator = document.getElementById('level-indicator');
+      indicator.className = 'level-indicator';
+      if (currentLevel >= 15) indicator.classList.add('text-rose-400', 'border-rose-500/30');
+      else if (currentLevel >= 10) indicator.classList.add('text-violet-400', 'border-violet-500/30');
+      else if (currentLevel >= 6) indicator.classList.add('text-indigo-400', 'border-indigo-500/30');
+
+      spawnTarget();
+    }
+
+    function createParticles(x, y, color) {
+      const canvas = document.getElementById('game-canvas');
+      const particleCount = 8;
+      const colors = ['#38bdf8', '#818cf8', '#c084fc', '#fbbf24', '#f472b6'];
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+        const angle = (Math.PI * 2 * i) / particleCount;
+        const velocity = 50 + Math.random() * 50;
+        const tx = Math.cos(angle) * velocity;
+        const ty = Math.sin(angle) * velocity;
+
+        particle.style.setProperty('--tx', tx + 'px');
+        particle.style.setProperty('--ty', ty + 'px');
+        particle.style.transform = `translate(${tx}px, ${ty}px)`;
+
+        canvas.appendChild(particle);
+        setTimeout(() => particle.remove(), 800);
+      }
+    }
+
+    function showComboText(x, y, multiplier) {
+      const canvas = document.getElementById('game-canvas');
+      const text = document.createElement('div');
+      text.className = 'combo-text';
+      text.style.left = x + 'px';
+      text.style.top = y + 'px';
+      text.style.color = multiplier >= 3 ? '#fbbf24' : '#38bdf8';
+      text.innerText = `x${multiplier}`;
+      canvas.appendChild(text);
+      setTimeout(() => text.remove(), 1000);
+    }
+
+    function updateComboDisplay() {
+      const comboDisplay = document.getElementById('combo-display');
+      comboDisplay.innerText = `x${combo}`;
+      if (combo >= 3) comboDisplay.className = 'text-sm font-bold text-amber-400 glow-animation';
+      else comboDisplay.className = 'text-sm font-bold text-sky-400';
+    }
+
+    function spawnTarget() {
+      if (targetsRemaining <= 0) {
+        completeLevel();
+        return;
+      }
+
+      const canvas = document.getElementById('game-canvas');
+      const cfg = levelConfig[currentLevel];
+      const div = document.createElement('div');
+
+      const halfSpeedInput = document.getElementById('half-speed-toggle');
+      const isTraining = halfSpeedInput ? halfSpeedInput.checked : false;
+
+      // Apply special styling for high levels
+      let targetClass = `target ${cfg.color} pulse-animation animate__animated animate__zoomIn`;
+      if (currentLevel >= 15) targetClass += ' target-level-extreme';
+      else if (currentLevel >= 10) targetClass += ' target-level-high';
+
+      div.className = targetClass;
+      div.style.width = cfg.size + 'px';
+      div.style.height = cfg.size + 'px';
+
+      const maxX = canvas.clientWidth - cfg.size - 20;
+      const maxY = canvas.clientHeight - cfg.size - 20;
+      const startX = Math.random() * maxX + 10;
+      const startY = Math.random() * maxY + 10;
+      div.style.left = startX + 'px';
+      div.style.top = startY + 'px';
+
+      // Add inner content for visual appeal
+      div.innerHTML = `<div class="w-1/2 h-1/2 bg-white/20 rounded-full"></div>`;
+
+      if (cfg.speed > 0) {
+        let mult = isTraining ? 0.5 : 1;
+        let dx = (Math.random() - 0.5) * cfg.speed * 3 * mult;
+        let dy = (Math.random() - 0.5) * cfg.speed * 3 * mult;
+
+        function animate() {
+          if (!div.parentElement || !gameActive) return;
+          if (!isPaused) {
+            let x = parseFloat(div.style.left);
+            let y = parseFloat(div.style.top);
+            if (x <= 5 || x >= canvas.clientWidth - cfg.size - 5) dx *= -1;
+            if (y <= 5 || y >= canvas.clientHeight - cfg.size - 5) dy *= -1;
+            div.style.left = (x + dx) + 'px';
+            div.style.top = (y + dy) + 'px';
+
+            // Create trail effect for high levels
+            if (currentLevel >= 12 && Math.random() > 0.7) {
+              const trail = document.createElement('div');
+              trail.className = 'trail';
+              trail.style.left = (x + cfg.size / 2) + 'px';
+              trail.style.top = (y + cfg.size / 2) + 'px';
+              trail.style.background = currentLevel >= 15 ? '#f87171' : '#818cf8';
+              canvas.appendChild(trail);
+              setTimeout(() => trail.remove(), 500);
+            }
+          }
+          requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+      }
+
+      div.onclick = (e) => {
+        e.stopPropagation();
+
+        // Combo system
+        combo++;
+        if (comboTimer) clearTimeout(comboTimer);
+        comboTimer = setTimeout(() => {
+          combo = 0;
+          updateComboDisplay();
+        }, 2000);
+
+        if (combo > 1) {
+          sfx.combo(Math.min(combo, 4));
+          showComboText(e.clientX, e.clientY, combo);
+        } else {
+          sfx.pop();
+        }
+
+        const multiplier = 1 + (combo * 0.1);
+        const points = Math.floor(cfg.points * multiplier);
+        score += points;
+
+        document.getElementById('score-display').innerText = score.toString().padStart(4, '0');
+        updateComboDisplay();
+
+        // Create particle explosion
+        const rect = div.getBoundingClientRect();
+        const canvasRect = canvas.getBoundingClientRect();
+        createParticles(
+          rect.left - canvasRect.left + cfg.size / 2,
+          rect.top - canvasRect.top + cfg.size / 2,
+          cfg.color
+        );
+
+        div.remove();
+        targetsRemaining--;
+        spawnTarget();
+      };
+
+      canvas.appendChild(div);
+    }
+
+    function completeLevel() {
+      if (currentLevel === 20) {
+        gameActive = false;
+        document.getElementById('progress-bar').style.width = "100%";
+        sfx.win();
+
+        // Extended confetti celebration
+        const duration = 3000;
+        const end = Date.now() + duration;
+
+        (function frame() {
+          confetti({
+            particleCount: 5,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+            colors: ['#38bdf8', '#818cf8', '#c084fc']
+          });
+          confetti({
+            particleCount: 5,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+            colors: ['#38bdf8', '#818cf8', '#c084fc']
+          });
+
+          if (Date.now() < end) {
+            requestAnimationFrame(frame);
+          }
+        }());
+
+        setTimeout(showFinal, 2000);
+        return;
+      }
+      sfx.win();
+      confetti({ particleCount: 100, spread: 60, origin: { y: 0.7 }, colors: ['#38bdf8', '#818cf8'] });
+      document.getElementById('level-summary').innerText = `Sector ${currentLevel} Verified`;
+      document.getElementById('level-complete').classList.remove('hidden');
+    }
+
+    function nextLevel() {
+      currentLevel++;
+      document.getElementById('level-complete').classList.add('hidden');
+      loadLevel();
+    }
+
+    function showFinal() {
+      document.getElementById('cert-name').innerText = playerName;
+      document.getElementById('cert-date').innerText = new Date().toLocaleDateString();
+      document.getElementById('cert-id').innerText = "CERT-" + Math.random().toString(36).substr(2, 9).toUpperCase();
+
+      const certScreen = document.getElementById('certificate-screen');
+      certScreen.style.display = 'flex';
+
+      // Animate certificate entry
+      setTimeout(() => {
+        document.getElementById('certificate-card').style.transform = 'scale(1)';
+      }, 100);
+
+      // Show buttons after 5 seconds
+      setTimeout(() => {
+        document.getElementById('cert-buttons').classList.add('visible');
+      }, 5000);
+
+      // Continuous confetti
+      let end = Date.now() + 10000;
+      (function r() {
+        confetti({
+          particleCount: 3,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: ['#fbbf24', '#f59e0b', '#38bdf8']
+        });
+        confetti({
+          particleCount: 3,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: ['#fbbf24', '#f59e0b', '#38bdf8']
+        });
+        if (Date.now() < end) requestAnimationFrame(r);
+      }());
+    }
+
+    async function claimCertificate() {
+      const c = document.getElementById("certificate-card");
+      try {
+        const canvas = await html2canvas(c, {
+          scale: 2,
+          backgroundColor: "#020617",
+          useCORS: true,
+          allowTaint: true
+        });
+        const link = document.createElement("a");
+        link.download = `ClickMaster_${playerName}_Certificate.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      } catch (err) {
+        console.error("Certificate generation failed:", err);
+        alert("Failed to generate certificate. Please try again.");
+      }
+    }
+
+    function restartGame() {
+      score = 0;
+      currentLevel = 1;
+      combo = 0;
+      document.getElementById('score-display').innerText = "0000";
+      document.getElementById('combo-display').innerText = "x1";
+      document.getElementById('certificate-screen').style.display = 'none';
+      document.getElementById('cert-buttons').classList.remove('visible');
+      document.getElementById('certificate-card').style.transform = 'scale(0.9)';
+      document.getElementById('start-screen').classList.remove('hidden');
+
+      // Clear all targets
+      const targets = document.querySelectorAll('.target');
+      targets.forEach(t => t.remove());
+    }
+
+    function quitGame() {
+      location.reload();
+    }
+
+    function togglePause() {
+      if (!gameActive) return;
+      isPaused = !isPaused;
+      const p = document.getElementById('pause-screen');
+      if (isPaused) p.classList.remove('hidden');
+      else p.classList.add('hidden');
+    }
+
+    function retryLevel() {
+      togglePause();
+      score = levelStartScore;
+      combo = 0;
+      document.getElementById('score-display').innerText = score.toString().padStart(4, '0');
+      document.getElementById('combo-display').innerText = "x1";
+      loadLevel();
+    }
+
+    function quitToMenu() {
+      togglePause();
+      gameActive = false;
+      combo = 0;
+      const targets = document.querySelectorAll('.target');
+      targets.forEach(t => t.remove());
+      document.getElementById('start-screen').classList.remove('hidden');
+      document.getElementById('level-complete').classList.add('hidden');
+      document.getElementById('level-indicator').classList.add('hidden');
+    }
+
+    document.getElementById('game-canvas').onclick = (e) => {
+      if (gameActive && e.target.id === 'game-canvas') {
+        sfx.fail();
+        combo = 0;
+        updateComboDisplay();
+
+        // Visual feedback for miss
+        const canvas = document.getElementById('game-canvas');
+        canvas.classList.add('shake-animation');
+        setTimeout(() => canvas.classList.remove('shake-animation'), 500);
+      }
+    };
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Escape' && gameActive) {
+        togglePause();
+      }
+    });
+  </script>
+</body>
+
+</html>

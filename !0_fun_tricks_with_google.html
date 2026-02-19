@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Fun Tricks - Interactive Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
+
+        :root {
+            --google-blue: #4285F4;
+            --google-red: #EA4335;
+            --google-yellow: #FBBC05;
+            --google-green: #34A853;
+        }
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: #f8f9fa;
+            transition: all 0.5s ease;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Pagination States */
+        .page {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 2. Barrel Roll */
+        .barrel-roll {
+            animation: barrelRoll 1s cubic-bezier(0.45, 0.05, 0.55, 0.95) 1;
+        }
+        @keyframes barrelRoll {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 3. Askew */
+        .is-askew {
+            transform: rotate(3deg) translateY(20px);
+        }
+
+        /* 8. Wizard of Oz (Sepia) */
+        .sepia-mode {
+            filter: sepia(1) contrast(0.8) brightness(0.9);
+            background-color: #d2b48c !important;
+        }
+
+        /* 10. Gravity Simulation */
+        .gravity-active .trick-card {
+            position: relative;
+            animation: fall 1s forwards cubic-bezier(0.6, -0.28, 0.735, 0.045);
+            pointer-events: none; /* Prevent interference with UI once fallen */
+        }
+        @keyframes fall {
+            to { transform: translateY(30vh) rotate(15deg); opacity: 0.8; }
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .floating { animation: float 3s ease-in-out infinite; }
+
+        .trick-card {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            border-bottom: 8px solid #e2e8f0;
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            z-index: 10;
+        }
+        .trick-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .google-text span:nth-child(1) { color: var(--google-blue); }
+        .google-text span:nth-child(2) { color: var(--google-red); }
+        .google-text span:nth-child(3) { color: var(--google-yellow); }
+        .google-text span:nth-child(4) { color: var(--google-blue); }
+        .google-text span:nth-child(5) { color: var(--google-green); }
+        .google-text span:nth-child(6) { color: var(--google-red); }
+
+        /* Zerg Rush "O"s */
+        .zerg-o {
+            position: fixed;
+            width: 25px;
+            height: 25px;
+            border: 4px solid var(--google-yellow);
+            border-radius: 50%;
+            z-index: 100;
+            pointer-events: auto;
+            cursor: crosshair;
+            transition: transform 0.1s;
+        }
+
+        .fungus-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 40;
+        }
+
+        .nav-btn {
+            transition: all 0.2s;
+        }
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        /* Ensure Navigation is ALWAYS clickable and on top */
+        footer {
+            z-index: 1000;
+            position: relative;
+        }
+    </style>
+</head>
+<body id="mainBody" class="p-4">
+
+    <div id="gameContainer" class="flex-1 flex flex-col transition-transform duration-500">
+        
+        <header class="text-center mt-8 mb-12">
+            <h1 class="google-text text-5xl md:text-6xl font-bold mb-2 floating">
+                <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span> Lab
+            </h1>
+            <p id="pageIndicator" class="text-gray-400 font-bold tracking-widest uppercase text-sm">Trick 1 of 10</p>
+        </header>
+
+        <!-- Pages Container -->
+        <main class="flex-1 flex items-center">
+            
+            <!-- 1: Zerg Rush -->
+            <div class="page active" data-index="1">
+                <div onclick="triggerZergRush(event)" class="trick-card p-10 rounded-3xl shadow-xl border-t-8 border-blue-500 text-center">
+                    <div class="text-6xl mb-6">🎮</div>
+                    <h2 class="text-3xl font-bold mb-4">Zerg Rush</h2>
+                    <p class="text-gray-500 text-lg mb-6">The "O"s are coming from above! Click the card to start the rush, then click the "O"s to destroy them.</p>
+                    <span class="text-blue-500 font-bold underline">Click to Trigger</span>
+                </div>
+            </div>
+
+            <!-- 2: Barrel Roll -->
+            <div class="page" data-index="2">
+                <div onclick="triggerBarrelRoll(event)" class="trick-card p-10 rounded-3xl shadow-xl border-t-8 border-red-500 text-center">
+                    <div class="text-6xl mb-6">🔄</div>
+                    <h2 class="text-3xl font-bold mb-4">Do a Barrel Roll</h2>
+                    <p class="text-gray-500 text-lg mb-6">Experience the classic 360-degree spin. Warning: May cause mild digital vertigo!</p>
+                    <span class="text-red-500 font-bold underline">Click to Trigger</span>
+                </div>
+            </div>
+
+            <!-- 3: Askew -->
+            <div class="page" data-index="3">
+                <div onclick="triggerAskew(event)" class="trick-card p-10 rounded-3xl shadow-xl border-t-8 border-yellow-500 text-center">
+                    <div class="text-6xl mb-6">📐</div>
+                    <h2 class="text-3xl font-bold mb-4">Askew</h2>
+                    <p class="text-gray-500 text-lg mb-6">Is the screen crooked? This trick tilts the entire interface slightly to the side.</p>
+                    <span class="text-yellow-600 font-bold underline">Click to Trigger</span>
+                </div>
+            </div>
+
+            <!-- 4: Recursion -->
+            <div class="page" data-index="4">
+                <div onclick="triggerRecursion(event)" class="trick-card p-10 rounded-3xl shadow-xl border-t-8 border-blue-600 text-center">
+                    <div class="text-6xl mb-6">🔁</div>
+                    <h2 class="text-3xl font-bold mb-4">Recursion</h2>
+                    <p class="text-blue-500 font-bold mb-2">Did you mean: Recursion?</p>
+                    <p class="text-gray-500 text-lg mb-6">The search engine's favorite infinite loop joke. Click to feel the pulse of infinity.</p>
+                    <span class="text-blue-600 font-bold underline">Click to Trigger</span>
+                </div>
+            </div>
+
+            <!-- 5: Thanos Snap -->
+            <div class="page" data-index="5">
+                <div onclick="triggerThanos(event)" class="trick-card p-10 rounded-3xl shadow-xl border-t-8 border-purple-500 text-center">
+                    <div class="text-6xl mb-6">🧤</div>
+                    <h2 class="text-3xl font-bold mb-4">Thanos Snap</h2>
+                    <p class="text-gray-500 text-lg mb-6">With a single click, watch as this card begins to fade away into digital dust.</p>
+                    <span class="text-purple-600 font-bold underline">Click to Trigger</span>
+                </div>
+            </div>
+
+            <!-- 6: Grogu -->
+            <div class="page" data-index="6">
+                <div onclick="triggerGrogu(event)" class="trick-card p-10 rounded-3xl shadow-xl border-t-8 border-green-600 text-center">
+                    <div class="text-6xl mb-6">🟢</div>
+                    <h2 class="text-3xl font-bold mb-4">Grogu</h2>
+                    <p class="text-gray-500 text-lg mb-6">The Child uses the Force! Click to watch the card be pulled down by an invisible power.</p>
+                    <span class="text-green-600 font-bold underline">Click to Trigger</span>
+                </div>
+            </div>
+
+            <!-- 7: Mario -->
+            <div class="page" data-index="7">
+                <div onclick="triggerMario(event)" class="trick-card p-10 rounded-3xl shadow-xl border-t-8 border-orange-500 text-center">
+                    <div class="text-6xl mb-6">🪙</div>
+                    <h2 class="text-3xl font-bold mb-4">Super Mario</h2>
+                    <p class="text-gray-500 text-lg mb-6">Power up! Click the card to release a shower of coins and hear the classic sound.</p>
+                    <span class="text-orange-600 font-bold underline">Click to Trigger</span>
+                </div>
+            </div>
+
+            <!-- 8: Wizard of Oz -->
+            <div class="page" data-index="8">
+                <div onclick="triggerOz(event)" class="trick-card p-10 rounded-3xl shadow-xl border-t-8 border-red-600 text-center">
+                    <div class="text-6xl mb-6">👠</div>
+                    <h2 class="text-3xl font-bold mb-4">Wizard of Oz</h2>
+                    <p class="text-gray-500 text-lg mb-6">Click the ruby slippers to transport this page into a sepia-toned memory of Kansas.</p>
+                    <span class="text-red-700 font-bold underline">Click to Trigger</span>
+                </div>
+            </div>
+
+            <!-- 9: Fungus -->
+            <div class="page" data-index="9">
+                <div onclick="triggerFungus(event)" class="trick-card p-10 rounded-3xl shadow-xl border-t-8 border-green-800 text-center">
+                    <div class="text-6xl mb-6">🍄</div>
+                    <h2 class="text-3xl font-bold mb-4">Cordyceps</h2>
+                    <p class="text-gray-500 text-lg mb-6">The Last of Us comes to Google. Click to watch the fungal growth spread across your screen.</p>
+                    <span class="text-green-900 font-bold underline">Click to Trigger</span>
+                </div>
+            </div>
+
+            <!-- 10: Gravity -->
+            <div class="page" data-index="10">
+                <div onclick="triggerGravity(event)" class="trick-card p-10 rounded-3xl shadow-xl border-t-8 border-gray-800 text-center">
+                    <div class="text-6xl mb-6">⬇️</div>
+                    <h2 class="text-3xl font-bold mb-4">Gravity</h2>
+                    <p class="text-gray-500 text-lg mb-6">What goes up must come down. Click to disable physics and watch the card fall.</p>
+                    <span class="text-black font-bold underline">Click to Trigger</span>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Navigation -->
+        <footer class="mt-auto mb-12 flex justify-center items-center gap-6">
+            <button id="prevBtn" onclick="changePage(-1)" class="nav-btn bg-white border-2 border-gray-200 text-gray-600 px-6 py-3 rounded-2xl font-bold hover:bg-gray-100 shadow-md flex items-center gap-2">
+                ← Back
+            </button>
+            
+            <div class="flex gap-2" id="dotContainer">
+                <!-- Dots generated by JS -->
+            </div>
+
+            <button id="nextBtn" onclick="changePage(1)" class="nav-btn bg-gray-800 text-white px-8 py-3 rounded-2xl font-bold hover:bg-black shadow-lg flex items-center gap-2">
+                Next Trick →
+            </button>
+        </footer>
+
+        <div class="text-center mb-4 relative z-[1001]">
+            <button onclick="resetLab()" class="text-gray-400 hover:text-red-500 text-xs font-bold uppercase tracking-widest transition-colors">
+                Reset All Effects
+            </button>
+        </div>
+    </div>
+
+    <div id="fungusContainer" class="fungus-overlay"></div>
+
+    <script>
+        const body = document.getElementById('mainBody');
+        const container = document.getElementById('gameContainer');
+        const pages = document.querySelectorAll('.page');
+        const pageIndicator = document.getElementById('pageIndicator');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const dotContainer = document.getElementById('dotContainer');
+        
+        let currentPage = 1;
+        const totalPages = pages.length;
+
+        // Initialize dots
+        for (let i = 1; i <= totalPages; i++) {
+            const dot = document.createElement('div');
+            dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${i === 1 ? 'bg-blue-500 w-6' : 'bg-gray-300'}`;
+            dot.id = `dot-${i}`;
+            dotContainer.appendChild(dot);
+        }
+
+        function updateUI() {
+            // Clean up visual states that should not persist across pages
+            body.classList.remove('sepia-mode', 'gravity-active');
+            container.classList.remove('is-askew');
+            document.getElementById('fungusContainer').innerHTML = '';
+            
+            // Show active page
+            pages.forEach(p => p.classList.remove('active'));
+            const activePage = document.querySelector(`.page[data-index="${currentPage}"]`);
+            activePage.classList.add('active');
+            
+            // Reset styles for the card in the newly shown page in case it was modified
+            const card = activePage.querySelector('.trick-card');
+            if (card) {
+                card.style.opacity = "1";
+                card.style.filter = "none";
+                card.style.transform = "none";
+                card.style.visibility = "visible";
+                card.style.pointerEvents = "auto";
+            }
+            
+            pageIndicator.innerText = `Trick ${currentPage} of ${totalPages}`;
+            
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.innerText = currentPage === totalPages ? "Start Over" : "Next Trick →";
+            
+            // Update dots
+            for (let i = 1; i <= totalPages; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                if (i === currentPage) {
+                    dot.className = 'w-6 h-2 rounded-full bg-blue-500 transition-all duration-300';
+                } else {
+                    dot.className = 'w-2 h-2 rounded-full bg-gray-300 transition-all duration-300';
+                }
+            }
+        }
+
+        function changePage(step) {
+            currentPage += step;
+            if (currentPage > totalPages) {
+                resetLab();
+                return;
+            }
+            if (currentPage < 1) currentPage = 1;
+            updateUI();
+        }
+
+        // --- Trick Logic ---
+
+        function triggerBarrelRoll(e) {
+            container.classList.add('barrel-roll');
+            setTimeout(() => container.classList.remove('barrel-roll'), 1000);
+        }
+
+        function triggerAskew(e) {
+            container.classList.toggle('is-askew');
+        }
+
+        function triggerRecursion(e) {
+            const card = e.currentTarget;
+            card.animate([
+                { transform: 'scale(1)' },
+                { transform: 'scale(1.05)' },
+                { transform: 'scale(1)' }
+            ], { duration: 500, iterations: 2 });
+        }
+
+        function triggerOz(e) {
+            body.classList.toggle('sepia-mode');
+        }
+
+        function triggerThanos(e) {
+            const card = e.currentTarget;
+            card.style.transition = "opacity 2s, filter 2.5s, transform 2s";
+            card.style.filter = "blur(15px) grayscale(1)";
+            card.style.opacity = "0";
+            card.style.transform = "scale(0.8) translateY(-20px)";
+            // Ensure card doesn't block clicks to the footer while fading
+            setTimeout(() => { card.style.pointerEvents = "none"; }, 100);
+        }
+
+        function triggerMario(e) {
+            const x = e ? e.clientX : window.innerWidth / 2;
+            const y = e ? e.clientY : window.innerHeight / 2;
+            
+            for(let i=0; i<5; i++) {
+                setTimeout(() => {
+                    const coin = document.createElement('div');
+                    coin.innerHTML = "🟡";
+                    coin.className = "fixed font-bold text-yellow-500 text-3xl z-50 pointer-events-none";
+                    coin.style.left = (x - 20 + (Math.random() * 40)) + 'px';
+                    coin.style.top = (y - 20) + 'px';
+                    document.body.appendChild(coin);
+                    
+                    coin.animate([
+                        { transform: 'translateY(0) scale(1)', opacity: 1 },
+                        { transform: 'translateY(-150px) rotate(360deg) scale(1.5)', opacity: 0 }
+                    ], { duration: 1000, easing: 'ease-out' }).onfinish = () => coin.remove();
+                }, i * 150);
+            }
+        }
+
+        function triggerGrogu(e) {
+            const card = e.currentTarget;
+            card.style.transition = "transform 2s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+            card.style.transform = "translateY(150px) rotate(-5deg)";
+        }
+
+        function triggerZergRush(e) {
+            for(let i=0; i<20; i++) {
+                setTimeout(() => {
+                    const o = document.createElement('div');
+                    o.className = 'zerg-o';
+                    o.style.left = Math.random() * window.innerWidth + 'px';
+                    o.style.top = '-50px';
+                    o.onclick = function() { 
+                        this.style.background = "red";
+                        setTimeout(() => this.remove(), 50);
+                    };
+                    document.body.appendChild(o);
+                    
+                    o.animate([
+                        { top: '-50px' },
+                        { top: '110vh' }
+                    ], { duration: 4000 + Math.random() * 2000, fill: 'forwards' });
+                }, i * 250);
+            }
+        }
+
+        function triggerFungus(e) {
+            const fContainer = document.getElementById('fungusContainer');
+            for(let i=0; i<30; i++) {
+                const f = document.createElement('div');
+                f.innerHTML = "🍄";
+                f.style.position = "absolute";
+                f.style.left = Math.random() * 100 + '%';
+                f.style.top = Math.random() * 100 + '%';
+                f.style.fontSize = (Math.random() * 50 + 20) + 'px';
+                f.style.opacity = "0";
+                f.style.transform = `rotate(${Math.random() * 360}deg)`;
+                fContainer.appendChild(f);
+                f.animate([{ opacity: 0 }, { opacity: 0.8 }], { duration: 1500, delay: i*150, fill: 'forwards' });
+            }
+        }
+
+        function triggerGravity(e) {
+            body.classList.add('gravity-active');
+        }
+
+        function resetLab() {
+            location.reload();
+        }
+
+        // Handle initial UI state
+        updateUI();
+    </script>
+</body>
+</html>

@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edectra | Word Processing: From Explorer to Innovator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+
+        :root {
+            --level1: #22c55e;
+            /* Green - Explorer */
+            --level2: #3b82f6;
+            /* Blue - Creator */
+            --level3: #a855f7;
+            /* Purple - Builder */
+            --level4: #ef4444;
+            /* Red - Innovator */
+            --bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: #1e293b;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Level Tabs */
+        .level-tab {
+            transition: all 0.3s ease;
+            filter: grayscale(100%);
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .level-tab.active {
+            filter: grayscale(0%);
+            opacity: 1;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .level-tab.unlocked {
+            filter: grayscale(0%);
+            opacity: 0.9;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .level-content {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .level-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Table Styles for editable areas */
+        [contenteditable] table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        [contenteditable] td,
+        [contenteditable] th {
+            border: 1px solid #cbd5e1;
+            padding: 8px;
+            min-width: 50px;
+        }
+
+        /* Grid Selector for Table */
+        .grid-cell {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            cursor: pointer;
+        }
+
+        .grid-cell.active {
+            background: #3b82f6;
+            border-color: #2563eb;
+        }
+
+        .editor-demo {
+            min-height: 120px;
+            border: 2px dashed #cbd5e1;
+            transition: all 0.3s ease;
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .editor-demo:focus-within {
+            outline: none;
+            border-color: currentColor;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 min-h-screen pb-20">
+
+    <!-- Sticky Navigation / Progress -->
+    <nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span
+                    class="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">Edectra</span>
+                <span class="hidden md:inline text-slate-400 text-sm">| Word Processing Roadmap</span>
+            </div>
+
+            <div class="flex gap-2">
+                <!-- Level Tabs -->
+                <button onclick="switchLevel(1)" id="tab1"
+                    class="level-tab active px-4 py-2 rounded-lg bg-green-50 text-green-700 font-bold text-xs uppercase tracking-wide border border-green-200">
+                    <i class="fas fa-compass mr-1"></i> Explorer
+                </button>
+                <button onclick="switchLevel(2)" id="tab2"
+                    class="level-tab px-4 py-2 rounded-lg bg-blue-50 text-blue-700 font-bold text-xs uppercase tracking-wide border border-blue-200">
+                    <i class="fas fa-layer-group mr-1"></i> Creator
+                </button>
+                <button onclick="switchLevel(3)" id="tab3"
+                    class="level-tab px-4 py-2 rounded-lg bg-purple-50 text-purple-700 font-bold text-xs uppercase tracking-wide border border-purple-200">
+                    <i class="fas fa-tools mr-1"></i> Builder
+                </button>
+                <button onclick="switchLevel(4)" id="tab4"
+                    class="level-tab px-4 py-2 rounded-lg bg-red-50 text-red-700 font-bold text-xs uppercase tracking-wide border border-red-200">
+                    <i class="fas fa-crown mr-1"></i> Innovator
+                </button>
+            </div>
+
+            <div class="hidden md:block">
+                <div class="text-xs text-slate-500 mb-1 text-right">Total Progress</div>
+                <div class="w-32 h-2 bg-slate-200 rounded-full overflow-hidden">
+                    <div id="totalProgress"
+                        class="h-full bg-gradient-to-r from-green-400 to-blue-500 w-0 transition-all duration-1000">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content Area -->
+    <main class="container mx-auto px-4 pt-24 max-w-5xl">
+
+        <!-- ================= LEVEL 1: EXPLORER ================= -->
+        <div id="level1" class="level-content active level1-theme">
+            <header class="text-center mb-12">
+                <div class="inline-block p-3 rounded-full bg-green-100 mb-4 animate-bounce">
+                    <i class="fas fa-compass text-3xl text-green-600"></i>
+                </div>
+                <h1 class="text-4xl font-bold text-slate-800 mb-2">Level 1: Explorer</h1>
+                <p class="text-slate-500">Master the basics and remove the fear of the blank page.</p>
+            </header>
+
+            <div class="space-y-12">
+                <!-- Unit 1: Intro -->
+                <section class="glass-card p-8 fade-in">
+                    <h2 class="text-2xl font-bold text-green-700 mb-4 flex items-center gap-2"><span
+                            class="bg-green-100 w-8 h-8 rounded-full flex items-center justify-center text-sm">1</span>
+                        Introduction</h2>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <p class="text-slate-600 mb-4">Word Processing is essential software used to create, edit,
+                                format, and print text documents. Examples include Microsoft Word, Google Docs, and
+                                LibreOffice.</p>
+                            <p class="text-sm text-slate-500 italic">"It's like a digital typewriter with superpowers."
+                            </p>
+                        </div>
+                        <div class="bg-slate-100 p-2 rounded-xl">
+                            <img src="interface.png" alt="Word Interface"
+                                class="w-full rounded shadow-sm hover:scale-105 transition-transform cursor-pointer">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Unit 2: Interface -->
+                <section class="glass-card p-8 fade-in">
+                    <h2 class="text-2xl font-bold text-green-700 mb-4 flex items-center gap-2"><span
+                            class="bg-green-100 w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span>
+                        The Interface</h2>
+                    <img src="ribbon.png" class="w-full rounded-lg shadow-sm border border-slate-200 mb-6" alt="Ribbon">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        <div class="p-4 bg-white border rounded hover:border-green-500 transition"><i
+                                class="fas fa-ribbon text-green-500 mb-2"></i><br>Ribbon</div>
+                        <div class="p-4 bg-white border rounded hover:border-green-500 transition"><i
+                                class="fas fa-file-alt text-green-500 mb-2"></i><br>Doc Area</div>
+                        <div class="p-4 bg-white border rounded hover:border-green-500 transition"><i
+                                class="fas fa-i-cursor text-green-500 mb-2"></i><br>Cursor</div>
+                        <div class="p-4 bg-white border rounded hover:border-green-500 transition"><i
+                                class="fas fa-info-circle text-green-500 mb-2"></i><br>Status Bar</div>
+                    </div>
+                </section>
+
+                <!-- Unit 3: Typing & Editing -->
+                <section class="glass-card p-8 fade-in">
+                    <h2 class="text-2xl font-bold text-green-700 mb-4 flex items-center gap-2"><span
+                            class="bg-green-100 w-8 h-8 rounded-full flex items-center justify-center text-sm">3</span>
+                        Typing & Editing</h2>
+                    <div class="bg-green-50 p-6 rounded-xl border border-green-100">
+                        <h4 class="font-bold mb-2">Interactive Challenge: Copy & Paste</h4>
+                        <div class="flex gap-4 mb-4">
+                            <input type="text" value="Copy Me!" id="copySrc" class="p-2 border rounded w-1/2" readonly>
+                            <button onclick="copyText()" class="bg-slate-200 px-4 rounded hover:bg-slate-300">Copy
+                                (Ctrl+C)</button>
+                        </div>
+                        <div class="flex gap-4">
+                            <input type="text" placeholder="Paste Here!" id="pasteDest"
+                                class="p-2 border rounded w-1/2">
+                            <button onclick="pasteText()"
+                                class="bg-green-600 text-white px-4 rounded hover:bg-green-700">Paste (Ctrl+V)</button>
+                        </div>
+                        <div id="pasteFeedback" class="text-green-600 text-sm mt-2 hidden font-bold">Success! Text
+                            copied.</div>
+                    </div>
+                </section>
+
+                <!-- Unit 4: Formatting -->
+                <section class="glass-card p-8 fade-in">
+                    <h2 class="text-2xl font-bold text-green-700 mb-4 flex items-center gap-2"><span
+                            class="bg-green-100 w-8 h-8 rounded-full flex items-center justify-center text-sm">4</span>
+                        Basic Formatting</h2>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <img src="text-design-bold-italic-in-word.png" class="rounded shadow mb-4"
+                                alt="Formatting Bar">
+                            <p class="text-slate-600">Make your text stand out.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-slate-200">
+                            <div class="flex gap-2 mb-4 border-b pb-2">
+                                <button onclick="formatL1('bold')"
+                                    class="w-8 h-8 bg-slate-100 rounded hover:bg-slate-200 font-bold">B</button>
+                                <button onclick="formatL1('italic')"
+                                    class="w-8 h-8 bg-slate-100 rounded hover:bg-slate-200 italic">I</button>
+                                <button onclick="formatL1('underline')"
+                                    class="w-8 h-8 bg-slate-100 rounded hover:bg-slate-200 underline">U</button>
+                                <button onclick="formatL1('color', 'red')"
+                                    class="w-8 h-8 bg-red-500 rounded hover:bg-red-600"></button>
+                            </div>
+                            <div id="l1FormatDemo" class="text-xl text-center py-8">I love ICT!</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Unit 5 & 6 Combined: Layout -->
+                <section class="glass-card p-8 fade-in">
+                    <h2 class="text-2xl font-bold text-green-700 mb-4"><span
+                            class="bg-green-100 w-8 h-8 rounded-full inline-flex items-center justify-center text-sm mr-2">5-6</span>
+                        Align & Layout</h2>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="font-bold text-slate-700 mb-2">Paragraph Alignment</h4>
+                            <div class="flex gap-2 mb-2">
+                                <button onclick="alignL1('left')"
+                                    class="flex-1 bg-slate-100 p-2 rounded hover:bg-slate-200"><i
+                                        class="fas fa-align-left"></i></button>
+                                <button onclick="alignL1('center')"
+                                    class="flex-1 bg-slate-100 p-2 rounded hover:bg-slate-200"><i
+                                        class="fas fa-align-center"></i></button>
+                                <button onclick="alignL1('right')"
+                                    class="flex-1 bg-slate-100 p-2 rounded hover:bg-slate-200"><i
+                                        class="fas fa-align-right"></i></button>
+                            </div>
+                            <p id="alignText" class="bg-white p-4 border rounded text-sm transition-all">"Left is
+                                standard. Center is for titles. Right is for dates."</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-700 mb-2">Page Orientation</h4>
+                            <img src="layouttab-pagesetupgroup.png" class="w-full mb-2 opacity-80" alt="Page Setup">
+                            <div class="flex gap-4 items-center justify-center h-full">
+                                <div id="pageOrient"
+                                    class="w-24 h-32 bg-white border-2 border-slate-300 shadow-sm transition-all duration-500 flex items-center justify-center text-xs text-slate-400">
+                                    Portrait</div>
+                                <button onclick="toggleOrient()"
+                                    class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Rotate
+                                    Page</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Unit 7: Saving -->
+                <section class="glass-card p-8 fade-in bg-green-50 border-green-200">
+                    <h2 class="text-2xl font-bold text-green-700 mb-4 flex items-center gap-2"><span
+                            class="bg-white w-8 h-8 rounded-full flex items-center justify-center text-sm border border-green-200">7</span>
+                        Save Your Work</h2>
+                    <p class="mb-4 text-center">Always save your work! (Ctrl+S)</p>
+                    <div class="flex justify-center">
+                        <button onclick="unlockLevel(2)"
+                            class="bg-green-600 text-white text-lg font-bold px-8 py-4 rounded-full shadow-lg hover:bg-green-700 transform hover:scale-105 transition flex items-center gap-2 animate-pulse">
+                            <i class="fas fa-save"></i> Save & Unlock Intermediate Level
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- ================= LEVEL 2: CREATOR ================= -->
+        <div id="level2" class="level-content level2-theme">
+            <header class="text-center mb-12">
+                <div class="inline-block p-3 rounded-full bg-blue-100 mb-4 animate-bounce">
+                    <i class="fas fa-layer-group text-3xl text-blue-600"></i>
+                </div>
+                <h1 class="text-4xl font-bold text-slate-800 mb-2">Level 2: Creator</h1>
+                <p class="text-slate-500">Transform plain text into professional documents.</p>
+            </header>
+
+            <div class="space-y-12">
+                <!-- Unit 8: Styles -->
+                <section class="glass-card p-8 fade-in">
+                    <h2 class="text-2xl font-bold text-blue-700 mb-4">Unit 8: Working with Styles</h2>
+                    <p class="text-slate-600 mb-4">Styles are the secret to professional documents. Instead of
+                        formatting manually, tell Word "This is a Title" or "This is a Heading".</p>
+                    <div class="bg-slate-100 p-6 rounded-xl border border-slate-200">
+                        <div class="flex gap-2 mb-4">
+                            <button onclick="applyStyle('h1')"
+                                class="px-3 py-1 bg-white border rounded shadow-sm hover:bg-blue-50 font-bold text-xl">Heading
+                                1</button>
+                            <button onclick="applyStyle('h2')"
+                                class="px-3 py-1 bg-white border rounded shadow-sm hover:bg-blue-50 font-bold text-lg">Heading
+                                2</button>
+                            <button onclick="applyStyle('p')"
+                                class="px-3 py-1 bg-white border rounded shadow-sm hover:bg-blue-50 text-sm">Normal</button>
+                        </div>
+                        <div id="styleDemo" class="bg-white p-4 border rounded min-h-[100px] transition-all">Select a
+                            style to change me!</div>
+                    </div>
+                </section>
+
+                <!-- Unit 9: Headers & Footers -->
+                <section class="glass-card p-8 fade-in">
+                    <h2 class="text-2xl font-bold text-blue-700 mb-4">Unit 9: Headers & Footers</h2>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <p class="mb-4">Headers appear at the very top of every page. Footers appear at the bottom.
+                            </p>
+                            <div class="space-y-4">
+                                <input type="text" id="headerInput" oninput="updateHF()"
+                                    placeholder="Header Text (e.g., Name)" class="w-full p-2 border rounded">
+                                <input type="text" id="footerInput" oninput="updateHF()"
+                                    placeholder="Footer Text (e.g., Page 1)" class="w-full p-2 border rounded">
+                            </div>
+                        </div>
+                        <div
+                            class="bg-white shadow-xl p-4 h-64 flex flex-col justify-between border w-48 mx-auto transform scale-90">
+                            <div id="headerPreview"
+                                class="text-xs text-slate-400 border-b border-dashed pb-2 text-center">Header Area</div>
+                            <div class="flex-1 p-2 text-[6px] text-slate-300 overflow-hidden">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+                                incididunt ut labore et dolore magna aliqua.
+                            </div>
+                            <div id="footerPreview"
+                                class="text-xs text-slate-400 border-t border-dashed pt-2 text-center">Footer Area</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Unit 10: Tables (ENHANCED) -->
+                <section class="glass-card p-8 fade-in relative">
+                    <h2 class="text-2xl font-bold text-blue-700 mb-4">Unit 10: Tables - Grid Editor</h2>
+                    <p class="mb-4">Tables organize data professionally. Use the grid to insert a table.</p>
+
+                    <div class="relative inline-block mb-4">
+                        <button onclick="toggleGridSelector()"
+                            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                            <i class="fas fa-table"></i> Insert Table
+                        </button>
+
+                        <!-- Grid Dropdown -->
+                        <div id="gridSelector"
+                            class="hidden absolute top-full left-0 mt-2 bg-white border shadow-xl p-3 z-10 rounded-lg">
+                            <div class="text-xs text-center text-slate-500 mb-2" id="gridLabel">0x0 Table</div>
+                            <div class="grid grid-cols-10 gap-1 w-[180px]" onmouseleave="resetGrid()">
+                                <!-- Generated by JS -->
+                                <script>
+                                    for (let r = 1; r <= 8; r++) {
+                                        for (let c = 1; c <= 10; c++) {
+                                            document.write(`<div class="grid-cell" onmouseover="highlightGrid(${r},${c})" onclick="insertTableToDoc(${r},${c})"></div>`);
+                                        }
+                                    }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table Edit Area -->
+                    <div id="tableEditor" contenteditable="true"
+                        class="bg-white p-6 border rounded-xl min-h-[200px] outline-none focus:border-blue-500 shadow-inner">
+                        <p class="text-slate-400 italic">Your document area...</p>
+                    </div>
+                </section>
+
+                <!-- Unit 11 & 12 Checkpoint -->
+                <section class="glass-card p-8 fade-in bg-blue-50 border-blue-200">
+                    <h2 class="text-2xl font-bold text-blue-700 mb-4">Level 2 Checkpoint</h2>
+                    <p class="text-center mb-6">You've learned Styles, Headers, Tables, and Images. Ready for Advanced?
+                    </p>
+                    <div class="flex justify-center">
+                        <button onclick="unlockLevel(3)"
+                            class="bg-blue-600 text-white text-lg font-bold px-8 py-4 rounded-full shadow-lg hover:bg-blue-700 transform hover:scale-105 transition flex items-center gap-2 animate-pulse">
+                            <i class="fas fa-check-circle"></i> Complete Intermediate Level
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- ================= LEVEL 3: BUILDER ================= -->
+        <div id="level3" class="level-content level3-theme">
+            <header class="text-center mb-12">
+                <div class="inline-block p-3 rounded-full bg-purple-100 mb-4 animate-bounce">
+                    <i class="fas fa-tools text-3xl text-purple-600"></i>
+                </div>
+                <h1 class="text-4xl font-bold text-slate-800 mb-2">Level 3: Builder</h1>
+                <p class="text-slate-500">Automate and structure complex documents.</p>
+            </header>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Unit 13: References -->
+                <section class="glass-card p-8 fade-in">
+                    <h2 class="text-2xl font-bold text-purple-700 mb-4">Unit 13: References (TOC)</h2>
+                    <p class="text-sm text-slate-600 mb-4">If you use <strong>Styles</strong> (Heading 1, 2), Word can
+                        auto-generate a Table of Contents.</p>
+                    <div class="bg-white p-4 rounded border shadow-inner">
+                        <button onclick="generateTOC()"
+                            class="w-full bg-slate-100 border-2 border-dashed border-slate-300 p-2 text-slate-500 rounded hover:bg-slate-200 transition mb-4">
+                            + Insert Table of Contents
+                        </button>
+                        <div id="tocPreview" class="hidden text-sm space-y-2">
+                            <div class="font-bold border-b pb-1 mb-2">Table of Contents</div>
+                            <div class="flex justify-between"><span>1. Introduction</span> <span
+                                    class="text-slate-400">................ 1</span></div>
+                            <div class="flex justify-between pl-4"><span>1.1 Background</span> <span
+                                    class="text-slate-400">................ 2</span></div>
+                            <div class="flex justify-between"><span>2. Methodology</span> <span
+                                    class="text-slate-400">................ 5</span></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Unit 14: Smart Tools -->
+                <section class="glass-card p-8 fade-in">
+                    <h2 class="text-2xl font-bold text-purple-700 mb-4">Unit 14: Smart Tools</h2>
+                    <h4 class="font-bold mb-2">Spell Check SImulation</h4>
+                    <div class="relative bg-white p-4 rounded border">
+                        <p id="typoText">Thiiis is a sentance with errrors.</p>
+                        <button onclick="fixTypos()"
+                            class="absolute top-2 right-2 text-xs bg-red-100 text-red-600 px-2 py-1 rounded hover:bg-red-200">Fix
+                            Errors</button>
+                    </div>
+                </section>
+
+                <!-- Unit 15-17: Templating & Reviews -->
+                <section class="glass-card p-8 fade-in md:col-span-2">
+                    <h2 class="text-2xl font-bold text-purple-700 mb-4">Collaboration & Review</h2>
+                    <div class="flex gap-4">
+                        <div class="flex-1 bg-slate-50 p-4 rounded text-center">
+                            <i class="fas fa-comment-dots text-3xl text-purple-400 mb-2"></i>
+                            <h4 class="font-bold">Comments</h4>
+                            <p class="text-xs">Leave notes without changing text.</p>
+                        </div>
+                        <div class="flex-1 bg-slate-50 p-4 rounded text-center">
+                            <i class="fas fa-history text-3xl text-purple-400 mb-2"></i>
+                            <h4 class="font-bold">Track Changes</h4>
+                            <p class="text-xs">See every edit made by others.</p>
+                        </div>
+                    </div>
+                    <div class="mt-8 text-center">
+                        <button onclick="unlockLevel(4)"
+                            class="bg-purple-600 text-white text-lg font-bold px-8 py-4 rounded-full shadow-lg hover:bg-purple-700 transform hover:scale-105 transition animate-pulse">
+                            <i class="fas fa-rocket"></i> Unlock Professional Level
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- ================= LEVEL 4: INNOVATOR ================= -->
+        <div id="level4" class="level-content level4-theme">
+            <header class="text-center mb-12">
+                <div class="inline-block p-3 rounded-full bg-red-100 mb-4 animate-bounce">
+                    <i class="fas fa-crown text-3xl text-red-600"></i>
+                </div>
+                <h1 class="text-4xl font-bold text-slate-800 mb-2">Level 4: Innovator</h1>
+                <p class="text-slate-500">Create real-world professional documents.</p>
+            </header>
+
+            <!-- Unit 21: Final Project -->
+            <section class="bg-white rounded-3xl shadow-2xl p-8 border-2 border-red-100 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-bl-full -z-0"></div>
+
+                <h2 class="text-3xl font-bold text-slate-800 mb-8 relative z-10">Unit 21: Final Professional Project
+                </h2>
+
+                <div class="grid lg:grid-cols-3 gap-8 relative z-10">
+                    <!-- Sidebar Instructions -->
+                    <div class="space-y-4">
+                        <div class="bg-red-50 p-4 rounded-xl">
+                            <h4 class="font-bold text-red-800 mb-2">Mission Checklist</h4>
+                            <ul class="space-y-2 text-sm">
+                                <li class="flex items-center gap-2"><input type="checkbox" id="chkTitle" disabled
+                                        class="accent-red-600"> Add a Title (Heading 1)</li>
+                                <li class="flex items-center gap-2"><input type="checkbox" id="chkBody" disabled
+                                        class="accent-red-600"> Write Content</li>
+                                <li class="flex items-center gap-2"><input type="checkbox" id="chkFormat" disabled
+                                        class="accent-red-600"> Use Bold Text</li>
+                                <li class="flex items-center gap-2"><input type="checkbox" id="chkTable" disabled
+                                        class="accent-red-600"> Insert a Table</li>
+                                <li class="flex items-center gap-2"><input type="checkbox" id="chkImage" disabled
+                                        class="accent-red-600"> Insert an Image</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl">
+                            <h4 class="font-bold text-slate-700 mb-2">Smart Toolbar</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="execCmd('formatBlock', 'H1')" title="Heading 1"
+                                    class="w-8 h-8 rounded bg-white shadow flex items-center justify-center font-bold">H1</button>
+                                <button onclick="execCmd('bold')" title="Bold"
+                                    class="w-8 h-8 rounded bg-white shadow flex items-center justify-center font-bold">B</button>
+                                <button onclick="insertFinalTable()" title="Insert Table"
+                                    class="w-8 h-8 rounded bg-white shadow flex items-center justify-center"><i
+                                        class="fas fa-table"></i></button>
+                                <button onclick="insertFinalImage()" title="Insert Image"
+                                    class="w-8 h-8 rounded bg-white shadow flex items-center justify-center"><i
+                                        class="fas fa-image"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Editor -->
+                    <div class="lg:col-span-2">
+                        <div id="finalDoc" contenteditable="true" oninput="checkFinal()"
+                            class="w-full h-[500px] border border-slate-300 rounded-xl p-8 focus:outline-none focus:border-red-500 overflow-y-auto font-serif text-lg leading-relaxed shadow-inner bg-white"
+                            placeholder="Start your professional document here...">
+                            Start typing...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completion Badge -->
+                <div id="finalBadge"
+                    class="hidden mt-12 text-center transform scale-0 transition-transform duration-500">
+                    <div
+                        class="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-1 rounded-full shadow-2xl animate-spin-slow">
+                        <div
+                            class="bg-white text-slate-800 rounded-full p-12 w-64 h-64 flex flex-col items-center justify-center border-4 border-yellow-200">
+                            <i class="fas fa-certificate text-5xl text-yellow-500 mb-2"></i>
+                            <h3 class="font-bold text-xl uppercase tracking-widest">Certified</h3>
+                            <p class="text-sm font-bold text-red-500">Word Innovator</p>
+                            <div class="mt-4 text-xs text-slate-400">Edectra Technology</div>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <button onclick="alert('Document exported to PDF! (Simulation)')"
+                            class="bg-slate-800 text-white px-8 py-3 rounded-full hover:bg-black transition">Download
+                            Certificate</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <script>
+        // --- LEVEL SYSTEM ---
+        let unlockedLevel = 1;
+
+        function switchLevel(level) {
+            if (level > unlockedLevel) return;
+            document.querySelectorAll('.level-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab' + level).classList.add('active');
+            document.querySelectorAll('.level-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('level' + level).classList.add('active');
+            document.getElementById('totalProgress').style.width = ((level / 4) * 100) + '%';
+            window.scrollTo(0, 0);
+        }
+
+        function unlockLevel(level) {
+            if (level <= unlockedLevel) return;
+            unlockedLevel = level;
+            const btn = document.getElementById('tab' + level);
+            btn.classList.remove('opacity-60', 'cursor-not-allowed');
+            btn.classList.add('unlocked', 'animate-pulse');
+            setTimeout(() => {
+                btn.classList.remove('animate-pulse');
+                switchLevel(level);
+                fireConfetti();
+            }, 800);
+        }
+
+        // --- LEVEL 1 LOGIC ---
+        function copyText() {
+            const copyText = document.getElementById("copySrc");
+            copyText.select();
+            document.execCommand("copy");
+            alert("Copied to clipboard: " + copyText.value);
+        }
+        function pasteText() {
+            document.getElementById("pasteDest").value = document.getElementById("copySrc").value;
+            document.getElementById("pasteFeedback").classList.remove("hidden");
+        }
+        function formatL1(cmd, val) {
+            const demo = document.getElementById('l1FormatDemo');
+            if (cmd === 'bold') demo.style.fontWeight = demo.style.fontWeight === 'bold' ? 'normal' : 'bold';
+            if (cmd === 'italic') demo.style.fontStyle = demo.style.fontStyle === 'italic' ? 'normal' : 'italic';
+            if (cmd === 'underline') demo.style.textDecoration = demo.style.textDecoration === 'underline' ? 'none' : 'underline';
+            if (cmd === 'color') demo.style.color = val;
+        }
+        function alignL1(val) { document.getElementById('alignText').style.textAlign = val; }
+        let isPortrait = true;
+        function toggleOrient() {
+            const p = document.getElementById('pageOrient');
+            isPortrait = !isPortrait;
+            p.style.width = isPortrait ? '6rem' : '8rem';
+            p.style.height = isPortrait ? '8rem' : '6rem';
+            p.innerText = isPortrait ? 'Portrait' : 'Landscape';
+        }
+
+        // --- LEVEL 2 (GRID SELECTOR) ---
+        function toggleGridSelector() {
+            document.getElementById('gridSelector').classList.toggle('hidden');
+        }
+        function highlightGrid(r, c) {
+            document.getElementById('gridLabel').innerText = `${c}x${r} Table`;
+            const cells = document.querySelectorAll('.grid-cell');
+            cells.forEach((cell, index) => {
+                const cellR = Math.floor(index / 10) + 1;
+                const cellC = (index % 10) + 1;
+                if (cellR <= r && cellC <= c) cell.classList.add('active');
+                else cell.classList.remove('active');
+            });
+        }
+        function resetGrid() {
+            document.querySelectorAll('.grid-cell').forEach(c => c.classList.remove('active'));
+            document.getElementById('gridLabel').innerText = "0x0 Table";
+        }
+        function insertTableToDoc(rows, cols) {
+            let html = '<table class="w-full border-collapse border border-slate-300 my-4">';
+            for (let i = 0; i < rows; i++) {
+                html += '<tr>';
+                for (let j = 0; j < cols; j++) {
+                    html += '<td class="border border-slate-300 p-2 min-w-[50px]">Cell</td>';
+                }
+                html += '</tr>';
+            }
+            html += '</table>';
+
+            // Insert into Level 2 Editor
+            const editor = document.getElementById('tableEditor');
+            editor.innerHTML = html + '<p><br></p>'; // Add space below
+            toggleGridSelector();
+        }
+
+        // --- LEVEL 2 STYLES ---
+        function applyStyle(tag) {
+            const demo = document.getElementById('styleDemo');
+            if (tag === 'h1') { demo.className = "bg-white p-4 border rounded text-2xl font-bold text-blue-800"; demo.innerText = "Heading 1 Style"; }
+            if (tag === 'h2') { demo.className = "bg-white p-4 border rounded text-xl font-bold text-blue-600"; demo.innerText = "Heading 2 Style"; }
+            if (tag === 'p') { demo.className = "bg-white p-4 border rounded text-base text-slate-600"; demo.innerText = "Normal Paragraph Style"; }
+        }
+        function updateHF() {
+            document.getElementById('headerPreview').innerText = document.getElementById('headerInput').value || "Header Area";
+            document.getElementById('footerPreview').innerText = document.getElementById('footerInput').value || "Footer Area";
+        }
+
+        // --- LEVEL 3 ---
+        function generateTOC() { document.getElementById('tocPreview').classList.remove('hidden'); }
+        function fixTypos() { document.getElementById('typoText').innerHTML = "This is a <span class='text-green-600 font-bold'>sentence</span> with <span class='text-green-600 font-bold'>errors</span> fixed."; }
+
+        // --- LEVEL 4 (FINAL PROJECT) ---
+        function execCmd(cmd, arg) {
+            document.execCommand(cmd, false, arg);
+            document.getElementById('finalDoc').focus();
+            checkFinal();
+        }
+
+        function insertFinalTable() {
+            const html = '<br><table style="width:100%; border-collapse: collapse; margin: 10px 0;">' +
+                '<tr><td style="border:1px solid #ccc; padding:8px;">Head 1</td><td style="border:1px solid #ccc; padding:8px;">Head 2</td></tr>' +
+                '<tr><td style="border:1px solid #ccc; padding:8px;">Data 1</td><td style="border:1px solid #ccc; padding:8px;">Data 2</td></tr>' +
+                '</table><br>';
+            execCmd('insertHTML', html);
+        }
+
+        function insertFinalImage() {
+            const img = '<br><img src="insert_image.png" style="max-width: 150px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); display: block; margin: 10px auto;"><br>';
+            execCmd('insertHTML', img);
+        }
+
+        function checkFinal() {
+            const doc = document.getElementById('finalDoc');
+            const html = doc.innerHTML;
+            const hasH1 = html.includes('<h1') || html.includes('text-2xl') || html.includes('font-size: x-large'); // flexible check
+            const hasBold = html.includes('<b>') || html.includes('<strong>') || window.getComputedStyle(doc).fontWeight > 400;
+            const hasTable = html.includes('<table');
+            const hasImage = html.includes('<img');
+            const hasContent = doc.innerText.length > 50;
+
+            // Auto check checkboxes
+            document.getElementById('chkTitle').checked = hasH1;
+            document.getElementById('chkBody').checked = hasContent;
+            document.getElementById('chkFormat').checked = hasBold;
+            document.getElementById('chkTable').checked = hasTable;
+            document.getElementById('chkImage').checked = hasImage;
+
+            if (hasContent && hasTable && hasImage && hasH1) {
+                const badge = document.getElementById('finalBadge');
+                badge.classList.remove('hidden');
+                setTimeout(() => badge.classList.remove('scale-0'), 100);
+            }
+        }
+
+        function fireConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff', '#ff00ff'];
+            for (let i = 0; i < 100; i++) {
+                const conf = document.createElement('div');
+                conf.style.position = 'fixed';
+                conf.style.width = '10px';
+                conf.style.height = '10px';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.top = '-10px';
+                conf.style.zIndex = '9999';
+                conf.style.transition = 'top 2s ease-in, transform 2s linear';
+                document.body.appendChild(conf);
+                setTimeout(() => {
+                    conf.style.top = '110vh';
+                    conf.style.transform = `rotate(${Math.random() * 360}deg)`;
+                }, 10);
+                setTimeout(() => conf.remove(), 2000);
+            }
+        }
+
+        // Init
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        });
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+
+</html>

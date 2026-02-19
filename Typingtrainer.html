@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EdTechra Typing Training Course </title>
+  <style>
+    :root {
+      /* Premium Light Theme Palette */
+      --bg-color: #F6F7FB;
+      --card-bg: #FFFFFF;
+      --primary-color: #4F46E5;
+      /* Indigo */
+      --primary-hover: #4338CA;
+      --accent-color: #10B981;
+      /* Emerald */
+      --error-color: #EF4444;
+      /* Red */
+      --text-main: #1F2937;
+      --text-muted: #6B7280;
+      --border-color: #E5E7EB;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      /* Prevent selection interfering with typing */
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Utility & Layout */
+    .app-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      /* Hidden by default */
+      flex-direction: column;
+      padding: 2rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .screen.active {
+      display: flex;
+      opacity: 1;
+      z-index: 10;
+    }
+
+    /* Dashboard Styles */
+    #dashboard-screen {
+      overflow-y: auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.025em;
+    }
+
+    h1 span {
+      color: var(--primary-color);
+    }
+
+    .stats-overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      text-align: center;
+      transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    /* Stage Progress Section */
+    .stages-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+    }
+
+    .stage-card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stage-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .stage-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .stage-progress-text {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .progress-track {
+      height: 8px;
+      background: #F3F4F6;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary-color);
+      width: 0%;
+      transition: width 0.5s ease-out;
+    }
+
+    .levels-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+    }
+
+    .level-node {
+      aspect-ratio: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #F9FAFB;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .level-node.locked {
+      color: #D1D5DB;
+      cursor: not-allowed;
+      background: #F3F4F6;
+    }
+
+    .level-node.locked::after {
+      content: '🔒';
+      font-size: 0.8rem;
+      position: absolute;
+    }
+
+    .level-node.unlocked {
+      background: white;
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .level-node.unlocked:hover {
+      background: var(--primary-color);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .level-node.completed {
+      background: var(--accent-color);
+      color: white;
+      border-color: var(--accent-color);
+    }
+
+    /* Typing Screen */
+    .typing-area {
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      flex-grow: 1;
+      justify-content: center;
+    }
+
+    .hud-bar {
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem;
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hud-item {
+      text-align: center;
+      min-width: 80px;
+    }
+
+    .hud-val {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--primary-color);
+    }
+
+    .hud-lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .text-display {
+      background: var(--card-bg);
+      padding: 3rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      font-family: 'Courier New', Courier, monospace;
+      /* Monospace for alignment */
+      font-size: 1.8rem;
+      line-height: 1.6;
+      min-height: 200px;
+      position: relative;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      color: #9CA3AF;
+      /* Unfocused text color */
+    }
+
+    .char {
+      position: relative;
+    }
+
+    .char.correct {
+      color: var(--text-main);
+    }
+
+    .char.error {
+      color: var(--error-color);
+      text-decoration: underline wavy var(--error-color);
+      background: #FEE2E2;
+    }
+
+    .char.current {
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: 2px;
+      animation: pulse-cursor 1.5s infinite;
+    }
+
+    @keyframes pulse-cursor {
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.7;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .weak-keys-panel {
+      background: #FEF3C7;
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      color: #92400E;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .key-badge {
+      background: #FFFFFF;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-weight: 700;
+      border: 1px solid #FCD34D;
+    }
+
+    /* Results Screen */
+    .results-modal {
+      background: var(--card-bg);
+      padding: 4rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      max-width: 600px;
+      width: 100%;
+      margin: auto;
+      text-align: center;
+    }
+
+    .score-big {
+      font-size: 4rem;
+      font-weight: 800;
+      color: var(--primary-color);
+      line-height: 1;
+      margin: 1rem 0;
+    }
+
+    .btn {
+      padding: 0.75rem 2rem;
+      border-radius: var(--radius-md);
+      border: none;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: white;
+      border: 2px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    /* Certificate View */
+    #certificate-view {
+      background: #fff;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #cert-canvas {
+      box-shadow: var(--shadow-lg);
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Utility */
+    .hidden {
+      display: none !important;
+    }
+
+    .confetti-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    /* Sound Toggle */
+    .sound-toggle {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: white;
+      padding: 0.5rem;
+      border-radius: 50%;
+      box-shadow: var(--shadow-md);
+      cursor: pointer;
+      z-index: 100;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-container">
+
+    <!-- DASHBOARD -->
+    <div id="dashboard-screen" class="screen active">
+      <header>
+        <h1>EdTechra Typing Training Course <span>Pro</span></h1>
+        <div class="header-controls">
+          <button class="btn btn-secondary" onclick="app.resetProgress()">Reset Progress</button>
+        </div>
+      </header>
+
+      <div class="stats-overview">
+        <div class="stat-card">
+          <div class="stat-value" id="dash-wpm">0</div>
+          <div class="stat-label">Best WPM</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="dash-acc">0%</div>
+          <div class="stat-label">Avg Accuracy</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="dash-level">1</div>
+          <div class="stat-label">Current Level</div>
+        </div>
+        <div class="stat-card" style="border-color: #FCD34D;">
+          <div class="stat-value" id="dash-badges">0/10</div>
+          <div class="stat-label">Badges Earned</div>
+        </div>
+      </div>
+
+      <div id="stages-wrapper" class="stages-container">
+        <!-- Stages will be injected by JS -->
+      </div>
+
+      <div id="badge-shelf"
+        style="padding: 2rem; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+        <h3>Trophy Case</h3>
+        <div id="badge-grid" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;"></div>
+      </div>
+    </div>
+
+    <!-- TYPING TRAINER -->
+    <div id="trainer-screen" class="screen">
+      <div class="hud-bar">
+        <div class="hud-item">
+          <button class="btn btn-secondary" style="padding: 0.25rem 0.75rem;"
+            onclick="app.loadDashboard()">Exit</button>
+        </div>
+        <div class="hud-item">
+          <div class="hud-val" id="live-wpm">0</div>
+          <div class="hud-lbl">WPM</div>
+        </div>
+        <div class="hud-item">
+          <div class="hud-val" id="live-acc">100%</div>
+          <div class="hud-lbl">Accuracy</div>
+        </div>
+        <div class="hud-item">
+          <div class="hud-val" id="live-time">0:00</div>
+          <div class="hud-lbl">Time</div>
+        </div>
+      </div>
+
+      <div class="typing-area">
+        <div class="weak-keys-panel" id="weak-keys-live">
+          <span>⚠️ Weak Keys:</span>
+          <span id="weak-keys-list">None yet</span>
+        </div>
+        <div id="text-display" class="text-display" tabindex="0">Press any key to start...</div>
+        <div style="text-align: center; color: var(--text-muted);">
+          <small>Focus on accuracy. Backspaces reduce your score.</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results-screen" class="screen">
+      <div class="results-modal">
+        <h2 id="res-title">Level Completed!</h2>
+        <div class="score-big" id="res-wpm">45 WPM</div>
+        <p id="res-acc" style="font-size: 1.25rem; margin-bottom: 2rem;">98% Accuracy</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; text-align: left;">
+          <div>Errors: <strong id="res-errors">2</strong></div>
+          <div>Backspaces: <strong id="res-back">5</strong></div>
+          <div>Target WPM: <strong id="res-target-wpm">40</strong></div>
+          <div>Min Accuracy: <strong id="res-target-acc">96%</strong></div>
+        </div>
+
+        <div id="res-msg" style="margin-bottom: 2rem; color: var(--error-color); font-weight: 600;"></div>
+
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+          <button class="btn btn-secondary" onclick="app.retryLevel()">Retry</button>
+          <button class="btn btn-primary" id="btn-next-level" onclick="app.nextLevel()">Next Level ➔</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CERTIFICATE -->
+    <div id="certificate-screen" class="screen">
+      <h2 style="margin-bottom: 1rem;">Course Completed!</h2>
+      <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem;">
+        <input type="text" id="cert-name" placeholder="Enter Your Name" style="padding: 0.5rem; font-size: 1rem;">
+        <button class="btn btn-primary" onclick="app.generateCertificate()">Generate</button>
+      </div>
+      <canvas id="cert-canvas" width="800" height="600"></canvas>
+      <br>
+      <button class="btn btn-secondary" onclick="app.downloadCertificate()" style="margin-top: 1rem;">Download
+        PNG</button>
+      <button class="btn btn-secondary" onclick="app.loadDashboard()" style="margin-top: 1rem;">Back to Home</button>
+    </div>
+
+  </div>
+
+  <div class="sound-toggle" onclick="app.toggleSound()">🔊</div>
+  <canvas id="confetti-canvas" class="confetti-container"></canvas>
+
+  <script>
+    /* DATA & CONFIGURATION */
+    const STAGES = [
+      { id: 1, name: "Stage 1: Home Row Control", start: 1, end: 10, passAcc: 95 },
+      { id: 2, name: "Stage 2: Top Row Introduction", start: 11, end: 20, passAcc: 95 },
+      { id: 3, name: "Stage 3: Bottom Row", start: 21, end: 30, passAcc: 96 },
+      { id: 4, name: "Stage 4: Capitals & Punctuation", start: 31, end: 38, passAcc: 96 },
+      { id: 5, name: "Stage 5: Numbers & Symbols", start: 39, end: 44, passAcc: 97 },
+      { id: 6, name: "Stage 6: Speed & Endurance", start: 45, end: 50, passAcc: 98 }
+    ];
+
+    const BADGES = [
+      { id: 'b1', name: 'Home Row Hero', desc: 'Pass Level 10', icon: '🏠', condition: (s) => s.unlockedLevel > 10 },
+      { id: 'b2', name: 'Top Row Tamer', desc: 'Pass Level 20', icon: '🧗', condition: (s) => s.unlockedLevel > 20 },
+      { id: 'b3', name: 'Alphabet Adventurer', desc: 'Pass Level 30', icon: 'abc', condition: (s) => s.unlockedLevel > 30 },
+      { id: 'b4', name: 'Punctuation Pro', desc: 'Pass Level 38', icon: '?!', condition: (s) => s.unlockedLevel > 38 },
+      { id: 'b5', name: 'Numbers Ninja', desc: 'Pass Level 44', icon: '#1', condition: (s) => s.unlockedLevel > 44 },
+      { id: 'b6', name: 'Endurance Engine', desc: 'Pass Level 49', icon: '🔋', condition: (s) => s.unlockedLevel > 49 },
+      { id: 'b7', name: 'Typing Master', desc: 'Pass Level 50', icon: '👑', condition: (s) => s.unlockedLevel > 50 },
+      { id: 'p1', name: 'Accuracy Ace', desc: '99% Accuracy in a test', icon: '🎯', condition: (s) => s.bestAcc >= 99 },
+      { id: 'p2', name: 'Speed Spark', desc: '70+ WPM in a test', icon: '⚡', condition: (s) => s.bestWpm >= 70 },
+      { id: 'p3', name: 'Clean Sheet', desc: '0 Backspaces in a drill', icon: '🧼', condition: (s) => s.hasZeroBackspaceRun }
+    ];
+
+    const LEVELS = [
+      // STAGE 1
+      { id: 1, text: "fff jjj fff jjj fjf jfj fff jjj fjf jfj f f j j fff jjj", targetWpm: 10 },
+      { id: 2, text: "ddd kkk ddd kkk dkd kdk ddd kkk dkd kdk d d k k ddd kkk", targetWpm: 12 },
+      { id: 3, text: "sss lll sss lll sls lsl sss lll sls lsl s s l l sss lll", targetWpm: 12 },
+      { id: 4, text: "aaa ;;; aaa ;;; a;a ;a; aaa ;;; a;a ;a; a a ; ; aaa ;;;", targetWpm: 12 },
+      { id: 5, text: "asdf jkl; asdf jkl; aj sk dl f; asdf jkl; fdsa ;lkj", targetWpm: 14 },
+      { id: 6, text: "fj dk sl a; fj dk sl a; jf kd ls ;a fjdk sla;", targetWpm: 14 },
+      { id: 7, text: "sad lad fall sad lad fall dad ask all dad ask all flask", targetWpm: 14 },
+      { id: 8, text: "faf jlj dad ksk lal s;s faf jlj dad ksk lal s;s", targetWpm: 15 },
+      { id: 9, text: "dad had a salad; alas a lad falls; ask dad for a flask;", targetWpm: 15 },
+      { id: 10, text: "a lad had a dad; dad had a salad; ask a sad lad; fall as a leaf; dad asks a lad; all lads fall; a sad dad had a salad; alas a flask falls;", targetWpm: 15, isTest: true },
+
+      // STAGE 2
+      { id: 11, text: "eee iii eee iii eie iei eee iii eie iei e e i i eee iii", targetWpm: 16 },
+      { id: 12, text: "rrr uuu rrr uuu rur uru rrr uuu rur uru r r u u rrr uuu", targetWpm: 16 },
+      { id: 13, text: "ttt yyy ttt yyy tyt yty ttt yyy tyt yty t t y y ttt yyy", targetWpm: 16 },
+      { id: 14, text: "www ooo www ooo wow owo www ooo wow owo w w o o www ooo", targetWpm: 16 },
+      { id: 15, text: "qqq ppp qqq ppp qpq pqp qqq ppp qpq pqp q q p p qqq ppp", targetWpm: 16 },
+      { id: 16, text: "the quick red fox; put the pot out; she see the sea;", targetWpm: 18 },
+      { id: 17, text: "top pot tip pit rut rot let lot wet wit pet pat set sat", targetWpm: 18 },
+      { id: 18, text: "here are the reports; please read the paper; keep it up;", targetWpm: 18 },
+      { id: 19, text: "we will wait for you at the top of the hill; do not be late for the test start", targetWpm: 20 },
+      { id: 20, text: "the quick brown fox jumps right over the little lazy dog; we hope to see you at the party; please take a seat and write a story; keep up the good work;", targetWpm: 25, isTest: true },
+
+      // STAGE 3
+      { id: 21, text: "vvv mmm vvv mmm vmv mvm vvv mmm vmv mvm v v m m vvv mmm", targetWpm: 22 },
+      { id: 22, text: "ccc nnn ccc nnn cnc ncn ccc nnn cnc ncn c c n n ccc nnn", targetWpm: 22 },
+      { id: 23, text: "xxx ,,, xxx ,,, x,x ,x, xxx ,,, x,x ,x, x x , , xxx ,,,", targetWpm: 22 },
+      { id: 24, text: "zzz ... zzz ... z.z .z. zzz ... z.z .z. z z . . zzz ...", targetWpm: 22 },
+      { id: 25, text: "bbb /// bbb /// b/b /b/ bbb /// b/b /b/ b b / / bbb ///", targetWpm: 22 },
+      { id: 26, text: "can you come back? zinc box. van man. zero zone. mix max.", targetWpm: 24 },
+      { id: 27, text: "pack my box with five dozen liquor jugs. sphinx of black quartz, judge my vow.", targetWpm: 26 },
+      { id: 28, text: "The zebra ran past the van.\nCan you fix the box? Max can mix the zinc.\nA man in a van saw a fox.\nDo not cut the flax.\nSix big black bears sat on a bed.", targetWpm: 28 },
+      { id: 29, text: "focus on the screen and do not look at your hands. trust your fingers to find the keys. speed comes with time so aim for accuracy first.", targetWpm: 30 },
+      { id: 30, text: "The quick brown fox jumps over the lazy dog.\nPack my box with five dozen liquor jugs.\nHow vexingly quick daft zebras jump!\nBright vixens jump; dozy fowl quack.\nQuick wafting zephyrs vex bold Jim.\nSphinx of black quartz, judge my vow.", targetWpm: 35, isTest: true },
+
+      // STAGE 4
+      { id: 31, text: "Left Shift A B C D E F G H I J K L M N O P Q R S T U V W X Y Z", targetWpm: 25 },
+      { id: 32, text: "Right Shift A B C D E F G H I J K L M N O P Q R S T U V W X Y Z", targetWpm: 25 },
+      { id: 33, text: "The Great Wall of China is very long. London is the capital of England. Mars is the Red Planet.", targetWpm: 28 },
+      { id: 34, text: "Apples, bananas, and cherries are fruits. Run, jump, and play. Yes, I will go. No, stay here.", targetWpm: 30 },
+      { id: 35, text: "Where are you going? I am going to the park! Stop! Wait for me! Can we go too? Yes!", targetWpm: 30 },
+      { id: 36, text: "'Hello,' said John. 'How are you?' asked Mary. 'I am fine,' he replied.", targetWpm: 30 },
+      { id: 37, text: "Dr. Smith said, 'Please wait here.' The sign read: STOP. apples, oranges; cats, dogs.", targetWpm: 32 },
+      { id: 38, text: "Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it.", targetWpm: 40, isTest: true },
+
+      // STAGE 5
+      { id: 39, text: "11 22 33 44 55 12 34 51 23 45 111 222 333 444 555 12345", targetWpm: 30 },
+      { id: 40, text: "66 77 88 99 00 67 89 06 78 90 666 777 888 999 000 67890", targetWpm: 30 },
+      { id: 41, text: "@ at # hash $ dollar % percent @email #tag $100 50% off", targetWpm: 28 },
+      { id: 42, text: "(parenthesis) [brackets] {braces} -hyphen _underscore (a-b) [x_y] {1-2}", targetWpm: 28 },
+      { id: 43, text: "Order #459 cost $20.50 (incl. tax). Send to: user_name@email.com [Priority].", targetWpm: 35 },
+      { id: 44, text: "Date: 2024-01-01. Item: #A-500. Qty: 50. Price: $99.99. Discount: 10%. (Note: Check for defects_type_b). Code: {X+Y} * [A-B]. Email: admin@sys.org.", targetWpm: 45, isTest: true },
+
+      // STAGE 6
+      { id: 45, text: "Sprint time. Type as fast as you can. Do not stop. Keep the rhythm flowing. Speed is key but accuracy is king. Go go go!", targetWpm: 50 },
+      { id: 46, text: "Sustained effort requires focus. Breathe steadily and keep your fingers moving. Do not tense your shoulders. Relax your hands. Let the words flow from your mind to the screen effortlessly. Maintain this pace.", targetWpm: 48 },
+      { id: 47, text: "", targetWpm: 45 }, // DYNAMICALLY GENERATED
+      { id: 48, text: "Precision is paramount here. Any mistake is costly. Focus purely on hitting the exact center of each key. Do not rush. Perfect practice makes perfect. Accuracy leads to true speed in the long run.", targetWpm: 45 },
+      { id: 49, text: "This is the endurance test. You must keep typing without fatigue. The quick brown fox jumps over the lazy dog repeatedly. Practice makes perfect. Typing is a skill for life. Keep going, do not give up. You are almost at the finish line.", targetWpm: 50 },
+      { id: 50, text: "Congratulations on reaching the final level. This is the master test. To pass this, you must demonstrate true mastery of the keyboard. Speed, accuracy, and rhythm must all be perfect. If you pass this, you are a certified Typing Master. Good luck!", targetWpm: 60, isTest: true }
+    ];
+
+    /* AUDIO SYSTEM */
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      toggle() {
+        this.enabled = !this.enabled;
+        this.init(); // Ensure init on toggle too
+        return this.enabled;
+      }
+
+      playTone(freq, type, duration, vol = 0.1) {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.frequency.value = freq;
+          osc.type = type;
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) { console.error(e); }
+      }
+
+      playTick() { this.playTone(600, 'sine', 0.05, 0.05); }
+      playError() { this.playTone(150, 'sawtooth', 0.15, 0.08); }
+      playSuccess() {
+        if (!this.enabled || !this.ctx) return;
+        setTimeout(() => this.playTone(523.25, 'sine', 0.3, 0.1), 0);
+        setTimeout(() => this.playTone(659.25, 'sine', 0.3, 0.1), 100);
+        setTimeout(() => this.playTone(783.99, 'sine', 0.4, 0.1), 200);
+      }
+    }
+
+    /* CONFETTI SYSTEM */
+    class ConfettiSystem {
+      constructor() {
+        this.canvas = document.getElementById('confetti-canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+      }
+      resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+      }
+      fire() {
+        for (let i = 0; i < 100; i++) {
+          this.particles.push({
+            x: this.canvas.width / 2,
+            y: this.canvas.height / 2,
+            vx: (Math.random() - 0.5) * 10,
+            vy: (Math.random() - 0.5) * 10 - 5,
+            color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+            life: 1
+          });
+        }
+        this.animate();
+      }
+      animate() {
+        if (this.particles.length === 0) {
+          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+          return;
+        }
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.particles.forEach((p, i) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.2; // Gravity
+          p.life -= 0.01;
+          this.ctx.fillStyle = p.color;
+          this.ctx.globalAlpha = p.life;
+          this.ctx.fillRect(p.x, p.y, 6, 6);
+          if (p.life <= 0) this.particles.splice(i, 1);
+        });
+        if (this.particles.length > 0) requestAnimationFrame(() => this.animate());
+      }
+    }
+
+    /* GAME ENGINE */
+    class App {
+      constructor() {
+        this.state = {
+          unlockedLevel: 1,
+          bestWpm: 0,
+          bestAcc: 0,
+          badges: [],
+          weakKeys: {}, // char -> {total: n, errors: n}
+          levelStats: {}, // levelId -> {wpm, acc, errors}
+          hasZeroBackspaceRun: false // Special stat
+        };
+        this.currentLevelId = 1;
+        this.gameActive = false;
+        this.startTime = 0;
+        this.timerInterval = 0;
+        this.inputText = "";
+        this.targetText = "";
+        this.errors = 0;
+        this.backspaces = 0;
+
+        this.sound = new SoundManager();
+        this.confetti = new ConfettiSystem();
+
+        this.ui = {
+          dashboard: document.getElementById('dashboard-screen'),
+          trainer: document.getElementById('trainer-screen'),
+          results: document.getElementById('results-screen'),
+          certificate: document.getElementById('certificate-screen'),
+          textDisplay: document.getElementById('text-display'),
+          stagesWrapper: document.getElementById('stages-wrapper'),
+          weakKeysList: document.getElementById('weak-keys-list')
+        };
+
+        this.init();
+      }
+
+      init() {
+        this.loadState();
+        this.renderDashboard();
+        this.renderBadges();
+
+        document.addEventListener('keydown', (e) => this.handleInput(e));
+
+        // Generate Level 47 dynamic content function
+        LEVELS[46].text = this.generateWeakKeyText();
+      }
+
+      loadState() {
+        const saved = localStorage.getItem('typingMasterProState');
+        if (saved) {
+          try {
+            this.state = { ...this.state, ...JSON.parse(saved) };
+          } catch (e) { console.error("Error loading state", e); }
+        }
+      }
+
+      saveState() {
+        localStorage.setItem('typingMasterProState', JSON.stringify(this.state));
+        this.renderBadges();
+      }
+
+      resetProgress() {
+        if (confirm("Are you sure you want to reset all progress?")) {
+          localStorage.removeItem('typingMasterProState');
+          location.reload();
+        }
+      }
+
+      toggleSound() {
+        const on = this.sound.toggle();
+        document.querySelector('.sound-toggle').innerText = on ? '🔊' : '🔇';
+      }
+
+      /* DASHBOARD RENDERING */
+      renderDashboard() {
+        // Update Stats
+        document.getElementById('dash-wpm').innerText = this.state.bestWpm;
+        document.getElementById('dash-acc').innerText = this.state.bestAcc + '%';
+        document.getElementById('dash-level').innerText = this.state.unlockedLevel;
+        document.getElementById('dash-badges').innerText = `${this.state.badges.length}/${BADGES.length}`;
+
+        // Render Stages
+        this.ui.stagesWrapper.innerHTML = '';
+        STAGES.forEach(stage => {
+          const levelsPassedInStage = Math.max(0, Math.min(stage.end - stage.start + 1, this.state.unlockedLevel - stage.start));
+          const totalLevels = stage.end - stage.start + 1;
+          const percent = Math.floor((levelsPassedInStage / totalLevels) * 100);
+
+          const card = document.createElement('div');
+          card.className = 'stage-card';
+          card.innerHTML = `
+                    <div class="stage-header">
+                        <div class="stage-title">${stage.name}</div>
+                        <div class="stage-progress-text">${percent}%</div>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: ${percent}%"></div>
+                    </div>
+                    <div class="levels-grid" id="stage-grid-${stage.id}"></div>
+                `;
+          this.ui.stagesWrapper.appendChild(card);
+
+          const grid = card.querySelector('.levels-grid');
+          for (let i = stage.start; i <= stage.end; i++) {
+            const node = document.createElement('div');
+            node.className = `level-node`;
+
+            if (i < this.state.unlockedLevel) {
+              node.classList.add('unlocked', 'completed');
+              node.innerText = i;
+              node.onclick = () => this.startLevel(i);
+            } else if (i === this.state.unlockedLevel) {
+              node.classList.add('unlocked');
+              node.innerText = i;
+              node.onclick = () => this.startLevel(i);
+            } else {
+              node.classList.add('locked');
+              node.innerText = i;
+            }
+            grid.appendChild(node);
+          }
+        });
+      }
+
+      renderBadges() {
+        const shelf = document.getElementById('badge-grid');
+        shelf.innerHTML = '';
+        BADGES.forEach(badge => {
+          const earned = this.state.badges.includes(badge.id);
+          const el = document.createElement('div');
+          el.style.opacity = earned ? '1' : '0.4';
+          el.style.filter = earned ? 'none' : 'grayscale(100%)';
+          el.style.textAlign = 'center';
+          el.title = badge.desc;
+          el.innerHTML = `
+                    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">${badge.icon}</div>
+                    <div style="font-size: 0.8rem; font-weight: bold;">${badge.name}</div>
+                `;
+          shelf.appendChild(el);
+        });
+      }
+
+      /* NAVIGATION */
+      showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        const screen = document.getElementById(id + (id.endsWith('screen') ? '' : '-screen'));
+        if (screen) screen.classList.add('active');
+      }
+
+      loadDashboard() {
+        this.gameActive = false;
+        this.renderDashboard();
+        this.showScreen('dashboard');
+      }
+
+      /* GAME LOGIC */
+      startLevel(lvlId) {
+        this.sound.init(); // Initialize audio context on first user interaction
+        this.currentLevelId = lvlId;
+        let levelData = LEVELS.find(l => l.id === lvlId);
+
+        // Weak key generation for L47
+        if (lvlId === 47) levelData.text = this.generateWeakKeyText();
+
+        this.targetText = levelData.text;
+        this.inputText = "";
+        this.errors = 0;
+        this.backspaces = 0;
+        this.startTime = 0;
+        this.gameActive = true;
+
+        // Reset UI
+        this.updateHud(0, 100, 0);
+        this.renderText();
+        this.updateWeakKeyPanel();
+
+        this.showScreen('trainer');
+        this.ui.textDisplay.focus(); // Focus for accessibility
+      }
+
+      generateWeakKeyText() {
+        // Find weakest keys
+        const entries = Object.entries(this.state.weakKeys)
+          .map(([char, data]) => ({ char, rate: data.errors / data.total }))
+          .filter(e => !isNaN(e.rate))
+          .sort((a, b) => b.rate - a.rate)
+          .slice(0, 5); // top 5
+
+        let keys = entries.map(e => e.char).join('');
+        if (keys.length === 0) keys = "practice"; // Default fallback
+
+        const fillers = "aeiou "; // connectors
+        let txt = "";
+        for (let i = 0; i < 200; i++) {
+          if (i > 0 && i % 6 === 5) txt += " ";
+          else txt += Math.random() < 0.6 ? keys[Math.floor(Math.random() * keys.length)] : fillers[Math.floor(Math.random() * fillers.length)];
+        }
+        return txt.trim();
+      }
+
+      handleInput(e) {
+        if (!this.gameActive) return;
+
+        // Ignore modifiers
+        if (e.key.length > 1 && e.key !== 'Backspace' && e.key !== 'Enter') return;
+        // Ignore if active element isn't body or relevant (prevent typing when in inputs)
+        if (e.target.tagName === 'INPUT') return;
+
+        e.preventDefault();
+
+        if (!this.startTime) this.startTime = Date.now();
+
+        if (e.key === 'Backspace') {
+          if (this.inputText.length > 0) {
+            this.inputText = this.inputText.slice(0, -1);
+            this.backspaces++;
+            this.renderText();
+          }
+          return;
+        }
+
+        // Cheat detection buffer (if huge jump in length - handled by individual key events mostly)
+
+        const expectedChar = this.targetText[this.inputText.length];
+        let typedChar = e.key;
+        if (typedChar === 'Enter') typedChar = '\n';
+
+
+        // Weak key tracking
+        if (expectedChar) {
+          if (!this.state.weakKeys[expectedChar]) this.state.weakKeys[expectedChar] = { total: 0, errors: 0 };
+          this.state.weakKeys[expectedChar].total++;
+
+          if (typedChar === expectedChar) {
+            this.sound.playTick();
+          } else {
+            this.sound.playError();
+            this.errors++;
+            this.state.weakKeys[expectedChar].errors++;
+          }
+        }
+
+        this.inputText += typedChar;
+        this.renderText();
+        this.checkCompletion();
+      }
+
+      renderText() {
+        let html = "";
+        // Optimize rendering for long text? 
+        // For now, simple loop is fine for < 1000 chars
+        for (let i = 0; i < this.targetText.length; i++) {
+          const char = this.targetText[i];
+          let className = "char";
+
+          if (i < this.inputText.length) {
+            className += this.inputText[i] === char ? " correct" : " error";
+          } else if (i === this.inputText.length) {
+            className += " current";
+          }
+
+          if (char === '\n') {
+            html += `<span class="${className}">↵<br></span>`;
+          } else {
+            html += `<span class="${className}">${char}</span>`;
+          }
+        }
+        this.ui.textDisplay.innerHTML = html;
+
+        // Auto scroll cursor into view
+        const current = this.ui.textDisplay.querySelector('.current');
+        if (current) {
+          current.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+
+        // Live Stats
+        const minutes = (Date.now() - this.startTime) / 60000;
+        if (minutes > 0 && this.inputText.length > 0) {
+          // Std WPM calculation: (Chars / 5) / minutes
+          const wpm = Math.round((this.inputText.length / 5) / minutes);
+          const acc = Math.max(0, Math.round(((this.inputText.length - this.errors) / this.inputText.length) * 100));
+          this.updateHud(wpm, acc, minutes * 60);
+        }
+      }
+
+      updateHud(wpm, acc, seconds) {
+        document.getElementById('live-wpm').innerText = wpm;
+        document.getElementById('live-acc').innerText = acc + '%';
+
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        document.getElementById('live-time').innerText = `${m}:${s.toString().padStart(2, '0')}`;
+      }
+
+      updateWeakKeyPanel() {
+        // Update UI based on stats
+        const badKeys = Object.entries(this.state.weakKeys)
+          .filter(([k, v]) => v.total > 5 && (v.errors / v.total) > 0.1)
+          .sort((a, b) => (b[1].errors / b[1].total) - (a[1].errors / a[1].total))
+          .slice(0, 5)
+          .map(k => `<span class="key-badge">${k[0]}</span>`)
+          .join('');
+
+        this.ui.weakKeysList.innerHTML = badKeys || "None detected";
+      }
+
+      async checkCompletion() {
+        if (this.inputText.length >= this.targetText.length) {
+          this.gameActive = false;
+          this.finishLevel();
+        }
+      }
+
+      finishLevel() {
+        const endTime = Date.now();
+        const minutes = (endTime - this.startTime) / 60000;
+        const wpm = Math.round((this.inputText.length / 5) / minutes);
+        const acc = Math.round(((this.inputText.length - this.errors) / this.inputText.length) * 100);
+
+        // Check CheckPass Criteria
+        const stage = STAGES.find(s => this.currentLevelId >= s.start && this.currentLevelId <= s.end);
+        const levelData = LEVELS.find(l => l.id === this.currentLevelId);
+        const passedAccuracy = acc >= stage.passAcc;
+        const passedWpm = wpm >= (levelData.targetWpm || 0);
+
+        const passed = passedAccuracy && passedWpm;
+
+        // UI Update
+        document.getElementById('res-title').innerText = passed ? "Level Complete!" : "Level Failed";
+        document.getElementById('res-title').style.color = passed ? "var(--primary-color)" : "var(--error-color)";
+        document.getElementById('res-wpm').innerText = wpm + ' WPM';
+        document.getElementById('res-acc').innerText = acc + '% Accuracy';
+        document.getElementById('res-errors').innerText = this.errors;
+        document.getElementById('res-back').innerText = this.backspaces;
+        document.getElementById('res-target-wpm').innerText = levelData.targetWpm;
+        document.getElementById('res-target-acc').innerText = stage.passAcc + '%';
+
+        const msgEl = document.getElementById('res-msg');
+        msgEl.innerText = "";
+        const nextBtn = document.getElementById('btn-next-level');
+        nextBtn.style.display = 'none';
+
+        if (passed) {
+          this.sound.playSuccess();
+          this.confetti.fire();
+
+          // Update State
+          if (this.currentLevelId === this.state.unlockedLevel) {
+            this.state.unlockedLevel++;
+          }
+
+          // Stats
+          this.state.bestWpm = Math.max(this.state.bestWpm, wpm);
+          this.state.bestAcc = Math.max(this.state.bestAcc, acc);
+          if (!this.state.levelStats[this.currentLevelId]) this.state.levelStats[this.currentLevelId] = {};
+
+          // Check Badges
+          this.state.hasZeroBackspaceRun = (this.backspaces === 0);
+          this.checkBadges();
+          this.saveState();
+
+          if (this.currentLevelId < 50) {
+            nextBtn.style.display = 'inline-flex';
+            nextBtn.onclick = () => this.nextLevel();
+            nextBtn.innerText = "Next Level ➔";
+          } else {
+            msgEl.innerText = "COURSE COMPLETE! Go get your certificate!";
+            msgEl.style.color = "var(--accent-color)";
+
+            nextBtn.style.display = 'inline-flex';
+            nextBtn.innerText = "Get Certificate 🎓";
+            nextBtn.onclick = () => this.showScreen('certificate');
+          }
+
+        } else {
+          msgEl.innerText = `Need ${levelData.targetWpm} WPM & ${stage.passAcc}% Accuracy`;
+        }
+
+        this.showScreen('results');
+      }
+
+      checkBadges() {
+        let newBadge = false;
+        BADGES.forEach(b => {
+          if (!this.state.badges.includes(b.id)) {
+            if (b.condition(this.state)) {
+              this.state.badges.push(b.id);
+              newBadge = true;
+              // Toast notification for badge could go here
+              // alert(`BADGE UNLOCKED: ${b.name} - ${b.icon}`);
+            }
+          }
+        });
+      }
+
+      nextLevel() {
+        if (this.currentLevelId < 50) {
+          this.startLevel(this.currentLevelId + 1);
+        }
+      }
+
+      retryLevel() {
+        this.startLevel(this.currentLevelId);
+      }
+
+      /* CERTIFICATE */
+      generateCertificate() {
+        const name = document.getElementById('cert-name').value || "Student";
+        const canvas = document.getElementById('cert-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // BG
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(0, 0, 800, 600);
+
+        // Border
+        ctx.lineWidth = 20;
+        ctx.strokeStyle = "#4F46E5";
+        ctx.strokeRect(40, 40, 720, 520);
+
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = "#FCD34D";
+        ctx.strokeRect(55, 55, 690, 490);
+
+        // Title
+        ctx.fillStyle = "#1F2937";
+        ctx.font = "bold 60px 'Times New Roman', serif";
+        ctx.textAlign = "center";
+        ctx.fillText("Certificate of Mastery", 400, 150);
+
+        // Body
+        ctx.font = "30px Arial, sans-serif";
+        ctx.fillText("This is to certify that", 400, 240);
+
+        ctx.font = "italic bold 50px Arial, sans-serif";
+        ctx.fillStyle = "#4F46E5";
+        ctx.fillText(name, 400, 310);
+
+        ctx.fillStyle = "#1F2937";
+        ctx.font = "30px Arial, sans-serif";
+        ctx.fillText("Has successfully completed the", 400, 380);
+        ctx.fillText("Edtechra Typing Training Course", 400, 420);
+
+        // Stats
+        ctx.font = "20px Arial, sans-serif";
+        ctx.fillStyle = "#6B7280";
+        const date = new Date().toLocaleDateString();
+        ctx.fillText(`Awarded on: ${date}`, 400, 480);
+        ctx.fillText(`Best WPM: ${this.state.bestWpm} | Best Accuracy: ${this.state.bestAcc}%`, 400, 510);
+
+        // Seal
+        ctx.beginPath();
+        ctx.arc(680, 480, 60, 0, Math.PI * 2);
+        ctx.fillStyle = "#FCD34D";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(680, 480, 50, 0, Math.PI * 2);
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = "#92400E";
+        ctx.font = "bold 14px Arial";
+        ctx.fillText("OFFICIAL", 680, 475);
+        ctx.fillText("SEAL", 680, 495);
+      }
+
+      downloadCertificate() {
+        const canvas = document.getElementById('cert-canvas');
+        const link = document.createElement('a');
+        link.download = 'TypingCertificate.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      }
+    }
+
+    // Start App
+    const app = new App();
+  </script>
+</body>
+
+</html>

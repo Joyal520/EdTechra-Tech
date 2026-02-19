@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edectra | Learning Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .glass-card:hover::before {
+            left: 100%;
+        }
+
+        /* Locked State */
+        .locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .locked::after {
+            content: '\f023';
+            /* Fa-lock */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .status-badge {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 4px 8px;
+            border-radius: 99px;
+            font-weight: 700;
+        }
+
+        .status-available {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .status-locked {
+            background: rgba(148, 163, 184, 0.1);
+            color: #94a3b8;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .status-hot {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Background Orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: #4f46e5;
+            top: -10%;
+            left: -10%;
+            animation-delay: 0s;
+            opacity: 0.4;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: #ec4899;
+            bottom: 10%;
+            right: -5%;
+            animation-delay: -5s;
+            opacity: 0.3;
+        }
+
+        .orb-3 {
+            width: 200px;
+            height: 200px;
+            background: #06b6d4;
+            top: 40%;
+            left: 40%;
+            animation-delay: -10s;
+            opacity: 0.2;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(30px, 50px);
+            }
+        }
+    </style>
+</head>
+
+<body class="p-6 md:p-12">
+
+    <!-- Ambient Background -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- Nav -->
+    <nav class="flex items-center justify-between mb-16 max-w-7xl mx-auto">
+        <a href="index.html" class="flex items-center gap-3 text-white/80 hover:text-white transition group">
+            <div
+                class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <span class="font-semibold tracking-wide">Back to Home</span>
+        </a>
+        <div class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+            Edectra Learning Hub
+        </div>
+        <div class="w-10"></div> <!-- Spacer -->
+    </nav>
+
+    <!-- Grid -->
+    <main class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+            <!-- 1. Intro to Computer -->
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 text-xl">
+                        <i class="fas fa-desktop"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Intro to Computers</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Understanding the machine that changed the world.</p>
+            </div>
+
+            <!-- 2. Hardware vs Software -->
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-xl">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Hardware vs Software</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">The physical parts vs the code that runs them.</p>
+            </div>
+
+            <!-- 3. Input/Output -->
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 text-xl">
+                        <i class="fas fa-keyboard"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Input & Output</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">How we talk to computers and how they talk back.</p>
+            </div>
+
+            <!-- 4. CPU, RAM, Storage -->
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center text-pink-400 text-xl">
+                        <i class="fas fa-memory"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">CPU, RAM & Storage</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">The brain, the workspace, and the long-term memory.</p>
+            </div>
+
+            <!-- 5. Cloud Storage -->
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-sky-500/20 flex items-center justify-center text-sky-400 text-xl">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Cloud Storage</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Saving your files to the internet.</p>
+            </div>
+
+            <!-- 6. Typing (AVAILABLE) -->
+            <a href="../TypingTrainerApp/index.html" class="glass-card p-6 flex flex-col h-64 cursor-pointer group">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center text-green-400 text-xl group-hover:bg-green-500 group-hover:text-white transition">
+                        <i class="fas fa-keyboard"></i>
+                    </div>
+                    <span class="status-badge status-available">Live</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2 text-white">Typing Master</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Improve your speed and accuracy with interactive
+                    lessons.</p>
+            </a>
+
+            <!-- 7. Shortcuts -->
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center text-yellow-400 text-xl">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Keyboard Shortcuts</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Work faster like a pro.</p>
+            </div>
+
+            <!-- 8. Files & Organization -->
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-400 text-xl">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Digital Organization</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Mastering tiles, folders, and file management.</p>
+            </div>
+
+            <!-- 9. Internet Basics (AVAILABLE) -->
+            <a href="internet.html" class="glass-card p-6 flex flex-col h-64 cursor-pointer group">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-xl group-hover:bg-cyan-500 group-hover:text-white transition">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <span class="status-badge status-available">Live</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2 text-white">Internet Basics</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Navigating the World Wide Web effectively.</p>
+            </a>
+
+            <!-- 10. Browser vs Search Engine -->
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-teal-500/20 flex items-center justify-center text-teal-400 text-xl">
+                        <i class="fab fa-chrome"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Browsers vs Search</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Chrome is the car, Google is the map.</p>
+            </div>
+
+            <!-- 11. How Internet Works -->
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">How Internet Works</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Servers, packets, and cables under the ocean.</p>
+            </div>
+
+            <!-- 12. Google Tricks (AVAILABLE) -->
+            <a href="!0_fun_tricks_with_google.html" class="glass-card p-6 flex flex-col h-64 cursor-pointer group">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-lime-500/20 flex items-center justify-center text-lime-400 text-xl group-hover:bg-lime-500 group-hover:text-white transition">
+                        <i class="fab fa-google"></i>
+                    </div>
+                    <span class="status-badge status-hot">Fun</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2 text-white">Google Tricks</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Hidden games and secrets in the search bar.</p>
+            </a>
+
+            <!-- 13. Email (AVAILABLE) -->
+            <a href="email.html" class="glass-card p-6 flex flex-col h-64 cursor-pointer group">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center text-red-400 text-xl group-hover:bg-red-500 group-hover:text-white transition">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <span class="status-badge status-available">Live</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2 text-white">Email Mastery</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Sending professional emails and managing inbox.</p>
+            </a>
+
+            <!-- 14. Cyber Safety (AVAILABLE) -->
+            <a href="cyber_threats.html" class="glass-card p-6 flex flex-col h-64 cursor-pointer group">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-red-600/20 flex items-center justify-center text-red-500 text-xl group-hover:bg-red-600 group-hover:text-white transition">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <span class="status-badge status-available">Live</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2 text-white">Cyber Safety</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Protecting yourself from online threats.</p>
+            </a>
+
+            <!-- 15. Phishing (AVAILABLE) -->
+            <a href="phishing-simulation.html" class="glass-card p-6 flex flex-col h-64 cursor-pointer group">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center text-rose-400 text-xl group-hover:bg-rose-500 group-hover:text-white transition">
+                        <i class="fas fa-fish"></i>
+                    </div>
+                    <span class="status-badge status-available">Live</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2 text-white">Phishing</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Spotting fake emails and scams.</p>
+            </a>
+
+            <!-- 16. Safe Behavior -->
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-fuchsia-500/20 flex items-center justify-center text-fuchsia-400 text-xl">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Online Etiquette</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Being safe and kind online.</p>
+            </div>
+
+            <!-- 17. Word Processing (AVAILABLE) -->
+            <a href="wordprocessing/word.html"
+                class="glass-card p-6 flex flex-col h-64 cursor-pointer group ring-2 ring-blue-500/50">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400 text-xl group-hover:bg-blue-600 group-hover:text-white transition">
+                        <i class="fas fa-file-word"></i>
+                    </div>
+                    <span class="status-badge status-hot">Featured</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2 text-white">Word Processing</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Create professional documents. 4-Level Course.</p>
+            </a>
+
+            <!-- 18. Spreadsheets -->
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-green-600/20 flex items-center justify-center text-green-400 text-xl">
+                        <i class="fas fa-file-excel"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Spreadsheets</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Data analysis and charts with Excel/Sheets.</p>
+            </div>
+
+            <!-- 19. Presentation -->
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-orange-600/20 flex items-center justify-center text-orange-400 text-xl">
+                        <i class="fas fa-file-powerpoint"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Presentations</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Captivate audiences with Slides/PowerPoint.</p>
+            </div>
+
+            <!-- 20. AI Basics -->
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-violet-500/20 flex items-center justify-center text-violet-400 text-xl">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">AI Basics</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Introduction to Artificial Intelligence.</p>
+            </div>
+
+            <!-- 21. Prompt Engineering -->
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-indigo-600/20 flex items-center justify-center text-indigo-400 text-xl">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Prompt Engineering</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Mastering communication with AI models.</p>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="text-center text-gray-500 text-sm mt-24 pb-8">
+        &copy; 2026 Edectra Technology. All rights reserved.
+    </footer>
+
+</body>
+
+</html>

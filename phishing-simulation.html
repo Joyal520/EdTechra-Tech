@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberSafe | Interactive Phishing Simulation</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --danger: #ef4444;
+      --success: #10b981;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      max-width: 600px;
+    }
+
+    h1 { font-size: 1.8rem; margin-bottom: 8px; color: var(--primary); }
+    header p { color: var(--text-light); margin: 0; font-size: 0.95rem; }
+
+    /* The Main Container */
+    .container {
+      width: 100%;
+      max-width: 850px;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Progress Tracker */
+    .stepper {
+      display: flex;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 15px;
+      justify-content: center;
+      gap: 20px;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+    .step.active { color: var(--primary); }
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: white;
+    }
+    .active .step-num { background: var(--primary); }
+
+    /* Scene Management */
+    .scene { display: none; padding: 40px; min-height: 450px; }
+    .scene.active { display: flex; flex-direction: column; }
+
+    /* Scene 1: Realistic Phone Email UI */
+    .phone-mockup {
+      max-width: 380px;
+      margin: 0 auto;
+      border: 8px solid #1e293b;
+      border-radius: 36px;
+      background: white;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    }
+    .phone-header {
+      background: #f8fafc;
+      padding: 15px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8rem;
+    }
+    .email-body { padding: 20px; font-size: 0.9rem; line-height: 1.5; }
+    .btn-verify {
+      display: block;
+      background: var(--primary);
+      color: white;
+      text-align: center;
+      padding: 12px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      margin: 20px 0;
+    }
+
+    /* Scene 2: Fake Banking Portal */
+    .browser-mockup {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .browser-bar {
+      background: #eef2f6;
+      padding: 8px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .url-bar {
+      background: white;
+      border-radius: 20px;
+      padding: 4px 15px;
+      font-size: 0.75rem;
+      color: var(--text-light);
+      flex-grow: 1;
+      border: 1px solid var(--border);
+    }
+    .login-container {
+      padding: 40px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .form-group {
+      width: 100%;
+      max-width: 300px;
+      margin-bottom: 15px;
+    }
+    .form-group label { display: block; font-size: 0.8rem; margin-bottom: 5px; font-weight: 500; }
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      outline: none;
+    }
+    .btn-login {
+      width: 100%;
+      max-width: 300px;
+      padding: 12px;
+      background: #1e293b;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Scene 3: The Result */
+    .result-card {
+      text-align: center;
+    }
+    .data-box {
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      text-align: left;
+    }
+    .data-line { font-family: monospace; margin: 5px 0; color: var(--danger); }
+
+    /* Tools & Education */
+    .lesson-tip {
+      margin-top: 30px;
+      padding: 15px;
+      background: #f0f9ff;
+      border-left: 4px solid var(--primary);
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .btn-secondary:hover { background: #f8fafc; }
+
+    .red-flag {
+      color: var(--danger);
+      font-weight: bold;
+      text-decoration: underline dotted;
+      cursor: help;
+    }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>SecureBank Training</h1>
+  <p>Can you spot the attack? Follow the steps to see how phishing works.</p>
+</header>
+
+<div class="container">
+  <!-- Stepper -->
+  <div class="stepper">
+    <div class="step active" id="step1-indicator">
+      <div class="step-num">1</div> The Bait
+    </div>
+    <div class="step" id="step2-indicator">
+      <div class="step-num">2</div> The Trap
+    </div>
+    <div class="step" id="step3-indicator">
+      <div class="step-num">3</div> The Reveal
+    </div>
+  </div>
+
+  <!-- Scene 1: Email -->
+  <div id="scene1" class="scene active">
+    <div class="phone-mockup">
+      <div class="phone-header">
+        <strong>From:</strong> Secure-Bank <small>&lt;alert@verify-account-now.com&gt;</small><br>
+        <strong>Subject:</strong> Urgent: Security Breach!
+      </div>
+      <div class="email-body">
+        <p>Dear Valued Member,</p>
+        <p>We detected a suspicious login from a new device in <strong>Moscow, RU</strong>.</p>
+        <p>If this wasn't you, please secure your account immediately by clicking the button below.</p>
+        <a href="#" class="btn-verify" id="btnToStep2">Secure My Account</a>
+        <p><small>Note: Failure to verify within 1 hour will result in a permanent block.</small></p>
+      </div>
+    </div>
+    
+    <div class="lesson-tip">
+      <strong>🔎 How to spot the lie:</strong>
+      <ul>
+        <li>Check the sender's email address closely.</li>
+        <li>Notice the <strong>Urgency</strong> and <strong>Threats</strong> (e.g., "1 hour", "Permanent block").</li>
+        <li>Hover over the button (in real life) to see the destination.</li>
+      </ul>
+      <button class="btn-secondary" onclick="revealFlags()">Highlight Red Flags</button>
+    </div>
+  </div>
+
+  <!-- Scene 2: Fake Login -->
+  <div id="scene2" class="scene">
+    <div class="browser-mockup">
+      <div class="browser-bar">
+        <div style="display:flex; gap:4px">
+          <div style="width:10px; height:10px; border-radius:50%; background:#ff5f56"></div>
+          <div style="width:10px; height:10px; border-radius:50%; background:#ffbd2e"></div>
+          <div style="width:10px; height:10px; border-radius:50%; background:#27c93f"></div>
+        </div>
+        <div class="url-bar">https://secure-bank.verify-login-portal.co/auth</div>
+      </div>
+      <div class="login-container">
+        <div style="font-size:1.5rem; font-weight:800; margin-bottom:20px; color:#1e293b">SecureBank</div>
+        <div class="form-group">
+          <label>Email or Username</label>
+          <input type="text" id="username" placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="Enter your password">
+        </div>
+        <button class="btn-login" id="btnToStep3">Sign In & Verify</button>
+        <p style="font-size:0.7rem; color:var(--text-light); margin-top:20px;">© 2024 SecureBank International. All rights reserved.</p>
+      </div>
+    </div>
+    <div class="lesson-tip">
+      <strong>⚠️ Look at the URL!</strong>
+      Even though the page looks 100% official, the address bar says <code>verify-login-portal.co</code>, not <code>securebank.com</code>.
+    </div>
+  </div>
+
+  <!-- Scene 3: The Result -->
+  <div id="scene3" class="scene">
+    <div class="result-card">
+      <div style="font-size: 3rem;">🔓</div>
+      <h2 style="color: var(--danger);">You've been phished!</h2>
+      <p>By entering your details on that page, you just sent your credentials directly to a hacker's database.</p>
+      
+      <div class="data-box">
+        <strong>Captured Data (What the hacker sees):</strong>
+        <div class="data-line">USER_EMAIL: <span id="capturedUser">...</span></div>
+        <div class="data-line">USER_PASS: <span id="capturedPass">...</span></div>
+        <div class="data-line">IP_ADDRESS: 192.168.1.45 (Simulated)</div>
+        <div class="data-line">BROWSER: Chrome v121.0.0.0</div>
+      </div>
+
+      <h3>How to stay safe:</h3>
+      <div style="text-align: left; display: inline-block; max-width: 500px;">
+        <p>1. <strong>Bookmark</strong> your real bank's website and only use that.</p>
+        <p>2. Enable <strong>Two-Factor Authentication (2FA)</strong>.</p>
+        <p>3. If you get a scary email, call the bank using the number on your <strong>physical bank card</strong>.</p>
+      </div>
+
+      <div style="margin-top: 30px;">
+        <button class="btn-login" onclick="resetSim()" style="background: var(--success);">Restart Simulation</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const scene1 = document.getElementById('scene1');
+  const scene2 = document.getElementById('scene2');
+  const scene3 = document.getElementById('scene3');
+  
+  const step1Ind = document.getElementById('step1-indicator');
+  const step2Ind = document.getElementById('step2-indicator');
+  const step3Ind = document.getElementById('step3-indicator');
+
+  const btnToStep2 = document.getElementById('btnToStep2');
+  const btnToStep3 = document.getElementById('btnToStep3');
+
+  // Transition to Scene 2
+  btnToStep2.addEventListener('click', (e) => {
+    e.preventDefault();
+    scene1.classList.remove('active');
+    scene2.classList.add('active');
+    step2Ind.classList.add('active');
+  });
+
+  // Transition to Scene 3
+  btnToStep3.addEventListener('click', () => {
+    const user = document.getElementById('username').value || 'anonymous@user.com';
+    const pass = document.getElementById('password').value || '••••••••';
+    
+    document.getElementById('capturedUser').textContent = user;
+    document.getElementById('capturedPass').textContent = pass;
+
+    scene2.classList.remove('active');
+    scene3.classList.add('active');
+    step3Ind.classList.add('active');
+  });
+
+  function revealFlags() {
+    const body = document.querySelector('.email-body');
+    body.innerHTML = `
+      <p>Dear Valued Member,</p>
+      <p>We detected a <span class="red-flag" title="Fear Tactic">suspicious login</span> from a new device in <strong>Moscow, RU</strong>.</p>
+      <p>If this wasn't you, please secure your account immediately by clicking the button below.</p>
+      <a href="#" class="btn-verify" style="background:#dc2626">Secure My Account</a>
+      <p><small>Note: <span class="red-flag" title="Pressure/Time limit">Failure to verify within 1 hour</span> will result in a <span class="red-flag" title="High Penalty/Threat">permanent block</span>.</small></p>
+    `;
+  }
+
+  function resetSim() {
+    location.reload();
+  }
+</script>
+
+</body>
+</html>

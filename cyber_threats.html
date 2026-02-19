@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Safety: Spot the Phish!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+        .phish-gradient {
+            background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+        }
+        .safe-gradient {
+            background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .float-anim {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-4 text-center shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <div class="inline-block bg-white/20 p-3 rounded-2xl mb-4 float-anim">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Cyber Safety for Students</h1>
+            <p class="text-lg md:text-xl opacity-90 max-w-2xl mx-auto">Learn how to spot online dangers and protect your digital life.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-12 space-y-16">
+        
+        <!-- Section 1: Definition -->
+        <section class="grid md:grid-cols-2 gap-8 items-center">
+            <div class="space-y-4">
+                <span class="text-indigo-600 font-bold tracking-wider uppercase text-sm">Basic Concept</span>
+                <h2 class="text-3xl font-bold">What is a Cyber Threat?</h2>
+                <div class="bg-indigo-50 border-l-4 border-indigo-500 p-6 rounded-r-xl">
+                    <p class="text-xl italic text-indigo-900">"A cyber threat is online danger."</p>
+                </div>
+                <ul class="space-y-2 text-slate-600">
+                    <li class="flex items-center gap-2">
+                        <svg class="text-red-500" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        Stealing passwords or money
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="text-red-500" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        Damaging your computer
+                    </li>
+                </ul>
+            </div>
+            <div class="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 flex justify-center">
+                <svg viewBox="0 0 200 200" width="200" height="200">
+                    <circle cx="100" cy="100" r="80" fill="#e0e7ff" />
+                    <rect x="60" y="70" width="80" height="60" rx="5" fill="#4f46e5" />
+                    <path d="M70 70V60c0-15 30-15 30 0v10" stroke="#4f46e5" stroke-width="8" fill="none" />
+                    <circle cx="100" cy="100" r="10" fill="white" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- NEW SECTION: Practical Session Link -->
+        <section class="bg-indigo-900 text-white rounded-3xl p-8 shadow-xl text-center">
+            <h2 class="text-2xl font-bold mb-4">Ready for the Practical Session?</h2>
+            <p class="mb-6 opacity-90">Now that you know the basics, let's put your skills to the test in our advanced simulation tool.</p>
+            <a href="phishing-simulation.html" class="inline-block bg-white text-indigo-900 px-8 py-3 rounded-full font-extrabold hover:bg-indigo-50 transition-colors shadow-lg">
+                Go to Practical Session →
+            </a>
+        </section>
+
+        <!-- Section 2: Interactive Simulation -->
+        <section id="simulation" class="bg-white p-6 md:p-10 rounded-3xl shadow-2xl border-2 border-indigo-100">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold mb-2">Class Activity: Phishing Test</h2>
+                <p class="text-slate-500">Can you identify if this email is <span class="text-red-500 font-bold">Fake</span> or <span class="text-green-500 font-bold">Real</span>?</p>
+            </div>
+
+            <div id="simulation-box" class="max-w-2xl mx-auto border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                <!-- Email Header -->
+                <div class="bg-slate-50 p-4 border-b border-slate-200">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold">!</div>
+                        <div>
+                            <p class="text-sm font-bold" id="email-sender">Security Team &lt;admin-alert-user99@gmail.com&gt;</p>
+                            <p class="text-xs text-slate-500">To: You</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Email Content -->
+                <div class="p-6 space-y-4">
+                    <h3 class="text-lg font-bold text-red-600" id="email-subject">URGENT: Your account will be closed!</h3>
+                    <p class="text-slate-700 leading-relaxed" id="email-body">
+                        Dear Student, <br><br>
+                        We detected a problem with your school account. If you do not verify your identity in the next 1 hour, your account will be deleted forever. <br><br>
+                        Click the button below to sign in and save your files:
+                    </p>
+                    <div class="py-4">
+                        <button class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold cursor-default opacity-80">Verify My Identity Now</button>
+                    </div>
+                    <p class="text-xs text-slate-400">© 2024 School Security Office. All rights reserved.</p>
+                </div>
+            </div>
+
+            <!-- Interaction Buttons -->
+            <div class="flex flex-col md:flex-row justify-center gap-4 mt-8">
+                <button onclick="checkAnswer('fake')" class="phish-gradient text-white px-10 py-4 rounded-2xl font-bold text-lg card-hover shadow-lg">
+                    This is a FAKE (Phishing)
+                </button>
+                <button onclick="checkAnswer('real')" class="bg-slate-200 text-slate-700 px-10 py-4 rounded-2xl font-bold text-lg card-hover">
+                    This is REAL
+                </button>
+            </div>
+
+            <!-- Feedback Message -->
+            <div id="feedback" class="mt-8 hidden p-6 rounded-2xl text-center animate-bounce">
+                <p id="feedback-text" class="text-xl font-bold"></p>
+            </div>
+        </section>
+
+        <!-- Section 3: Red Flags Grid -->
+        <section class="space-y-8">
+            <h2 class="text-3xl font-bold text-center">Phishing Red Flags</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-md border-t-4 border-red-400 card-hover">
+                    <div class="bg-red-100 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="text-red-600"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <h4 class="font-bold text-lg mb-2">Panic & Urgency</h4>
+                    <p class="text-slate-600">Messages like "Do it in 1 hour!" or "Your account is suspended!" are designed to make you act without thinking.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-md border-t-4 border-orange-400 card-hover">
+                    <div class="bg-orange-100 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="text-orange-600"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    </div>
+                    <h4 class="font-bold text-lg mb-2">Strange Sender</h4>
+                    <p class="text-slate-600">Check the email address carefully. A real company uses their name, not random letters or "gmail.com".</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-md border-t-4 border-yellow-400 card-hover">
+                    <div class="bg-yellow-100 w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="text-yellow-600"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    </div>
+                    <h4 class="font-bold text-lg mb-2">Asking for Secrets</h4>
+                    <p class="text-slate-600">No real company will ever ask for your <strong>Password</strong> or <strong>OTP</strong> through an email or link.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final Safety Rule -->
+        <section class="gradient-bg rounded-3xl p-10 text-white text-center shadow-2xl">
+            <h2 class="text-3xl font-bold mb-6">The Golden Safety Formula</h2>
+            <div class="flex flex-wrap justify-center gap-4 text-2xl font-extrabold uppercase tracking-tighter">
+                <div class="bg-white/20 px-6 py-4 rounded-xl">Pause</div>
+                <div class="flex items-center">→</div>
+                <div class="bg-white/20 px-6 py-4 rounded-xl">Think</div>
+                <div class="flex items-center">→</div>
+                <div class="bg-white/20 px-6 py-4 rounded-xl">Check</div>
+                <div class="flex items-center">→</div>
+                <div class="bg-white/20 px-6 py-4 rounded-xl">Act</div>
+            </div>
+            <p class="mt-8 text-white/80">If you are unsure, always ask a teacher or a parent first.</p>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-12 text-center">
+        <p class="font-bold text-white mb-2">Stay Safe Online!</p>
+        <p class="text-sm">Created for educational purposes by Gemini 2.5 Flash.</p>
+    </footer>
+
+    <script>
+        function checkAnswer(choice) {
+            const feedback = document.getElementById('feedback');
+            const feedbackText = document.getElementById('feedback-text');
+            
+            feedback.classList.remove('hidden');
+            
+            if (choice === 'fake') {
+                feedback.className = "mt-8 p-6 rounded-2xl text-center bg-green-100 text-green-700 border-2 border-green-500 animate-bounce";
+                feedbackText.innerHTML = "✅ EXCELLENT! You spotted the Red Flags: Urgent threat, strange email, and link asking for verification.";
+            } else {
+                feedback.className = "mt-8 p-6 rounded-2xl text-center bg-red-100 text-red-700 border-2 border-red-500";
+                feedbackText.innerHTML = "❌ OH NO! This was a Phishing email. Look closer at the email address and the panic-filled message!";
+            }
+            
+            // Scroll to feedback
+            feedback.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Mastery: ICT Syllabus Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card { transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-12 px-6 text-center shadow-lg">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">📧 All About Email</h1>
+        <p class="text-xl opacity-90 max-w-2xl mx-auto">Master the backbone of academic and corporate communication.</p>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-12">
+        
+        <!-- Section 1: Introduction -->
+        <div class="grid md:grid-cols-2 gap-8 mb-16">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border-l-8 border-indigo-500 card">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-700">1. What is Email?</h2>
+                <p class="mb-4">Electronic Mail is more than just messaging—it's your professional digital identity.</p>
+                <ul class="space-y-2">
+                    <li class="flex items-center"><span class="mr-2">📝</span> Formal communication tool</li>
+                    <li class="flex items-center"><span class="mr-2">🎓</span> Academic submission method</li>
+                    <li class="flex items-center"><span class="mr-2">⚖️</span> Legal communication record</li>
+                </ul>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-sm border-l-8 border-purple-500 card">
+                <h2 class="text-2xl font-bold mb-4 text-purple-700">2. How it Works</h2>
+                <p class="text-sm text-slate-600 mb-4">Email uses <strong>Servers</strong>, not magic!</p>
+                <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold">
+                    <div class="bg-purple-100 p-3 rounded">SMTP<br><span class="font-normal">Sending</span></div>
+                    <div class="bg-indigo-100 p-3 rounded">IMAP<br><span class="font-normal">Syncing</span></div>
+                    <div class="bg-blue-100 p-3 rounded">POP3<br><span class="font-normal">Downloading</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Anatomy of an Email -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8">3. Anatomy of a Professional Email</h2>
+            <div class="overflow-hidden rounded-xl border border-slate-200 shadow-md">
+                <table class="w-full text-left bg-white">
+                    <thead class="bg-slate-100 border-b">
+                        <tr>
+                            <th class="p-4 font-bold">Component</th>
+                            <th class="p-4 font-bold">Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        <tr><td class="p-4 font-semibold">To</td><td class="p-4">The primary recipient.</td></tr>
+                        <tr class="bg-slate-50"><td class="p-4 font-semibold">CC (Carbon Copy)</td><td class="p-4">Visible to all. Use to keep people "in the loop".</td></tr>
+                        <tr><td class="p-4 font-semibold">BCC (Blind CC)</td><td class="p-4">Hidden recipients. Use for privacy or large groups.</td></tr>
+                        <tr class="bg-slate-50"><td class="p-4 font-semibold">Subject Line</td><td class="p-4 text-red-600 font-bold italic underline">The most important part! Must be specific.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 4: Email Security -->
+        <section class="bg-red-50 p-8 rounded-2xl mb-16 border border-red-200">
+            <h2 class="text-2xl font-bold mb-6 text-red-700 flex items-center">
+                <span class="mr-3">🛡️</span> 10. Email Security & Phishing
+            </h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <h3 class="font-bold text-red-600 mb-2">Spotting Phishing</h3>
+                    <p class="text-sm">Look for urgent threats, generic greetings ("Dear Customer"), and weird sender addresses.</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <h3 class="font-bold text-green-600 mb-2">Strong Passwords</h3>
+                    <p class="text-sm italic">"Blue!Ocean2026#"</p>
+                    <p class="text-xs text-slate-500">12+ characters, symbols, and numbers.</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <h3 class="font-bold text-blue-600 mb-2">Enable 2FA</h3>
+                    <p class="text-sm">Always add a second step (Phone code) to your Gmail or Outlook account.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVITY BOX -->
+        <section class="bg-indigo-900 text-white p-8 md:p-12 rounded-3xl shadow-2xl relative overflow-hidden">
+            <div class="relative z-10">
+                <h2 class="text-3xl font-bold mb-4">🚀 Practical Activity: Requesting Leave</h2>
+                <p class="mb-8 text-indigo-100">Scenario: You need to take 2 days off from your institute or workplace due to a personal problem. Draft a professional email below.</p>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Input Form -->
+                    <div class="space-y-4 text-slate-800">
+                        <div>
+                            <label class="block text-white text-sm font-bold mb-2">Your Full Name</label>
+                            <input id="userName" type="text" placeholder="e.g. John Perera" class="w-full p-3 rounded-lg outline-none focus:ring-2 ring-yellow-400">
+                        </div>
+                        <div>
+                            <label class="block text-white text-sm font-bold mb-2">Recipient Name</label>
+                            <input id="mgrName" type="text" placeholder="e.g. Mr. Silva" class="w-full p-3 rounded-lg outline-none focus:ring-2 ring-yellow-400">
+                        </div>
+                        <div>
+                            <label class="block text-white text-sm font-bold mb-2">Reason for Leave</label>
+                            <input id="reason" type="text" placeholder="e.g. a personal family emergency" class="w-full p-3 rounded-lg outline-none focus:ring-2 ring-yellow-400">
+                        </div>
+                        <div>
+                            <label class="block text-white text-sm font-bold mb-2">Dates</label>
+                            <input id="dates" type="text" placeholder="e.g. 20th and 21st Oct" class="w-full p-3 rounded-lg outline-none focus:ring-2 ring-yellow-400">
+                        </div>
+                    </div>
+
+                    <!-- Live Preview -->
+                    <div class="bg-white text-slate-800 p-6 rounded-xl shadow-inner border-t-8 border-yellow-400 font-mono text-sm min-h-[300px]">
+                        <div class="border-b pb-2 mb-4">
+                            <span class="font-bold text-slate-400">Subject:</span> <span id="previewSubject" class="text-indigo-700 font-bold">Leave Request - [Your Name]</span>
+                        </div>
+                        <p>Dear <span id="previewMgr" class="bg-yellow-100">[Name]</span>,</p><br>
+                        <p>I hope this email finds you well.</p><br>
+                        <p>I am writing to formally request leave for <span id="previewDates" class="bg-yellow-100">[Dates]</span> due to <span id="previewReason" class="bg-yellow-100">[Reason]</span>.</p><br>
+                        <p>I will ensure all my pending tasks are completed before my absence. Thank you for your understanding.</p><br>
+                        <p>Kind regards,</p>
+                        <p class="font-bold" id="previewName">[Your Name]</p>
+                        <p class="text-xs text-slate-500">Contact: 07XXXXXXXX</p>
+                    </div>
+                </div>
+                
+                <div class="mt-8 flex flex-wrap gap-4">
+                    <button onclick="window.print()" class="bg-yellow-400 hover:bg-yellow-500 text-indigo-900 font-bold py-3 px-8 rounded-full transition shadow-lg">
+                        🖨️ Save/Print My Email
+                    </button>
+                    <button onclick="resetForm()" class="bg-transparent border border-white hover:bg-white hover:text-indigo-900 py-3 px-8 rounded-full transition">
+                        Reset Form
+                    </button>
+                </div>
+            </div>
+
+            <!-- Background Decoration -->
+            <div class="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-indigo-700 rounded-full opacity-20"></div>
+        </section>
+
+        <!-- Checklist -->
+        <section class="mt-16 text-center">
+            <h2 class="text-2xl font-bold mb-6">✅ Skills Checklist</h2>
+            <div class="flex flex-wrap justify-center gap-4">
+                <span class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-bold">Clear Subject Lines</span>
+                <span class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-bold">Proper Salutations</span>
+                <span class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-bold">Attachment Etiquette</span>
+                <span class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-bold">Phishing Detection</span>
+                <span class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-bold">Inbox Organization</span>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-slate-400 py-8 text-center text-sm">
+        <p>© 2024 ICT Syllabus Module | Professional Communications Series</p>
+    </footer>
+
+    <script>
+        const inputs = ['userName', 'mgrName', 'reason', 'dates'];
+        const previews = {
+            userName: ['previewName', 'previewSubject'],
+            mgrName: ['previewMgr'],
+            reason: ['previewReason'],
+            dates: ['previewDates']
+        };
+
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', (e) => {
+                const val = e.target.value;
+                previews[id].forEach(prevId => {
+                    const el = document.getElementById(prevId);
+                    if (prevId === 'previewSubject') {
+                        el.innerText = `Leave Request - ${val || '[Your Name]'}`;
+                    } else {
+                        el.innerText = val || `[${id.replace('Name', '')}]`;
+                        el.classList.toggle('bg-yellow-100', !val);
+                    }
+                });
+            });
+        });
+
+        function resetForm() {
+            inputs.forEach(id => {
+                document.getElementById(id).value = '';
+                document.getElementById(id).dispatchEvent(new Event('input'));
+            });
+        }
+    </script>
+</body>
+</html>
