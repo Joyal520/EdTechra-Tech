@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EdTechra: Browsers vs Search Engines</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background: #fdf2f8;
+            scroll-behavior: smooth;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+        }
+
+        .stagger-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        .stagger-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .browser-frame {
+            border: 12px solid #334155;
+            border-radius: 2rem;
+            overflow: hidden;
+            background: white;
+        }
+
+        .search-item {
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .search-item:hover {
+            background: #f1f5f9;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+
+<body class="overflow-x-hidden">
+    <nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-pink-600 flex items-center gap-2">
+                <i class="fab fa-chrome"></i> EdTechra
+            </div>
+            <a href="lesson.html" class="font-medium text-gray-600 hover:text-pink-600"><i
+                    class="fas fa-arrow-left mr-2"></i>Back to Hub</a>
+        </div>
+    </nav>
+
+    <section class="hero-gradient min-h-[50vh] flex items-center justify-center pt-24 px-6 text-white text-center">
+        <div class="max-w-4xl">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6">Browsers vs Search</h1>
+            <p class="text-xl md:text-2xl opacity-90">Chrome is the car, Google is the map.</p>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section class="py-20 px-6">
+        <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-12">
+            <div class="stagger-fade-in p-8 bg-white rounded-[2.5rem] shadow-xl border border-pink-100">
+                <div class="w-16 h-16 bg-pink-100 text-pink-600 rounded-2xl flex items-center justify-center mb-6"><i
+                        class="fas fa-window-maximize fa-2x"></i></div>
+                <h2 class="text-3xl font-bold mb-4">The Web Browser</h2>
+                <p class="text-gray-600 leading-relaxed mb-6 font-medium">Think of the <strong>Browser</strong> as the
+                    <strong>Car</strong>. It's the application that takes you to different websites.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <span class="bg-gray-100 px-4 py-2 rounded-full text-sm font-bold text-gray-700">Google
+                        Chrome</span>
+                    <span class="bg-gray-100 px-4 py-2 rounded-full text-sm font-bold text-gray-700">Safari</span>
+                    <span class="bg-gray-100 px-4 py-2 rounded-full text-sm font-bold text-gray-700">Microsoft
+                        Edge</span>
+                </div>
+            </div>
+            <div class="stagger-fade-in p-8 bg-white rounded-[2.5rem] shadow-xl border border-cyan-100">
+                <div class="w-16 h-16 bg-cyan-100 text-cyan-600 rounded-2xl flex items-center justify-center mb-6"><i
+                        class="fas fa-search fa-2x"></i></div>
+                <h2 class="text-3xl font-bold mb-4">The Search Engine</h2>
+                <p class="text-gray-600 leading-relaxed mb-6 font-medium">Think of the <strong>Search Engine</strong> as
+                    the <strong>Map</strong>. It's a special website that helps you find other websites.</p>
+                <div class="flex flex-wrap gap-4">
+                    <span class="bg-gray-100 px-4 py-2 rounded-full text-sm font-bold text-gray-700">Google.com</span>
+                    <span class="bg-gray-100 px-4 py-2 rounded-full text-sm font-bold text-gray-700">Bing</span>
+                    <span class="bg-gray-100 px-4 py-2 rounded-full text-sm font-bold text-gray-700">DuckDuckGo</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Simulation -->
+    <section class="py-20 px-6 bg-slate-100">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl font-bold mb-4">Launch Your Search</h2>
+            <p class="text-gray-600 mb-12">See how the Browser and Search Engine work together!</p>
+
+            <div class="browser-frame shadow-2xl">
+                <div class="bg-slate-700 p-3 flex items-center gap-2">
+                    <div class="flex gap-1.5 ml-2">
+                        <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+                    </div>
+                    <div
+                        class="flex-1 bg-slate-800 rounded-full px-4 py-1 text-xs text-slate-400 text-left border border-slate-600">
+                        https://www.google.com
+                    </div>
+                </div>
+                <div class="p-12 min-h-[300px] flex flex-col items-center justify-center" id="search-content">
+                    <div id="google-view">
+                        <h3 class="text-5xl font-bold mb-8 tracking-tighter">
+                            <span class="text-blue-500">G</span><span class="text-red-500">o</span><span
+                                class="text-yellow-500">o</span><span class="text-blue-500">g</span><span
+                                class="text-green-500">l</span><span class="text-red-500">e</span>
+                        </h3>
+                        <div class="flex gap-2 max-w-md w-full">
+                            <input type="text" id="search-input"
+                                class="flex-1 border-2 border-slate-200 px-6 py-3 rounded-full outline-none focus:border-blue-400 transition-all text-slate-700"
+                                placeholder="Ask the map something...">
+                            <button onclick="simulateSearch()"
+                                class="bg-blue-500 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-600 transition-all">Search</button>
+                        </div>
+                    </div>
+                    <div id="results-view" class="hidden w-full text-left">
+                        <p class="text-sm text-slate-400 mb-6">About 1,240,000,000 results (0.42 seconds)</p>
+                        <div class="space-y-6">
+                            <div class="search-item p-4 rounded-xl">
+                                <h4 class="text-xl font-bold text-blue-600 underline">Everything About Computers - Wiki
+                                </h4>
+                                <p class="text-sm text-slate-600">A computer is a machine that can be programmed to
+                                    carry out sequences of arithmetic or logical operations...</p>
+                            </div>
+                            <div class="search-item p-4 rounded-xl">
+                                <h4 class="text-xl font-bold text-blue-600 underline">Top 10 PC Components Explained
+                                </h4>
+                                <p class="text-sm text-slate-600">Learn about CPU, RAM, GPU and why they matter for your
+                                    daily work and gaming...</p>
+                            </div>
+                        </div>
+                        <button onclick="resetSearch()"
+                            class="mt-8 text-blue-500 font-bold hover:underline font-fredoka"><i
+                                class="fas fa-arrow-left mr-2"></i>New Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final Quiz -->
+    <section class="py-24 px-6 bg-white">
+        <div class="max-w-3xl mx-auto">
+            <div id="quiz-card" class="bg-pink-50 p-10 rounded-3xl shadow-xl border border-pink-100">
+                <h3 class="text-3xl font-bold mb-2 text-center">Quick Check</h3>
+                <p class="text-slate-500 text-center mb-8">Can you distinguish them?</p>
+                <div id="question">
+                    <p class="text-xl font-bold text-center mb-6">"Which one is the application you open on your phone
+                        or laptop?"</p>
+                    <div class="grid gap-4">
+                        <button onclick="check(true, this)"
+                            class="bg-white border-2 border-pink-100 hover:border-pink-600 p-5 rounded-2xl text-left transition-all font-bold">The
+                            Web Browser (Chrome, Safari)</button>
+                        <button onclick="check(false, this)"
+                            class="bg-white border-2 border-pink-100 hover:border-pink-600 p-5 rounded-2xl text-left transition-all font-bold">The
+                            Search Engine (Google.com, Bing)</button>
+                    </div>
+                </div>
+                <div id="feedback" class="hidden mt-8 text-center animate-bounce">
+                    <p class="text-2xl font-bold text-pink-600">Spot on! 🚗✨</p>
+                    <button onclick="location.reload()" class="mt-4 text-pink-400 underline font-fredoka">Try
+                        Again</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 px-6 text-center border-t">
+        <p class="text-pink-600 font-bold text-2xl mb-2">EdTechra</p>
+        <p class="text-slate-300 text-xs mt-6">© 2026 EdTechra Learning Hub</p>
+    </footer>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.stagger-fade-in').forEach(el => observer.observe(el));
+
+        function simulateSearch() {
+            const input = document.getElementById('search-input').value;
+            if (!input) return;
+            document.getElementById('google-view').classList.add('hidden');
+            document.getElementById('results-view').classList.remove('hidden');
+        }
+
+        function resetSearch() {
+            document.getElementById('google-view').classList.remove('hidden');
+            document.getElementById('results-view').classList.add('hidden');
+            document.getElementById('search-input').value = "";
+        }
+
+        function check(isCorrect, el) {
+            if (isCorrect) {
+                document.getElementById('question').classList.add('hidden');
+                document.getElementById('feedback').classList.remove('hidden');
+            } else {
+                el.classList.add('border-red-500', 'bg-red-50');
+                setTimeout(() => el.classList.remove('border-red-500', 'bg-red-50'), 500);
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Storage — Save, Share, Sync | EdTechra Tech</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-light: #818CF8;
+            --primary-dark: #3730A3;
+            --secondary: #10B981;
+            --bg-color: #F8FAFC;
+            --surface: #FFFFFF;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --border: #E2E8F0;
+            --radius: 16px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Top Navigation & Progress */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badges-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .badge-icon {
+            font-size: 1.5rem;
+            filter: grayscale(100%);
+            opacity: 0.3;
+            transition: all 0.5s ease;
+            position: relative;
+        }
+
+        .badge-icon.earned {
+            filter: grayscale(0%);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .badge-icon.earned::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-main);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .badge-icon.earned:hover::after {
+            opacity: 1;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Layout */
+        main {
+            max-width: 1000px;
+            margin: 80px auto 40px;
+            padding: 0 20px;
+        }
+
+        section {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h1, h2, h3 {
+            color: var(--text-main);
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
+
+        /* Buttons */
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: var(--border);
+            color: var(--text-main);
+        }
+
+        button.secondary:hover {
+            background: #cbd5e1;
+            box-shadow: none;
+        }
+
+        /* Hero Section */
+        #hero {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%);
+            border: none;
+            position: relative;
+            overflow: hidden;
+            opacity: 1;
+            transform: none;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .learning-goals {
+            background: rgba(255,255,255,0.8);
+            display: inline-block;
+            padding: 20px 40px;
+            border-radius: var(--radius);
+            text-align: left;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 2;
+        }
+
+        .learning-goals ul {
+            list-style: none;
+        }
+        
+        .learning-goals li {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Floating Clouds Animation */
+        .floating-cloud {
+            position: absolute;
+            opacity: 0.6;
+            animation: float 15s infinite linear;
+            z-index: 1;
+            font-size: 4rem;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(-100px) translateY(0); }
+            50% { transform: translateX(calc(50vw)) translateY(-20px); }
+            100% { transform: translateX(calc(100vw + 100px)) translateY(0); }
+        }
+
+        /* Image Handling */
+        .image-container {
+            width: 100%;
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin: 20px 0;
+            position: relative;
+            box-shadow: var(--shadow);
+            background: #f1f5f9;
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+        }
+
+        .image-caption {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 10px;
+            background: white;
+            border-top: 1px solid var(--border);
+        }
+
+        .image-fallback {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Interactive Grids / Flex */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Simulation Base */
+        .sim-container {
+            background: #f8fafc;
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .sim-header {
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .item-card {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .item-card:hover {
+            border-color: var(--primary);
+            background: #e0e7ff;
+        }
+
+        .item-card.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .drop-zone {
+            min-height: 150px;
+            background: rgba(255,255,255,0.5);
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 10px;
+            transition: background 0.2s;
+        }
+
+        .drop-zone.active {
+            background: #e0e7ff;
+            border-color: var(--primary);
+        }
+
+        /* Storage Meter */
+        .storage-meter {
+            height: 12px;
+            background: var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .storage-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease, background 0.3s;
+        }
+        .storage-fill.full {
+            background: var(--danger);
+        }
+
+        /* Devices Sync Simulation */
+        .device-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 15px;
+            border: 4px solid #333;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+        .device-screen {
+            background: #f1f5f9;
+            min-height: 100px;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+        textarea.device-screen {
+            width: 100%;
+            border: 1px solid var(--border);
+            resize: none;
+        }
+        .sync-icon {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            background: var(--secondary);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .sync-icon.active {
+            opacity: 1;
+            animation: spin 1s infinite linear;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Carousel */
+        .carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 20px;
+            padding-bottom: 20px;
+            scrollbar-width: thin;
+        }
+        .carousel-item {
+            scroll-snap-align: start;
+            min-width: 250px;
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        .carousel-item h3 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        /* Quiz */
+        .quiz-question {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .quiz-question.active {
+            display: block;
+        }
+        .quiz-options {
+            display: grid;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .quiz-btn {
+            background: white;
+            color: var(--text-main);
+            border: 2px solid var(--border);
+            text-align: left;
+            padding: 15px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .quiz-btn:hover { background: #f8fafc; border-color: var(--primary-light); }
+        .quiz-btn.correct { background: #d1fae5; border-color: var(--secondary); color: #065f46; }
+        .quiz-btn.wrong { background: #fee2e2; border-color: var(--danger); color: #991b1b; }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            z-index: 9999;
+            pointer-events: none;
+            animation: fall 3s linear forwards;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Utility */
+        .hidden { display: none !important; }
+        .success-text { color: var(--secondary); font-weight: bold; }
+        .error-text { color: var(--danger); font-weight: bold; }
+        
+        /* Modals */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: var(--radius);
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .hero-title { font-size: 2.5rem; }
+            section { padding: 25px; }
+            .device-card { margin-bottom: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">☁️ EdTechra Tech</div>
+        <div class="badges-container" id="badges-nav">
+            <span class="badge-icon" id="badge-nav-starter" data-tooltip="Cloud Starter">🌱</span>
+            <span class="badge-icon" id="badge-nav-uploader" data-tooltip="Uploader">📤</span>
+            <span class="badge-icon" id="badge-nav-organizer" data-tooltip="Organizer">📁</span>
+            <span class="badge-icon" id="badge-nav-permission" data-tooltip="Permission Master">🔐</span>
+            <span class="badge-icon" id="badge-nav-sync" data-tooltip="Sync Wizard">🔄</span>
+            <span class="badge-icon" id="badge-nav-safe" data-tooltip="Cloud Safe">🛡️</span>
+            <span class="badge-icon" id="badge-nav-pro" data-tooltip="Cloud Pro">🏆</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="main-progress"></div>
+        </div>
+    </header>
+
+    <main>
+        <!-- 1) HERO SECTION -->
+        <section id="hero" class="visible">
+            <div class="floating-cloud" style="top: 20%; left: -10%; animation-duration: 20s;">☁️</div>
+            <div class="floating-cloud" style="top: 60%; left: -20%; animation-duration: 15s; font-size: 3rem;">⛅</div>
+            <div class="floating-cloud" style="top: 30%; left: -30%; animation-duration: 25s; font-size: 5rem;">☁️</div>
+            
+            <h1 class="hero-title">Cloud Storage</h1>
+            <p class="hero-subtitle">Upload → Sync → Access anywhere</p>
+            
+            <div class="learning-goals">
+                <h3>🎯 What you'll learn today:</h3>
+                <ul>
+                    <li>✅ Understand Cloud vs Local storage</li>
+                    <li>✅ Upload and organize files</li>
+                    <li>✅ Share files safely with permissions</li>
+                    <li>✅ Sync across your devices</li>
+                </ul>
+            </div>
+            <br>
+            <button onclick="scrollToSection('intro')">Start Learning 🚀</button>
+        </section>
+
+        <!-- 2) WHAT IS CLOUD STORAGE -->
+        <section id="intro">
+            <h2>1. What is Cloud Storage?</h2>
+            <div class="grid-2">
+                <div>
+                    <p>Think of cloud storage as a secure, magical hard drive on the internet. Instead of saving files to your computer's memory, you save them to secure servers owned by companies like Google, Microsoft, or Apple.</p>
+                    <p><strong>Benefits:</strong></p>
+                    <ul>
+                        <li>🌍 Access files from any device</li>
+                        <li>🛡️ Safe even if your computer breaks</li>
+                        <li>🤝 Easy to share with others</li>
+                    </ul>
+                    
+                    <div class="sim-container" style="margin-top: 30px;">
+                        <p><strong>Mini Activity:</strong> Where should we save your important homework?</p>
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button class="secondary" onclick="checkIntroAnswer('local')">💾 Save to Laptop</button>
+                            <button onclick="checkIntroAnswer('cloud')">☁️ Save to Cloud</button>
+                        </div>
+                        <p id="intro-feedback" style="margin-top: 10px; font-weight: bold;"></p>
+                    </div>
+                </div>
+                <div>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=800&q=80" alt="Cloud Data Center" onerror="handleImageFallback(this, 'Cloud Servers')">
+                        <div class="image-caption">Giant servers (data centers) hold your "cloud" files securely.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3) CLOUD VS LOCAL -->
+        <section id="vs">
+            <h2>2. Cloud vs Local Storage</h2>
+            <p><strong>Local storage</strong> is physical hardware you hold. <strong>Cloud storage</strong> is accessed via the internet.</p>
+            
+            <div class="sim-container" style="background: #fff3cd; border-color: #ffe69c; padding: 15px; margin-bottom: 20px;">
+                <p><strong>Scenario:</strong> You spill coffee on your laptop and it won't turn on! ☕💻🔥</p>
+                <button class="secondary" onclick="checkCoffee('local')">I saved files locally</button>
+                <button class="secondary" onclick="checkCoffee('cloud')">I saved files in the cloud</button>
+                <p id="coffee-feedback" style="margin-top: 10px;"></p>
+            </div>
+
+            <p><strong>Mini Task:</strong> Tap an item, then tap where it belongs to sort them.</p>
+            
+            <!-- Custom Tap-to-Move Interface -->
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;" id="sort-items">
+                <div class="item-card" onclick="selectItem(this, 'local')">💾 USB Drive</div>
+                <div class="item-card" onclick="selectItem(this, 'cloud')">☁️ Google Drive</div>
+                <div class="item-card" onclick="selectItem(this, 'local')">💿 Hard Drive (HDD)</div>
+                <div class="item-card" onclick="selectItem(this, 'cloud')">☁️ Dropbox</div>
+                <div class="item-card" onclick="selectItem(this, 'local')">📱 SD Card</div>
+                <div class="item-card" onclick="selectItem(this, 'cloud')">☁️ OneDrive</div>
+            </div>
+            
+            <div class="grid-2">
+                <div class="sim-container">
+                    <h3 style="text-align: center;">💾 Local Storage</h3>
+                    <div class="drop-zone" id="zone-local" onclick="dropItem('local')">
+                        <p style="text-align: center; color: #94a3b8; margin-top: 40px;">Tap here to drop selected item</p>
+                    </div>
+                </div>
+                <div class="sim-container">
+                    <h3 style="text-align: center;">☁️ Cloud Storage</h3>
+                    <div class="drop-zone" id="zone-cloud" onclick="dropItem('cloud')">
+                        <p style="text-align: center; color: #94a3b8; margin-top: 40px;">Tap here to drop selected item</p>
+                    </div>
+                </div>
+            </div>
+            <p id="sort-feedback" class="success-text" style="text-align: center; margin-top: 15px; display: none;">Great job! You know the difference!</p>
+        </section>
+
+        <!-- 4) SIMULATION #1 — UPLOAD & DOWNLOAD -->
+        <section id="sim1">
+            <h2>3. Simulation: Upload & Download</h2>
+            <p>Moving a file from your device to the cloud is called <strong>Uploading</strong>. Moving it from the cloud to your device is <strong>Downloading</strong>.</p>
+            <p><strong>Challenge:</strong> Upload exactly 3 files, keeping total size under 40MB.</p>
+
+            <div class="grid-2">
+                <div class="sim-container">
+                    <div class="sim-header">
+                        <span>💻 Your Laptop (Local)</span>
+                    </div>
+                    <div class="drop-zone" id="laptop-zone">
+                        <div class="item-card" onclick="moveFile(this)" data-size="10" data-loc="laptop">📄 Homework.docx (10MB)</div>
+                        <div class="item-card" onclick="moveFile(this)" data-size="25" data-loc="laptop">🖼️ Holiday.jpg (25MB)</div>
+                        <div class="item-card" onclick="moveFile(this)" data-size="15" data-loc="laptop">📊 Project.pptx (15MB)</div>
+                        <div class="item-card" onclick="moveFile(this)" data-size="12" data-loc="laptop">🎵 Audio.mp3 (12MB)</div>
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">*Tap file to move to Cloud</p>
+                </div>
+
+                <div class="sim-container">
+                    <div class="sim-header">
+                        <span>☁️ My Cloud Drive</span>
+                        <span id="storage-text">0 / 40 MB</span>
+                    </div>
+                    <div class="storage-meter">
+                        <div class="storage-fill" id="storage-fill"></div>
+                    </div>
+                    <div class="drop-zone" id="cloud-zone">
+                        <!-- Uploaded files go here -->
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">*Tap file to Download back to Laptop</p>
+                </div>
+            </div>
+            <div id="sim1-feedback" style="margin-top: 15px; text-align: center; font-weight: bold; min-height: 24px;"></div>
+        </section>
+
+        <!-- 5) SIMULATION #2 — FOLDER ORGANIZATION -->
+        <section id="sim2">
+            <h2>4. Organize Your Drive</h2>
+            <p>The cloud can get messy. Use folders to stay organized!</p>
+            <p><strong>Task:</strong> Move the random files into the correct folders.</p>
+
+            <div class="grid-2">
+                <div class="sim-container">
+                    <div class="sim-header">📁 Folders (Tap to open)</div>
+                    <div class="grid-2" id="folder-grid">
+                        <div class="item-card" style="background: #e2e8f0; justify-content: center;" onclick="openFolder('School')">📁 School</div>
+                        <div class="item-card" style="background: #e2e8f0; justify-content: center;" onclick="openFolder('Photos')">📁 Photos</div>
+                        <div class="item-card" style="background: #e2e8f0; justify-content: center;" onclick="openFolder('Work')">📁 Work</div>
+                        <button class="secondary" style="width: 100%; justify-content: center; padding: 10px;" onclick="createNewFolder()">+ New Folder</button>
+                    </div>
+
+                    <div id="active-folder-view" class="hidden" style="margin-top: 15px; border-top: 1px solid #ccc; padding-top: 10px;">
+                        <div class="sim-header">
+                            <span id="active-folder-name">📁 Folder</span>
+                            <button class="secondary" style="padding: 2px 8px; font-size: 0.8rem;" onclick="closeFolder()">Back</button>
+                        </div>
+                        <div class="drop-zone" id="folder-drop-zone" style="min-height: 80px;" onclick="dropIntoFolder()">
+                            <p style="text-align: center; font-size: 0.8rem; color: #94a3b8; margin-top: 25px;">Tap file, then tap here to move</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sim-container">
+                    <div class="sim-header">📄 Unsorted Files (Tap to select)</div>
+                    <div id="unsorted-files">
+                        <div class="item-card" onclick="selectFileForFolder(this, 'School')">Math_Assignment.pdf</div>
+                        <div class="item-card" onclick="selectFileForFolder(this, 'Photos')">Selfie_2026.jpg</div>
+                        <div class="item-card" onclick="selectFileForFolder(this, 'Work')">Invoice_Feb.xlsx</div>
+                        <div class="item-card" onclick="selectFileForFolder(this, 'School')">History_Essay.docx</div>
+                    </div>
+                </div>
+            </div>
+            <p id="sim2-feedback" class="success-text" style="text-align: center; margin-top: 15px; display: none;">Drive perfectly organized!</p>
+        </section>
+
+        <!-- 6) SIMULATION #3 — SHARING & PERMISSIONS -->
+        <section id="sim3">
+            <h2>5. Sharing & Permissions</h2>
+            <p>You can share cloud files via a link or email. <strong>Permissions</strong> control what others can do.</p>
+            <ul>
+                <li>👁️ <strong>Viewer:</strong> Can only look (Safe).</li>
+                <li>💬 <strong>Commenter:</strong> Can leave notes, but can't change file.</li>
+                <li>✏️ <strong>Editor:</strong> Can change or delete content (Be careful!).</li>
+            </ul>
+
+            <div class="sim-container" style="background: #eff6ff; border-color: #bfdbfe;">
+                <h3 style="text-align: center; margin-bottom: 20px;">✉️ Share "Final_Project.docx"</h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto;">
+                    <div>
+                        <label style="font-weight: bold;">1. Who are you sharing with?</label>
+                        <select id="share-person" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-top: 5px;">
+                            <option value="">-- Select Person --</option>
+                            <option value="teacher">👨‍🏫 Mr. Smith (Teacher - grading it)</option>
+                            <option value="friend">👩‍🎓 Sarah (Partner - helping write it)</option>
+                            <option value="public">🌍 Public Internet Link (Anyone)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-weight: bold;">2. What permission?</label>
+                        <select id="share-perm" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-top: 5px;">
+                            <option value="">-- Select Permission --</option>
+                            <option value="viewer">👁️ Viewer</option>
+                            <option value="commenter">💬 Commenter</option>
+                            <option value="editor">✏️ Editor</option>
+                        </select>
+                    </div>
+                    <button onclick="simulateShare()" style="justify-content: center;">Share File</button>
+                </div>
+                
+                <div id="share-result" style="margin-top: 20px; padding: 15px; border-radius: 8px; text-align: center; display: none;"></div>
+            </div>
+            
+            <div id="share-tasks" style="margin-top: 20px; text-align: center;">
+                <p><strong>Tasks:</strong></p>
+                <p id="task-t1">❌ Share with Teacher as Viewer/Commenter</p>
+                <p id="task-t2">❌ Share with Partner as Editor</p>
+            </div>
+        </section>
+
+        <!-- 7) SIMULATION #4 — SYNC -->
+        <section id="sim4">
+            <h2>6. Syncing Across Devices</h2>
+            <p>"Sync" means changes made on one device automatically update everywhere via the cloud.</p>
+            <p><strong>Task:</strong> Try editing the document on the laptop. Notice what happens. Then try offline mode!</p>
+
+            <div style="text-align: center; margin-bottom: 20px;">
+                <label style="display: inline-flex; align-items: center; gap: 10px; cursor: pointer; background: #e2e8f0; padding: 10px 20px; border-radius: 20px;">
+                    <input type="checkbox" id="offline-toggle" onchange="toggleOffline()" style="width: 20px; height: 20px;">
+                    <span id="network-status" style="font-weight: bold; color: var(--secondary);">🟢 Online (Sync Active)</span>
+                </label>
+            </div>
+
+            <div class="grid-2" style="grid-template-columns: 1fr 1fr 1fr;">
+                <div class="device-card">
+                    <h4>💻 Laptop (Edit me)</h4>
+                    <textarea class="device-screen" id="laptop-text" oninput="handleLaptopEdit()">Shopping List:
+- Apples
+- Bread</textarea>
+                    <div class="sync-icon" id="sync-laptop">🔄</div>
+                </div>
+                
+                <div class="device-card">
+                    <h4>📱 Phone</h4>
+                    <div class="device-screen" id="phone-text">Shopping List:
+- Apples
+- Bread</div>
+                    <div class="sync-icon" id="sync-phone">🔄</div>
+                </div>
+
+                <div class="device-card">
+                    <h4>💊 Tablet</h4>
+                    <div class="device-screen" id="tablet-text">Shopping List:
+- Apples
+- Bread</div>
+                    <div class="sync-icon" id="sync-tablet">🔄</div>
+                </div>
+            </div>
+            <p id="sync-feedback" style="text-align: center; margin-top: 15px; font-weight: bold;"></p>
+        </section>
+
+        <!-- 8) SAFETY -->
+        <section id="safety">
+            <h2>7. Cloud Safety Best Practices</h2>
+            <div class="grid-2">
+                <!-- Pwd -->
+                <div class="sim-container">
+                    <h3>1. Strong Password</h3>
+                    <p>Use long passwords with mix of characters.</p>
+                    <input type="text" id="pwd-input" placeholder="Type a password..." oninput="checkPassword()" style="width: 100%; padding: 8px; margin-bottom: 5px;">
+                    <div class="storage-meter"><div class="storage-fill" id="pwd-meter"></div></div>
+                    <p id="pwd-text" style="font-size: 0.8rem;">Strength: Weak</p>
+                </div>
+
+                <!-- 2FA -->
+                <div class="sim-container">
+                    <h3>2. Enable 2FA</h3>
+                    <p>Two-Factor Auth requires your password + a code from your phone.</p>
+                    <button id="btn-2fa" class="secondary" onclick="toggle2FA()">Turn On 2FA</button>
+                    <p id="txt-2fa" class="success-text hidden" style="margin-top: 5px;">✅ Extra Secure!</p>
+                </div>
+
+                <!-- Phishing -->
+                <div class="sim-container">
+                    <h3>3. Beware Phishing</h3>
+                    <p>Which email is safe to click?</p>
+                    <div style="font-size: 0.8rem; margin-top: 10px;">
+                        <div class="item-card" onclick="checkPhish(false)" style="flex-direction: column; align-items: flex-start;">
+                            <strong>From: security@g00gle-alert.com</strong>
+                            <span>"Your account is blocked! Click here to login."</span>
+                        </div>
+                        <div class="item-card" onclick="checkPhish(true)" style="flex-direction: column; align-items: flex-start;">
+                            <strong>From: no-reply@accounts.google.com</strong>
+                            <span>"Security alert for your linked device."</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backup -->
+                <div class="sim-container">
+                    <h3>4. Backup Strategy</h3>
+                    <p>The 3-2-1 rule: 3 copies, 2 different media, 1 offsite (cloud).</p>
+                    <button class="secondary" onclick="checkBackup()" style="width:100%">I understand!</button>
+                    <p id="txt-backup" class="success-text hidden" style="margin-top: 5px;">✅ Backups save lives!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9) FUN FACTS CAROUSEL -->
+        <section id="facts">
+            <h2>8. Fun Cloud Facts (Swipe)</h2>
+            <div class="carousel">
+                <div class="carousel-item">
+                    <h3>🏢</h3>
+                    <p>The "Cloud" is actually massive warehouses filled with blinking computers called Data Centers.</p>
+                </div>
+                <div class="carousel-item">
+                    <h3>🌊</h3>
+                    <p>Some companies build data centers underwater to keep the computers naturally cool!</p>
+                </div>
+                <div class="carousel-item">
+                    <h3>🕰️</h3>
+                    <p>Version History: Cloud drives save older versions. If you delete text, you can restore it from yesterday!</p>
+                </div>
+                <div class="carousel-item">
+                    <h3>📱</h3>
+                    <p>If you lose your phone, your photos aren't lost if they are synced to the cloud.</p>
+                </div>
+                <div class="carousel-item">
+                    <h3>⚡</h3>
+                    <p>Cloud editing allows 50+ people to type on the exact same document at the exact same time.</p>
+                </div>
+                <div class="carousel-item">
+                    <h3>🔒</h3>
+                    <p>Your data in the cloud is encrypted, meaning it's scrambled into unreadable code during transit.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10) FINAL QUIZ -->
+        <section id="quiz-section">
+            <h2>9. Final Knowledge Check</h2>
+            <p>Score 8/10 to earn your Cloud Pro badge!</p>
+            
+            <div class="sim-container">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <span id="quiz-progress" style="font-weight: bold;">Question 1 / 10</span>
+                    <span id="quiz-score" style="color: var(--primary); font-weight: bold;">Score: 0</span>
+                </div>
+
+                <div id="quiz-container">
+                    <!-- Questions injected by JS -->
+                </div>
+
+                <div id="quiz-result" class="hidden" style="text-align: center; padding: 20px;">
+                    <h3 id="quiz-final-score" style="font-size: 2rem;"></h3>
+                    <p id="quiz-final-msg"></p>
+                    <button onclick="resetQuiz()" class="secondary" style="margin-top: 15px;">Retake Quiz</button>
+                    <button onclick="finishSession()" style="margin-top: 15px;" id="btn-finish-quiz" class="hidden">Complete Session</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 11) COMPLETION -->
+        <section id="completion" class="hidden" style="text-align: center;">
+            <h1 style="font-size: 3rem; margin-bottom: 10px;">🎉 Congratulations!</h1>
+            <p style="font-size: 1.2rem;">You have successfully completed the Cloud Storage session.</p>
+            
+            <div style="background: #f8fafc; padding: 20px; border-radius: var(--radius); margin: 20px 0; display: inline-block;">
+                <h3>Your Earned Badges</h3>
+                <div class="badges-container" id="final-badges" style="justify-content: center; margin-top: 10px;">
+                    <!-- Copied from header -->
+                </div>
+            </div>
+
+            <div style="margin: 30px 0;">
+                <p><strong>Did you like this session?</strong></p>
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 10px;">
+                    <button class="secondary" style="font-size: 1.5rem;" onclick="saveFeedback('bad')">😞</button>
+                    <button class="secondary" style="font-size: 1.5rem;" onclick="saveFeedback('okay')">😐</button>
+                    <button class="secondary" style="font-size: 1.5rem;" onclick="saveFeedback('good')">🤩</button>
+                </div>
+                <p id="feedback-msg" class="success-text hidden" style="margin-top: 10px;">Thanks for your feedback!</p>
+            </div>
+
+            <button style="font-size: 1.2rem; padding: 15px 30px;">Continue to Next Unit: Email 📧</button>
+        </section>
+
+    </main>
+
+    <script>
+        // --- STATE MANAGEMENT ---
+        const state = {
+            badges: JSON.parse(localStorage.getItem('edtech_cloud_badges')) || [],
+            progress: parseInt(localStorage.getItem('edtech_cloud_progress')) || 0,
+            tasks: {
+                sim1: false, sim2: false, sim3_t1: false, sim3_t2: false, sim4: false, safety: 0
+            }
+        };
+
+        // Initialize Badges on load
+        function initBadges() {
+            state.badges.forEach(b => {
+                const el = document.getElementById(`badge-nav-${b}`);
+                if (el) el.classList.add('earned');
+            });
+            updateProgressBar();
+        }
+
+        function awardBadge(id) {
+            if (!state.badges.includes(id)) {
+                state.badges.push(id);
+                localStorage.setItem('edtech_cloud_badges', JSON.stringify(state.badges));
+                const el = document.getElementById(`badge-nav-${id}`);
+                if (el) {
+                    el.classList.add('earned');
+                    // Small animation
+                    el.style.transform = 'scale(1.5)';
+                    setTimeout(() => el.style.transform = '', 300);
+                }
+                showToast(`🏆 Badge Earned: ${el.getAttribute('data-tooltip')}`);
+            }
+            updateProgressBar();
+        }
+
+        function updateProgressBar() {
+            // Assume 7 badges total
+            const pct = (state.badges.length / 7) * 100;
+            document.getElementById('main-progress').style.width = `${pct}%`;
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.textContent = msg;
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.right = '20px';
+            toast.style.background = 'var(--text-main)';
+            toast.style.color = 'white';
+            toast.style.padding = '10px 20px';
+            toast.style.borderRadius = '8px';
+            toast.style.zIndex = '9999';
+            toast.style.animation = 'fadeIn 0.3s, fadeOut 0.3s 2.7s';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // --- SCROLL ANIMATIONS ---
+        const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(sec => observer.observe(sec));
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- IMAGE FALLBACK ---
+        function handleImageFallback(img, text) {
+            img.onerror = null; // Prevent loop
+            img.style.display = 'none';
+            const fallback = document.createElement('div');
+            fallback.className = 'image-fallback';
+            fallback.innerHTML = `<span>🖼️ ${text} (Image Unavailable)</span>`;
+            img.parentNode.insertBefore(fallback, img);
+        }
+
+        // --- SECTION 2: INTRO ---
+        function checkIntroAnswer(ans) {
+            const fb = document.getElementById('intro-feedback');
+            if (ans === 'cloud') {
+                fb.textContent = "✅ Correct! Saving to the cloud means it's accessible anywhere.";
+                fb.className = 'success-text';
+                awardBadge('starter');
+            } else {
+                fb.textContent = "❌ Saving locally is okay, but if the laptop breaks, the homework is gone!";
+                fb.className = 'error-text';
+            }
+        }
+
+        // --- SECTION 3: CLOUD VS LOCAL ---
+        function checkCoffee(ans) {
+            const fb = document.getElementById('coffee-feedback');
+            if (ans === 'cloud') {
+                fb.innerHTML = "✅ <strong>Phew!</strong> You just log in on another computer and your files are there!";
+                fb.className = 'success-text';
+            } else {
+                fb.innerHTML = "❌ <strong>Oh no!</strong> Since files were only on the physical laptop, they are lost forever.";
+                fb.className = 'error-text';
+            }
+        }
+
+        let selectedSortItem = null;
+        let correctSorts = 0;
+        
+        function selectItem(el, correctType) {
+            if (el.classList.contains('hidden')) return;
+            document.querySelectorAll('#sort-items .item-card').forEach(i => i.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedSortItem = { el, correctType };
+        }
+
+        function dropItem(targetType) {
+            if (!selectedSortItem) return;
+            if (selectedSortItem.correctType === targetType) {
+                const zone = document.getElementById(`zone-${targetType}`);
+                selectedSortItem.el.classList.remove('selected');
+                selectedSortItem.el.onclick = null; // disable further clicks
+                selectedSortItem.el.style.cursor = 'default';
+                zone.appendChild(selectedSortItem.el);
+                correctSorts++;
+                selectedSortItem = null;
+                
+                if(correctSorts === 6) {
+                    document.getElementById('sort-feedback').style.display = 'block';
+                }
+            } else {
+                selectedSortItem.el.style.backgroundColor = '#fee2e2';
+                setTimeout(() => selectedSortItem.el.style.backgroundColor = '', 500);
+            }
+        }
+
+        // --- SECTION 4: SIM 1 (UPLOAD/DOWNLOAD) ---
+        let storageUsed = 0;
+        const maxStorage = 40;
+        
+        function moveFile(el) {
+            const size = parseInt(el.getAttribute('data-size'));
+            const loc = el.getAttribute('data-loc');
+            
+            if (loc === 'laptop') {
+                // Try Upload
+                if (storageUsed + size > maxStorage) {
+                    document.getElementById('sim1-feedback').textContent = `❌ Cannot upload. Drive full! Remove a file first.`;
+                    document.getElementById('sim1-feedback').className = 'error-text';
+                    el.style.backgroundColor = '#fee2e2';
+                    setTimeout(() => el.style.backgroundColor = '', 500);
+                    return;
+                }
+                // Upload success
+                document.getElementById('cloud-zone').appendChild(el);
+                el.setAttribute('data-loc', 'cloud');
+                storageUsed += size;
+            } else {
+                // Download
+                document.getElementById('laptop-zone').appendChild(el);
+                el.setAttribute('data-loc', 'laptop');
+                storageUsed -= size;
+            }
+            
+            updateStorageUI();
+            checkSim1Goal();
+        }
+
+        function updateStorageUI() {
+            const meter = document.getElementById('storage-fill');
+            const text = document.getElementById('storage-text');
+            let pct = (storageUsed / maxStorage) * 100;
+            meter.style.width = `${pct}%`;
+            text.textContent = `${storageUsed} / ${maxStorage} MB`;
+            
+            if (pct >= 90) meter.classList.add('full');
+            else meter.classList.remove('full');
+        }
+
+        function checkSim1Goal() {
+            const cloudFiles = document.getElementById('cloud-zone').children.length;
+            if (cloudFiles === 3 && storageUsed <= 40) {
+                document.getElementById('sim1-feedback').textContent = `✨ Challenge Complete! 3 files uploaded under 40MB.`;
+                document.getElementById('sim1-feedback').className = 'success-text';
+                awardBadge('uploader');
+            } else {
+                document.getElementById('sim1-feedback').textContent = "";
+            }
+        }
+
+        // --- SECTION 5: SIM 2 (FOLDERS) ---
+        let activeFolder = null;
+        let selectedFileSim2 = null;
+        let sortedFilesSim2 = 0;
+
+        function selectFileForFolder(el, correctFolder) {
+            if(el.classList.contains('hidden')) return;
+            document.querySelectorAll('#unsorted-files .item-card').forEach(i => i.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedFileSim2 = { el, correctFolder };
+        }
+
+        function openFolder(name) {
+            document.getElementById('folder-grid').classList.add('hidden');
+            document.getElementById('active-folder-view').classList.remove('hidden');
+            document.getElementById('active-folder-name').textContent = `📁 ${name}`;
+            activeFolder = name;
+            // clear drop zone visuals (in real app we'd load folder contents)
+            const dropZone = document.getElementById('folder-drop-zone');
+            Array.from(dropZone.children).forEach(c => {
+                if(!c.tagName.toLowerCase().includes('p')) c.style.display = 'none'; 
+            });
+        }
+
+        function closeFolder() {
+            document.getElementById('folder-grid').classList.remove('hidden');
+            document.getElementById('active-folder-view').classList.add('hidden');
+            activeFolder = null;
+        }
+
+        function dropIntoFolder() {
+            if (!selectedFileSim2 || !activeFolder) return;
+            
+            if (selectedFileSim2.correctFolder === activeFolder) {
+                // Correct
+                selectedFileSim2.el.classList.remove('selected');
+                selectedFileSim2.el.classList.add('hidden'); // Hide from unsorted
+                selectedFileSim2 = null;
+                sortedFilesSim2++;
+                
+                const dropZone = document.getElementById('folder-drop-zone');
+                const p = dropZone.querySelector('p');
+                if(p) p.textContent = "✅ File added!";
+                setTimeout(() => { if(p) p.textContent = "Tap file, then tap here to move"; }, 1500);
+
+                if (sortedFilesSim2 === 4) {
+                    closeFolder();
+                    document.getElementById('sim2-feedback').style.display = 'block';
+                    awardBadge('organizer');
+                }
+            } else {
+                // Wrong
+                document.getElementById('active-folder-name').textContent += " ❌ Wrong File";
+                setTimeout(() => document.getElementById('active-folder-name').textContent = `📁 ${activeFolder}`, 1000);
+            }
+        }
+
+        function createNewFolder() {
+            const name = prompt("Enter folder name:");
+            if (name) {
+                const grid = document.getElementById('folder-grid');
+                const newF = document.createElement('div');
+                newF.className = 'item-card';
+                newF.style = "background: #e2e8f0; justify-content: center;";
+                newF.textContent = `📁 ${name}`;
+                newF.onclick = () => openFolder(name);
+                grid.insertBefore(newF, grid.lastElementChild);
+            }
+        }
+
+        // --- SECTION 6: SIM 3 (PERMISSIONS) ---
+        function simulateShare() {
+            const person = document.getElementById('share-person').value;
+            const perm = document.getElementById('share-perm').value;
+            const res = document.getElementById('share-result');
+            
+            if(!person || !perm) return alert("Select both person and permission!");
+
+            res.style.display = 'block';
+
+            // Scenario Logic
+            if (person === 'public' && perm === 'editor') {
+                res.innerHTML = "❌ <strong>DANGER!</strong> You gave the whole internet power to delete your work! Someone deleted your file!";
+                res.style.background = '#fee2e2';
+                res.style.color = '#991b1b';
+            } else if (person === 'teacher' && (perm === 'viewer' || perm === 'commenter')) {
+                res.innerHTML = "✅ <strong>Perfect!</strong> Teacher can read and grade it without accidentally deleting anything.";
+                res.style.background = '#d1fae5';
+                res.style.color = '#065f46';
+                document.getElementById('task-t1').textContent = "✅ Share with Teacher as Viewer/Commenter";
+                document.getElementById('task-t1').className = "success-text";
+                state.tasks.sim3_t1 = true;
+            } else if (person === 'teacher' && perm === 'editor') {
+                 res.innerHTML = "⚠️ <strong>Okay...</strong> But usually teachers just need to view or comment, not edit your homework.";
+                 res.style.background = '#fef3c7';
+                 res.style.color = '#b45309';
+            } else if (person === 'friend' && perm === 'editor') {
+                res.innerHTML = "✅ <strong>Collaboration!</strong> Your friend can now type directly into the document with you.";
+                res.style.background = '#d1fae5';
+                res.style.color = '#065f46';
+                document.getElementById('task-t2').textContent = "✅ Share with Partner as Editor";
+                document.getElementById('task-t2').className = "success-text";
+                state.tasks.sim3_t2 = true;
+            } else if (person === 'friend' && perm === 'viewer') {
+                res.innerHTML = "❌ <strong>Oops!</strong> Your partner needs to help write it, but they can only view it. Give them Editor access.";
+                res.style.background = '#fee2e2';
+                res.style.color = '#991b1b';
+            } else {
+                res.innerHTML = "ℹ️ Link generated.";
+                res.style.background = '#f1f5f9';
+                res.style.color = 'black';
+            }
+
+            if (state.tasks.sim3_t1 && state.tasks.sim3_t2) {
+                awardBadge('permission');
+            }
+        }
+
+        // --- SECTION 7: SIM 4 (SYNC) ---
+        let isOffline = false;
+        let pendingText = "";
+
+        function toggleOffline() {
+            isOffline = document.getElementById('offline-toggle').checked;
+            const status = document.getElementById('network-status');
+            
+            if (isOffline) {
+                status.innerHTML = "🔴 Offline (Sync Paused)";
+                status.style.color = "var(--danger)";
+            } else {
+                status.innerHTML = "🟢 Online (Sync Active)";
+                status.style.color = "var(--secondary)";
+                // Flush pending
+                triggerSync(document.getElementById('laptop-text').value);
+                
+                if (pendingText !== "") {
+                    document.getElementById('sync-feedback').textContent = "✅ Reconnected! Changes synced to all devices.";
+                    document.getElementById('sync-feedback').className = "success-text";
+                    awardBadge('sync');
+                }
+            }
+        }
+
+        function handleLaptopEdit() {
+            const text = document.getElementById('laptop-text').value;
+            if (isOffline) {
+                pendingText = text;
+                document.getElementById('sync-feedback').textContent = "⚠️ Offline: Changes saved locally. Will sync when online.";
+                document.getElementById('sync-feedback').className = "error-text";
+            } else {
+                triggerSync(text);
+                document.getElementById('sync-feedback').textContent = "✅ All changes saved to cloud.";
+                document.getElementById('sync-feedback').className = "success-text";
+                state.tasks.sim4 = true;
+            }
+        }
+
+        function triggerSync(text) {
+            ['laptop', 'phone', 'tablet'].forEach(dev => {
+                const icon = document.getElementById(`sync-${dev}`);
+                icon.classList.add('active');
+                setTimeout(() => icon.classList.remove('active'), 1000);
+            });
+            setTimeout(() => {
+                document.getElementById('phone-text').textContent = text;
+                document.getElementById('tablet-text').textContent = text;
+            }, 500);
+        }
+
+        // --- SECTION 8: SAFETY ---
+        function checkSafetyBadge() {
+            if (state.tasks.safety >= 3) awardBadge('safe');
+        }
+
+        function checkPassword() {
+            const val = document.getElementById('pwd-input').value;
+            const meter = document.getElementById('pwd-meter');
+            const txt = document.getElementById('pwd-text');
+            
+            let str = 0;
+            if (val.length > 5) str += 33;
+            if (val.length > 8 && /[0-9]/.test(val)) str += 33;
+            if (val.length > 8 && /[^A-Za-z0-9]/.test(val)) str += 34;
+
+            meter.style.width = `${str}%`;
+            if (str < 34) { meter.style.background = 'var(--danger)'; txt.textContent = "Strength: Weak"; }
+            else if (str < 90) { meter.style.background = 'var(--warning)'; txt.textContent = "Strength: Medium"; }
+            else { 
+                meter.style.background = 'var(--secondary)'; 
+                txt.textContent = "Strength: Strong ✅";
+                if (!state.tasks.pwd) { state.tasks.pwd = true; state.tasks.safety++; checkSafetyBadge(); }
+            }
+        }
+
+        function toggle2FA() {
+            document.getElementById('txt-2fa').classList.remove('hidden');
+            document.getElementById('btn-2fa').disabled = true;
+            document.getElementById('btn-2fa').textContent = "Enabled";
+            if (!state.tasks.tfa) { state.tasks.tfa = true; state.tasks.safety++; checkSafetyBadge(); }
+        }
+
+        function checkPhish(isSafe) {
+            if (isSafe) {
+                alert("✅ Correct! Look at the email address carefully. accounts.google.com is real.");
+                if (!state.tasks.phish) { state.tasks.phish = true; state.tasks.safety++; checkSafetyBadge(); }
+            } else {
+                alert("❌ Danger! Notice the typo in 'g00gle-alert.com'. That is a scam.");
+            }
+        }
+        
+        function checkBackup() {
+             document.getElementById('txt-backup').classList.remove('hidden');
+        }
+
+        // --- QUIZ DATA & LOGIC ---
+        const questions = [
+            { q: "What is the main difference between Cloud and Local storage?", 
+              opts: ["Cloud is faster", "Cloud saves to internet servers, Local to your device", "Local requires a password", "Cloud is only for photos"], ans: 1 },
+            { q: "Moving a file from your computer to Google Drive is called:", 
+              opts: ["Downloading", "Syncing", "Uploading", "Formatting"], ans: 2 },
+            { q: "What does 'Sync' do?", 
+              opts: ["Deletes old files", "Keeps files updated across all connected devices", "Makes files smaller", "Changes file passwords"], ans: 1 },
+            { q: "Which permission should you give a teacher grading your essay?", 
+              opts: ["Editor", "Viewer or Commenter", "Owner", "Admin"], ans: 1 },
+            { q: "What happens if you edit a cloud document while Offline?", 
+              opts: ["The file is deleted", "It won't let you type", "It saves locally and syncs when back online", "It breaks the computer"], ans: 2 },
+            { q: "Why is a public 'Editor' link dangerous?", 
+              opts: ["It charges money", "Anyone on the internet can change or delete your file", "It uses too much internet data", "It causes viruses"], ans: 1 },
+            { q: "What is Two-Factor Authentication (2FA)?", 
+              opts: ["Having two passwords", "Requiring a password PLUS a code from your phone", "Using two computers", "Saving files twice"], ans: 1 },
+            { q: "Which of these is Local Storage?", 
+              opts: ["Dropbox", "Google Drive", "USB Flash Drive", "iCloud"], ans: 2 },
+            { q: "What is the 3-2-1 Backup rule?", 
+              opts: ["3 files, 2 folders, 1 drive", "3 copies, 2 media types, 1 offsite/cloud", "Save 3 times at 2:01 PM", "None of these"], ans: 1 },
+            { q: "If your laptop breaks, are your cloud files safe?", 
+              opts: ["No, they are gone", "Yes, they live on secure servers elsewhere", "Only if you pay", "Only for 24 hours"], ans: 1 }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+
+        function renderQuestion() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            
+            if (currentQ >= questions.length) {
+                showQuizResult();
+                return;
+            }
+
+            const q = questions[currentQ];
+            document.getElementById('quiz-progress').textContent = `Question ${currentQ + 1} / ${questions.length}`;
+            
+            const qDiv = document.createElement('div');
+            qDiv.className = 'quiz-question active';
+            qDiv.innerHTML = `<h3>${currentQ + 1}. ${q.q}</h3>`;
+            
+            const optsDiv = document.createElement('div');
+            optsDiv.className = 'quiz-options';
+            
+            q.opts.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-btn';
+                btn.textContent = opt;
+                btn.onclick = () => handleAnswer(index, btn);
+                optsDiv.appendChild(btn);
+            });
+            
+            qDiv.appendChild(optsDiv);
+            container.appendChild(qDiv);
+        }
+
+        function handleAnswer(index, btn) {
+            const q = questions[currentQ];
+            const buttons = document.querySelectorAll('.quiz-btn');
+            buttons.forEach(b => b.disabled = true); // prevent multi click
+
+            if (index === q.ans) {
+                btn.classList.add('correct');
+                score++;
+                document.getElementById('quiz-score').textContent = `Score: ${score}`;
+            } else {
+                btn.classList.add('wrong');
+                buttons[q.ans].classList.add('correct'); // show right answer
+            }
+
+            setTimeout(() => {
+                currentQ++;
+                renderQuestion();
+            }, 1500);
+        }
+
+        function showQuizResult() {
+            document.getElementById('quiz-container').innerHTML = '';
+            document.getElementById('quiz-progress').style.display = 'none';
+            document.getElementById('quiz-score').style.display = 'none';
+            
+            const resDiv = document.getElementById('quiz-result');
+            resDiv.classList.remove('hidden');
+            
+            const title = document.getElementById('quiz-final-score');
+            const msg = document.getElementById('quiz-final-msg');
+            const btnFinish = document.getElementById('btn-finish-quiz');
+            
+            title.textContent = `${score} / 10`;
+            
+            if (score >= 8) {
+                msg.textContent = "Amazing! You've mastered Cloud Storage fundamentals.";
+                title.style.color = "var(--secondary)";
+                awardBadge('pro');
+                btnFinish.classList.remove('hidden');
+                triggerConfetti();
+            } else {
+                msg.textContent = "Good try! Review the material and try again to get the Cloud Pro badge (need 8/10).";
+                title.style.color = "var(--warning)";
+                btnFinish.classList.add('hidden');
+            }
+        }
+
+        function resetQuiz() {
+            currentQ = 0;
+            score = 0;
+            document.getElementById('quiz-progress').style.display = 'inline';
+            document.getElementById('quiz-score').style.display = 'inline';
+            document.getElementById('quiz-score').textContent = 'Score: 0';
+            document.getElementById('quiz-result').classList.add('hidden');
+            renderQuestion();
+        }
+
+        function triggerConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti';
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.backgroundColor = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444'][Math.floor(Math.random() * 4)];
+                conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(conf);
+                setTimeout(() => conf.remove(), 5000);
+            }
+        }
+
+        // --- COMPLETION ---
+        function finishSession() {
+            document.getElementById('quiz-section').style.display = 'none';
+            document.getElementById('completion').classList.remove('hidden');
+            document.getElementById('completion').scrollIntoView({ behavior: 'smooth' });
+            
+            // Copy badges to final screen
+            const finalBadges = document.getElementById('final-badges');
+            finalBadges.innerHTML = document.getElementById('badges-nav').innerHTML;
+        }
+
+        function saveFeedback(type) {
+            localStorage.setItem('edtech_cloud_feedback', type);
+            document.getElementById('feedback-msg').classList.remove('hidden');
+        }
+
+        // --- INIT ---
+        window.onload = () => {
+            initBadges();
+            renderQuestion();
+        };
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,2644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Organization | EdTechra Tech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg: #0a0f14;
+            --bg-secondary: #131a22;
+            --bg-tertiary: #1a242f;
+            --fg: #e8eef4;
+            --fg-secondary: #a8b8c8;
+            --muted: #5a6d7e;
+            --accent: #00e5b8;
+            --accent-glow: rgba(0, 229, 184, 0.3);
+            --accent-secondary: #ff7052;
+            --card: rgba(19, 26, 34, 0.9);
+            --border: rgba(168, 184, 200, 0.12);
+            --success: #00e5b8;
+            --warning: #ffb74d;
+            --error: #ff5252;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent) 0%, #00b4d8 50%, var(--accent-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-15px) rotate(3deg); }
+            75% { transform: translateY(-8px) rotate(-2deg); }
+        }
+
+        @keyframes float-delayed {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(-4deg); }
+            66% { transform: translateY(-10px) rotate(2deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(60px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        @keyframes snap {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        @keyframes badge-pop {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        @keyframes progress-fill {
+            from { width: 0; }
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
+            50% { box-shadow: 0 0 40px var(--accent-glow), 0 0 60px var(--accent-glow); }
+        }
+
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-float-delayed { animation: float-delayed 8s ease-in-out infinite; }
+        .animate-pulse-bg { animation: pulse 4s ease-in-out infinite; }
+        .animate-shake { animation: shake 0.5s ease-in-out; }
+        .animate-snap { animation: snap 0.3s ease-out; }
+        .animate-badge-pop { animation: badge-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        .section-hidden { opacity: 0; transform: translateY(60px); }
+        .section-visible { opacity: 1; transform: translateY(0); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, #00b4d8 100%);
+            color: var(--bg);
+            font-weight: 600;
+            padding: 14px 32px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        .btn-primary:active { transform: translateY(0); }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--fg);
+            font-weight: 500;
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(0, 229, 184, 0.3);
+            transform: translateY(-4px);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--bg-secondary);
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #00b4d8);
+            transition: width 0.3s ease;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 4px;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            background: rgba(10, 15, 20, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 0;
+        }
+
+        /* Floating Icons */
+        .floating-icon {
+            position: absolute;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        /* Drag and Drop */
+        .draggable {
+            cursor: grab;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .draggable:active { cursor: grabbing; }
+
+        .draggable.dragging {
+            opacity: 0.7;
+            transform: scale(1.05) rotate(3deg);
+            z-index: 100;
+        }
+
+        .drop-zone {
+            transition: all 0.3s ease;
+            border: 2px dashed transparent;
+        }
+
+        .drop-zone.drag-over {
+            border-color: var(--accent);
+            background: rgba(0, 229, 184, 0.1);
+            transform: scale(1.02);
+        }
+
+        .drop-zone.correct-drop {
+            animation: snap 0.3s ease;
+            border-color: var(--success);
+            background: rgba(0, 229, 184, 0.2);
+        }
+
+        .drop-zone.wrong-drop {
+            animation: shake 0.5s ease;
+            border-color: var(--error);
+            background: rgba(255, 82, 82, 0.1);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(0, 229, 184, 0.2), rgba(0, 180, 216, 0.2));
+            border: 1px solid var(--accent);
+            border-radius: 50px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .badge.locked {
+            opacity: 0.4;
+            filter: grayscale(1);
+        }
+
+        .badge.new { animation: badge-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        /* Quiz */
+        .quiz-option {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .quiz-option:hover:not(.disabled) {
+            border-color: var(--accent);
+            background: rgba(0, 229, 184, 0.05);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: rgba(0, 229, 184, 0.15);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--error);
+            background: rgba(255, 82, 82, 0.1);
+        }
+
+        .quiz-option.disabled { pointer-events: none; }
+
+        /* Carousel */
+        .carousel-container { overflow: hidden; }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .carousel-slide {
+            min-width: 100%;
+            padding: 0 8px;
+        }
+
+        /* Image Fallback */
+        .img-fallback {
+            background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        /* Desktop Simulation */
+        .desktop-area {
+            background: linear-gradient(145deg, #1e2a36, #141c24);
+            border-radius: 12px;
+            min-height: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .desktop-icon {
+            position: absolute;
+            width: 70px;
+            text-align: center;
+            cursor: grab;
+            transition: all 0.2s ease;
+        }
+
+        .desktop-icon:hover { transform: scale(1.1); }
+        .desktop-icon:active { cursor: grabbing; }
+
+        /* Sound Toggle */
+        .sound-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .sound-toggle:hover { border-color: var(--accent); }
+
+        /* Confetti */
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: -10px;
+            pointer-events: none;
+            animation: confetti 3s linear forwards;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content { transform: scale(1); }
+
+        /* Timer */
+        .timer {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .timer.warning { color: var(--warning); }
+        .timer.danger { color: var(--error); }
+
+        /* Folder Tree */
+        .folder-tree {
+            font-family: 'DM Sans', monospace;
+        }
+
+        .tree-item {
+            padding: 8px 12px;
+            margin: 2px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tree-item:hover { background: rgba(0, 229, 184, 0.1); }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .desktop-area { min-height: 300px; }
+            .desktop-icon { width: 56px; }
+            .btn-primary { padding: 12px 24px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="max-w-6xl mx-auto px-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--accent)] to-[#00b4d8] flex items-center justify-center">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                </div>
+                <span class="font-bold text-lg">EdTechra Tech</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden sm:flex items-center gap-2 text-sm text-[var(--fg-secondary)]">
+                    <span id="currentSection">Introduction</span>
+                </div>
+                <div id="badgesEarned" class="flex items-center gap-2"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sound Toggle -->
+    <button class="sound-toggle" id="soundToggle" aria-label="Toggle sound">
+        <svg id="soundOnIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+        <svg id="soundOffIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+    </button>
+
+    <!-- Main Content -->
+    <main class="pt-16">
+        <!-- Section 1: Hero -->
+        <section id="hero" class="min-h-screen relative flex items-center justify-center overflow-hidden px-4 py-20">
+            <!-- Background Elements -->
+            <div class="absolute inset-0 overflow-hidden">
+                <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-[var(--accent)] rounded-full filter blur-[150px] opacity-20 animate-pulse-bg"></div>
+                <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#00b4d8] rounded-full filter blur-[120px] opacity-15 animate-pulse-bg" style="animation-delay: 2s;"></div>
+                <div class="absolute top-1/2 left-1/2 w-64 h-64 bg-[var(--accent-secondary)] rounded-full filter blur-[100px] opacity-10 animate-pulse-bg" style="animation-delay: 4s;"></div>
+            </div>
+
+            <!-- Floating Icons -->
+            <div class="floating-icon animate-float" style="top: 15%; left: 10%; animation-delay: 0s;">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                </svg>
+            </div>
+            <div class="floating-icon animate-float-delayed" style="top: 25%; right: 15%; animation-delay: 1s;">
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+            </div>
+            <div class="floating-icon animate-float" style="bottom: 30%; left: 8%; animation-delay: 2s;">
+                <svg width="45" height="45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+            </div>
+            <div class="floating-icon animate-float-delayed" style="bottom: 20%; right: 12%; animation-delay: 0.5s;">
+                <svg width="55" height="55" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                </svg>
+            </div>
+            <div class="floating-icon animate-float" style="top: 40%; left: 5%; animation-delay: 3s;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M9 18V5l12-2v13"></path>
+                    <circle cx="6" cy="18" r="3"></circle>
+                    <circle cx="18" cy="16" r="3"></circle>
+                </svg>
+            </div>
+
+            <!-- Hero Content -->
+            <div class="relative z-10 text-center max-w-4xl mx-auto section-hidden" data-animate>
+                <div class="inline-flex items-center gap-2 bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-full px-4 py-2 mb-8">
+                    <span class="w-2 h-2 rounded-full bg-[var(--accent)]"></span>
+                    <span class="text-sm text-[var(--fg-secondary)]">Interactive Learning Module</span>
+                </div>
+                
+                <h1 class="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                    <span class="gradient-text">Digital Organization</span>
+                </h1>
+                
+                <p class="text-xl sm:text-2xl text-[var(--fg-secondary)] mb-8 max-w-2xl mx-auto">
+                    Stop losing files. Build a clean system that works.
+                </p>
+
+                <button class="btn-primary text-lg mb-12" onclick="scrollToSection('section2')">
+                    Start Organising
+                </button>
+
+                <!-- Goals -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+                    <div class="card text-center">
+                        <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[#00b4d8] flex items-center justify-center">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                        </div>
+                        <p class="text-sm font-medium">Files vs Folders</p>
+                    </div>
+                    <div class="card text-center">
+                        <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-[#00b4d8] to-[var(--accent)] flex items-center justify-center">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-sm font-medium">Naming Rules</p>
+                    </div>
+                    <div class="card text-center">
+                        <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-[var(--accent-secondary)] to-[var(--warning)] flex items-center justify-center">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                <polyline points="17 1 21 5 17 9"></polyline>
+                                <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                                <polyline points="7 23 3 19 7 15"></polyline>
+                                <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+                            </svg>
+                        </div>
+                        <p class="text-sm font-medium">Move & Copy</p>
+                    </div>
+                    <div class="card text-center">
+                        <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-[var(--warning)] to-[var(--accent-secondary)] flex items-center justify-center">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </div>
+                        <p class="text-sm font-medium">Search Skills</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Section 2: What is a File & Folder -->
+        <section id="section2" class="py-20 px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="section-hidden" data-animate>
+                    <div class="text-center mb-12">
+                        <span class="badge mb-4">Lesson 1</span>
+                        <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">What is a File & Folder?</h2>
+                        <p class="text-[var(--fg-secondary)] text-lg max-w-2xl mx-auto">
+                            Understanding the basics of digital organization
+                        </p>
+                    </div>
+
+                    <!-- Images -->
+                    <div class="grid md:grid-cols-2 gap-6 mb-12">
+                        <div class="card overflow-hidden">
+                            <div class="aspect-video rounded-lg overflow-hidden mb-4 bg-[var(--bg-tertiary)]">
+                                <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=400&fit=crop" 
+                                     alt="Folders on a computer" 
+                                     class="w-full h-full object-cover"
+                                     onerror="this.parentElement.innerHTML='<div class=\'w-full h-full img-fallback\'><span>Computer Folders</span></div>'">
+                            </div>
+                            <h3 class="font-semibold text-lg mb-2">Folders on a Computer</h3>
+                            <p class="text-[var(--fg-secondary)] text-sm">Folders help you group related files together for easy access.</p>
+                        </div>
+                        <div class="card overflow-hidden">
+                            <div class="aspect-video rounded-lg overflow-hidden mb-4 bg-[var(--bg-tertiary)]">
+                                <img src="https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=600&h=400&fit=crop" 
+                                     alt="Files on desktop" 
+                                     class="w-full h-full object-cover"
+                                     onerror="this.parentElement.innerHTML='<div class=\'w-full h-full img-fallback\'><span>Digital Files</span></div>'">
+                            </div>
+                            <h3 class="font-semibold text-lg mb-2">Files on Desktop</h3>
+                            <p class="text-[var(--fg-secondary)] text-sm">Files contain your actual content - documents, photos, videos, and more.</p>
+                        </div>
+                    </div>
+
+                    <!-- Explanation Cards -->
+                    <div class="grid md:grid-cols-2 gap-6 mb-12">
+                        <div class="card border-l-4 border-l-[var(--accent)]">
+                            <div class="flex items-start gap-4">
+                                <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[#00b4d8] flex items-center justify-center flex-shrink-0">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-xl mb-2">File</h4>
+                                    <p class="text-[var(--fg-secondary)]">A file is your actual content - a document, photo, video, or any piece of data you create or save.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card border-l-4 border-l-[var(--accent-secondary)]">
+                            <div class="flex items-start gap-4">
+                                <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--accent-secondary)] to-[var(--warning)] flex items-center justify-center flex-shrink-0">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-xl mb-2">Folder</h4>
+                                    <p class="text-[var(--fg-secondary)]">A folder is a container that holds files and other folders, helping you organize everything logically.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mini Activity: Click to Classify -->
+                    <div class="card">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="font-bold text-xl">Mini Activity: Click to Classify</h3>
+                            <span class="text-sm text-[var(--fg-secondary)]" id="classifyScore">0/8 correct</span>
+                        </div>
+                        <p class="text-[var(--fg-secondary)] mb-6">Tap each item to classify it as a FILE or FOLDER. Learn by doing!</p>
+                        
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6" id="classifyItems">
+                            <!-- Items will be generated by JS -->
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div id="classifyFeedback" class="text-[var(--accent)] font-medium"></div>
+                            <button class="btn-secondary" onclick="resetClassify()">Reset Activity</button>
+                        </div>
+
+                        <!-- Badge Reward -->
+                        <div id="classifyBadge" class="mt-6 p-4 bg-gradient-to-r from-[rgba(0,229,184,0.1)] to-[rgba(0,180,216,0.1)] rounded-xl border border-[var(--accent)] hidden">
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--accent)] to-[#00b4d8] flex items-center justify-center animate-badge-pop">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-lg">Badge Earned!</h4>
+                                    <p class="text-[var(--accent)]">Organizer Starter</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Simulation - Clean the Messy Desktop -->
+        <section id="section3" class="py-20 px-4 bg-[var(--bg-secondary)]">
+            <div class="max-w-6xl mx-auto">
+                <div class="section-hidden" data-animate>
+                    <div class="text-center mb-8">
+                        <span class="badge mb-4">Simulation 1</span>
+                        <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Clean the Messy Desktop</h2>
+                        <p class="text-[var(--fg-secondary)] text-lg max-w-2xl mx-auto">
+                            Drag files into the correct folders. Beat the timer!
+                        </p>
+                    </div>
+
+                    <!-- Game Stats -->
+                    <div class="flex flex-wrap items-center justify-center gap-6 mb-8">
+                        <div class="card px-6 py-3">
+                            <span class="text-[var(--fg-secondary)] text-sm">Time</span>
+                            <div class="timer" id="gameTimer">1:30</div>
+                        </div>
+                        <div class="card px-6 py-3">
+                            <span class="text-[var(--fg-secondary)] text-sm">Files Left</span>
+                            <div class="text-2xl font-bold" id="filesLeft">15</div>
+                        </div>
+                        <div class="card px-6 py-3">
+                            <span class="text-[var(--fg-secondary)] text-sm">Correct</span>
+                            <div class="text-2xl font-bold text-[var(--success)]" id="correctMoves">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Game Area -->
+                    <div class="grid lg:grid-cols-3 gap-6">
+                        <!-- Desktop Area -->
+                        <div class="lg:col-span-2">
+                            <div class="card">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-semibold">Desktop</h3>
+                                    <button class="btn-secondary text-sm" onclick="resetDesktopGame()">Reset Game</button>
+                                </div>
+                                <div class="desktop-area p-4" id="desktopArea">
+                                    <!-- Icons will be generated by JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Folder Targets -->
+                        <div class="space-y-4" id="folderTargets">
+                            <h3 class="font-semibold">Drop Zones</h3>
+                            <!-- Folders will be generated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Folder Management -->
+                    <div class="flex flex-wrap gap-4 mt-6 justify-center">
+                        <button class="btn-secondary" onclick="createFolder()">
+                            <span class="flex items-center gap-2">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Create Folder
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- Badge Reward -->
+                    <div id="desktopBadge" class="mt-8 card hidden">
+                        <div class="text-center">
+                            <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-[var(--accent)] to-[#00b4d8] flex items-center justify-center animate-badge-pop">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                            </div>
+                            <h4 class="font-bold text-xl mb-2">Badge Earned!</h4>
+                            <p class="text-[var(--accent)] text-lg">Desktop Cleaner</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Important Points with Mini Activities -->
+        <section id="section4" class="py-20 px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="section-hidden" data-animate>
+                    <div class="text-center mb-12">
+                        <span class="badge mb-4">Lesson 2</span>
+                        <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Key Rules for Organization</h2>
+                        <p class="text-[var(--fg-secondary)] text-lg max-w-2xl mx-auto">
+                            Master these four essential skills for better file management
+                        </p>
+                    </div>
+
+                    <!-- Rule Cards -->
+                    <div class="space-y-8">
+                        <!-- A) Naming Rules -->
+                        <div class="card">
+                            <div class="flex items-start gap-4 mb-6">
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[#00b4d8] flex items-center justify-center flex-shrink-0">
+                                    <span class="font-bold text-[var(--bg)]">A</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-xl mb-2">Naming Rules</h3>
+                                    <p class="text-[var(--fg-secondary)]">Good file names are descriptive, consistent, and searchable.</p>
+                                </div>
+                            </div>
+
+                            <div class="grid md:grid-cols-2 gap-4 mb-6">
+                                <div class="p-4 rounded-xl bg-[var(--error)]/10 border border-[var(--error)]/30">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--error)" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                        <span class="font-medium text-[var(--error)]">Bad Name</span>
+                                    </div>
+                                    <code class="text-sm">New Document (3).docx</code>
+                                </div>
+                                <div class="p-4 rounded-xl bg-[var(--success)]/10 border border-[var(--success)]/30">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        <span class="font-medium text-[var(--success)]">Good Name</span>
+                                    </div>
+                                    <code class="text-sm">2024-02-English-Essay-Draft1.docx</code>
+                                </div>
+                            </div>
+
+                            <!-- Mini Task -->
+                            <div class="p-4 rounded-xl bg-[var(--bg-tertiary)]">
+                                <p class="font-medium mb-4">Which file name is best?</p>
+                                <div class="space-y-3" id="namingOptions">
+                                    <button class="quiz-option w-full" onclick="checkNaming(this, false)">
+                                        <code>Document1.pdf</code>
+                                    </button>
+                                    <button class="quiz-option w-full" onclick="checkNaming(this, true)">
+                                        <code>2024-03-15_Invoice_Amazon.pdf</code>
+                                    </button>
+                                    <button class="quiz-option w-full" onclick="checkNaming(this, false)">
+                                        <code>file (2).pdf</code>
+                                    </button>
+                                </div>
+                                <p id="namingFeedback" class="mt-4 text-sm"></p>
+                            </div>
+                        </div>
+
+                        <!-- B) Copy vs Move -->
+                        <div class="card">
+                            <div class="flex items-start gap-4 mb-6">
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#00b4d8] to-[var(--accent)] flex items-center justify-center flex-shrink-0">
+                                    <span class="font-bold text-[var(--bg)]">B</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-xl mb-2">Copy vs Move</h3>
+                                    <p class="text-[var(--fg-secondary)]">Copy duplicates a file. Move transfers it to a new location.</p>
+                                </div>
+                            </div>
+
+                            <!-- Simulation -->
+                            <div class="grid md:grid-cols-3 gap-4 items-center">
+                                <div class="p-6 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border)] text-center drop-zone" id="folderA">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" class="mx-auto mb-3">
+                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                    <p class="font-medium mb-2">Folder A</p>
+                                    <div class="flex flex-wrap gap-2 justify-center" id="folderAFiles">
+                                        <div class="px-3 py-1 bg-[var(--accent)]/20 rounded-lg text-sm" id="fileToMove">
+                                            report.docx
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col gap-3">
+                                    <button class="btn-primary text-sm" onclick="simulateCopy()">
+                                        Copy to B
+                                    </button>
+                                    <button class="btn-secondary text-sm" onclick="simulateMove()">
+                                        Move to B
+                                    </button>
+                                    <button class="btn-secondary text-sm" onclick="resetCopyMove()">
+                                        Reset
+                                    </button>
+                                </div>
+
+                                <div class="p-6 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border)] text-center drop-zone" id="folderB">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-secondary)" stroke-width="1.5" class="mx-auto mb-3">
+                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                    <p class="font-medium mb-2">Folder B</p>
+                                    <div class="flex flex-wrap gap-2 justify-center" id="folderBFiles"></div>
+                                </div>
+                            </div>
+                            <p id="copyMoveFeedback" class="mt-4 text-sm text-center"></p>
+                        </div>
+
+                        <!-- C) Delete vs Recycle Bin -->
+                        <div class="card">
+                            <div class="flex items-start gap-4 mb-6">
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--accent-secondary)] to-[var(--warning)] flex items-center justify-center flex-shrink-0">
+                                    <span class="font-bold text-[var(--bg)]">C</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-xl mb-2">Delete vs Recycle Bin</h3>
+                                    <p class="text-[var(--fg-secondary)]">Deleted files go to Recycle Bin first. You can restore them!</p>
+                                </div>
+                            </div>
+
+                            <!-- Simulation -->
+                            <div class="grid md:grid-cols-3 gap-4 items-center">
+                                <div class="p-6 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border)] text-center" id="deleteSource">
+                                    <p class="font-medium mb-3">Desktop</p>
+                                    <div id="fileToDelete" class="px-4 py-2 bg-[var(--accent)]/20 rounded-lg inline-block">
+                                        old_notes.txt
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col gap-3">
+                                    <button class="btn-primary text-sm" id="deleteBtn" onclick="simulateDelete()">
+                                        Delete File
+                                    </button>
+                                    <button class="btn-secondary text-sm" id="restoreBtn" onclick="simulateRestore()" style="display:none;">
+                                        Restore File
+                                    </button>
+                                    <button class="btn-secondary text-sm" onclick="resetDeleteSim()">
+                                        Reset
+                                    </button>
+                                </div>
+
+                                <div class="p-6 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border)] text-center" id="recycleBinArea">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" class="mx-auto mb-3">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                    <p class="font-medium mb-2">Recycle Bin</p>
+                                    <div id="recycleBinContent"></div>
+                                </div>
+                            </div>
+                            <p id="deleteFeedback" class="mt-4 text-sm text-center"></p>
+                        </div>
+
+                        <!-- D) Search Skill -->
+                        <div class="card">
+                            <div class="flex items-start gap-4 mb-6">
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--warning)] to-[var(--accent-secondary)] flex items-center justify-center flex-shrink-0">
+                                    <span class="font-bold text-[var(--bg)]">D</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-xl mb-2">Search Skill</h3>
+                                    <p class="text-[var(--fg-secondary)]">Use keywords to find files quickly. Good names make search powerful!</p>
+                                </div>
+                            </div>
+
+                            <!-- Search Simulation -->
+                            <div class="p-4 rounded-xl bg-[var(--bg-tertiary)]">
+                                <div class="relative mb-4">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" class="absolute left-4 top-1/2 -translate-y-1/2">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    </svg>
+                                    <input type="text" 
+                                           id="searchInput" 
+                                           placeholder="Try searching: invoice, homework, photo" 
+                                           class="w-full pl-12 pr-4 py-3 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)] focus:border-[var(--accent)] focus:outline-none transition-colors"
+                                           oninput="filterFiles(this.value)">
+                                </div>
+
+                                <div id="searchResults" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                    <!-- Results will be generated by JS -->
+                                </div>
+
+                                <p id="searchFeedback" class="mt-4 text-sm text-center"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Badge for completing all -->
+                    <div id="fileLogicBadge" class="mt-8 card hidden">
+                        <div class="text-center">
+                            <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-[var(--accent-secondary)] to-[var(--warning)] flex items-center justify-center animate-badge-pop">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                </svg>
+                            </div>
+                            <h4 class="font-bold text-xl mb-2">Badge Earned!</h4>
+                            <p class="text-[var(--accent)] text-lg">File Logic</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Simulation 2 - Build Your Folder System -->
+        <section id="section5" class="py-20 px-4 bg-[var(--bg-secondary)]">
+            <div class="max-w-6xl mx-auto">
+                <div class="section-hidden" data-animate>
+                    <div class="text-center mb-8">
+                        <span class="badge mb-4">Simulation 2</span>
+                        <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Build Your Folder System</h2>
+                        <p class="text-[var(--fg-secondary)] text-lg max-w-2xl mx-auto">
+                            Choose your role and get a personalized folder structure
+                        </p>
+                    </div>
+
+                    <!-- Role Selection -->
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                        <button class="card text-center hover:border-[var(--accent)] transition-all role-btn" onclick="selectRole('student')">
+                            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-[var(--accent)] to-[#00b4d8] flex items-center justify-center">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                                    <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-bold">Student</h4>
+                        </button>
+                        <button class="card text-center hover:border-[var(--accent)] transition-all role-btn" onclick="selectRole('teacher')">
+                            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#00b4d8] to-[var(--accent)] flex items-center justify-center">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-bold">Teacher</h4>
+                        </button>
+                        <button class="card text-center hover:border-[var(--accent)] transition-all role-btn" onclick="selectRole('business')">
+                            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-[var(--accent-secondary)] to-[var(--warning)] flex items-center justify-center">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-bold">Small Business</h4>
+                        </button>
+                        <button class="card text-center hover:border-[var(--accent)] transition-all role-btn" onclick="selectRole('creator')">
+                            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-[var(--warning)] to-[var(--accent-secondary)] flex items-center justify-center">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                    <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                                </svg>
+                            </div>
+                            <h4 class="font-bold">Content Creator</h4>
+                        </button>
+                    </div>
+
+                    <!-- Folder Structure Display -->
+                    <div id="folderStructureArea" class="card hidden">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="font-bold text-xl" id="structureTitle">Your Folder Structure</h3>
+                            <div class="flex gap-2">
+                                <button class="btn-secondary text-sm" onclick="addCustomFolder()">
+                                    Add Folder
+                                </button>
+                                <button class="btn-secondary text-sm" onclick="exportStructure()">
+                                    Export
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="folderTree" class="folder-tree bg-[var(--bg-tertiary)] rounded-xl p-4">
+                            <!-- Tree will be generated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Badge -->
+                    <div id="systemBuilderBadge" class="mt-8 card hidden">
+                        <div class="text-center">
+                            <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#00b4d8] to-[var(--accent)] flex items-center justify-center animate-badge-pop">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="14" width="7" height="7"></rect>
+                                    <rect x="3" y="14" width="7" height="7"></rect>
+                                </svg>
+                            </div>
+                            <h4 class="font-bold text-xl mb-2">Badge Earned!</h4>
+                            <p class="text-[var(--accent)] text-lg">System Builder</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Cloud + Local Organization -->
+        <section id="section6" class="py-20 px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="section-hidden" data-animate>
+                    <div class="text-center mb-8">
+                        <span class="badge mb-4">Lesson 3</span>
+                        <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Cloud vs Local Storage</h2>
+                        <p class="text-[var(--fg-secondary)] text-lg max-w-2xl mx-auto">
+                            Understand when to use each type of storage
+                        </p>
+                    </div>
+
+                    <!-- Explanation -->
+                    <div class="grid md:grid-cols-2 gap-6 mb-8">
+                        <div class="card border-t-4 border-t-[var(--accent)]">
+                            <div class="aspect-video rounded-lg overflow-hidden mb-4 bg-[var(--bg-tertiary)]">
+                                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=400&fit=crop" 
+                                     alt="Local storage" 
+                                     class="w-full h-full object-cover"
+                                     onerror="this.parentElement.innerHTML='<div class=\'w-full h-full img-fallback\'><span>Local PC Storage</span></div>'">
+                            </div>
+                            <h3 class="font-bold text-xl mb-2">Local Storage</h3>
+                            <ul class="text-[var(--fg-secondary)] space-y-2">
+                                <li class="flex items-start gap-2">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" class="mt-1 flex-shrink-0">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Files stored on your device
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" class="mt-1 flex-shrink-0">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Works offline
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" class="mt-1 flex-shrink-0">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Faster access
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card border-t-4 border-t-[var(--accent-secondary)]">
+                            <div class="aspect-video rounded-lg overflow-hidden mb-4 bg-[var(--bg-tertiary)]">
+                                <img src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=600&h=400&fit=crop" 
+                                     alt="Cloud storage" 
+                                     class="w-full h-full object-cover"
+                                     onerror="this.parentElement.innerHTML='<div class=\'w-full h-full img-fallback\'><span>Cloud Storage</span></div>'">
+                            </div>
+                            <h3 class="font-bold text-xl mb-2">Cloud Storage</h3>
+                            <ul class="text-[var(--fg-secondary)] space-y-2">
+                                <li class="flex items-start gap-2">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-secondary)" stroke-width="2" class="mt-1 flex-shrink-0">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Access from any device
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-secondary)" stroke-width="2" class="mt-1 flex-shrink-0">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Easy sharing
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-secondary)" stroke-width="2" class="mt-1 flex-shrink-0">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Automatic backup
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Drag Activity -->
+                    <div class="card">
+                        <h3 class="font-bold text-xl mb-4">Where should these files go?</h3>
+                        <p class="text-[var(--fg-secondary)] mb-6">Drag each scenario to the best storage type</p>
+
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <!-- Scenarios -->
+                            <div class="space-y-3" id="cloudScenarios">
+                                <div class="p-3 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border)] cursor-grab draggable-scenario" draggable="true" data-target="local">
+                                    Need offline access
+                                </div>
+                                <div class="p-3 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border)] cursor-grab draggable-scenario" draggable="true" data-target="cloud">
+                                    Need sharing with team
+                                </div>
+                                <div class="p-3 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border)] cursor-grab draggable-scenario" draggable="true" data-target="cloud">
+                                    Need automatic backup
+                                </div>
+                                <div class="p-3 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border)] cursor-grab draggable-scenario" draggable="true" data-target="local">
+                                    Large video editing files
+                                </div>
+                            </div>
+
+                            <!-- Drop Zones -->
+                            <div class="p-6 rounded-xl bg-[var(--accent)]/10 border-2 border-dashed border-[var(--accent)]/30 text-center drop-zone-cloud" id="localDropZone">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" class="mx-auto mb-3">
+                                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                                </svg>
+                                <p class="font-bold text-[var(--accent)]">Local Storage</p>
+                                <div class="mt-3 space-y-2" id="localDropContent"></div>
+                            </div>
+
+                            <div class="p-6 rounded-xl bg-[var(--accent-secondary)]/10 border-2 border-dashed border-[var(--accent-secondary)]/30 text-center drop-zone-cloud" id="cloudDropZone">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-secondary)" stroke-width="1.5" class="mx-auto mb-3">
+                                    <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                                </svg>
+                                <p class="font-bold text-[var(--accent-secondary)]">Cloud Storage</p>
+                                <div class="mt-3 space-y-2" id="cloudDropContent"></div>
+                            </div>
+                        </div>
+
+                        <div id="cloudFeedback" class="mt-4 text-center"></div>
+                    </div>
+
+                    <!-- Badge -->
+                    <div id="smartStorageBadge" class="mt-8 card hidden">
+                        <div class="text-center">
+                            <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent-secondary)] flex items-center justify-center animate-badge-pop">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                    <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-bold text-xl mb-2">Badge Earned!</h4>
+                            <p class="text-[var(--accent)] text-lg">Smart Storage</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Fun Facts Carousel -->
+        <section id="section7" class="py-20 px-4 bg-[var(--bg-secondary)]">
+            <div class="max-w-4xl mx-auto">
+                <div class="section-hidden" data-animate>
+                    <div class="text-center mb-8">
+                        <span class="badge mb-4">Did You Know?</span>
+                        <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Fun Facts</h2>
+                    </div>
+
+                    <div class="carousel-container">
+                        <div class="carousel-track" id="carouselTrack">
+                            <!-- Slides will be generated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Carousel Controls -->
+                    <div class="flex items-center justify-center gap-4 mt-6">
+                        <button class="w-12 h-12 rounded-full bg-[var(--bg-tertiary)] border border-[var(--border)] flex items-center justify-center hover:border-[var(--accent)] transition-colors" onclick="prevSlide()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </button>
+                        <div class="flex gap-2" id="carouselDots"></div>
+                        <button class="w-12 h-12 rounded-full bg-[var(--bg-tertiary)] border border-[var(--border)] flex items-center justify-center hover:border-[var(--accent)] transition-colors" onclick="nextSlide()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8: Final Quiz -->
+        <section id="section8" class="py-20 px-4">
+            <div class="max-w-3xl mx-auto">
+                <div class="section-hidden" data-animate>
+                    <div class="text-center mb-8">
+                        <span class="badge mb-4">Final Challenge</span>
+                        <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Knowledge Check</h2>
+                        <p class="text-[var(--fg-secondary)] text-lg">
+                            Answer 10 questions to earn your certificate
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <!-- Progress -->
+                        <div class="flex items-center justify-between mb-6">
+                            <span class="text-sm text-[var(--fg-secondary)]">Question <span id="quizProgress">1</span>/10</span>
+                            <span class="text-sm text-[var(--fg-secondary)]">Score: <span id="quizScore">0</span></span>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="w-full h-2 bg-[var(--bg-tertiary)] rounded-full mb-6">
+                            <div class="h-full bg-gradient-to-r from-[var(--accent)] to-[#00b4d8] rounded-full transition-all duration-300" id="quizProgressBar" style="width: 10%"></div>
+                        </div>
+
+                        <!-- Question -->
+                        <div id="quizQuestion" class="mb-6">
+                            <h3 class="text-xl font-bold mb-4" id="questionText"></h3>
+                            <div class="space-y-3" id="quizOptions"></div>
+                        </div>
+
+                        <!-- Feedback -->
+                        <div id="quizFeedback" class="mb-6 p-4 rounded-xl hidden"></div>
+
+                        <!-- Next Button -->
+                        <button class="btn-primary w-full" id="nextQuizBtn" onclick="nextQuestion()" style="display: none;">
+                            Next Question
+                        </button>
+                    </div>
+
+                    <!-- Quiz Complete -->
+                    <div id="quizComplete" class="card hidden">
+                        <div class="text-center">
+                            <div id="quizResultIcon" class="w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center"></div>
+                            <h3 class="text-2xl font-bold mb-2" id="quizResultTitle"></h3>
+                            <p class="text-[var(--fg-secondary)] mb-4" id="quizResultText"></p>
+                            <p class="text-4xl font-bold mb-6" id="finalScore"></p>
+
+                            <div id="proBadge" class="hidden">
+                                <div class="inline-flex items-center gap-3 p-4 bg-gradient-to-r from-[rgba(0,229,184,0.2)] to-[rgba(0,180,216,0.2)] rounded-xl border border-[var(--accent)]">
+                                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-[var(--accent)] to-[#00b4d8] flex items-center justify-center animate-badge-pop">
+                                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                            <circle cx="12" cy="8" r="7"></circle>
+                                            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                                        </svg>
+                                    </div>
+                                    <div class="text-left">
+                                        <h4 class="font-bold">Badge Earned!</h4>
+                                        <p class="text-[var(--accent)]">Digital Organization Pro</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn-secondary mt-6" onclick="retakeQuiz()">Retake Quiz</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 9: Completion Screen -->
+        <section id="section9" class="py-20 px-4 bg-[var(--bg-secondary)]">
+            <div class="max-w-4xl mx-auto">
+                <div class="section-hidden" data-animate>
+                    <div class="card text-center">
+                        <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-[var(--accent)] to-[#00b4d8] flex items-center justify-center">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+
+                        <h2 class="text-3xl sm:text-4xl font-bold mb-4">You Completed Digital Organization!</h2>
+                        <p class="text-[var(--fg-secondary)] text-lg mb-8">Congratulations on finishing this module!</p>
+
+                        <!-- Stats -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                            <div class="p-4 rounded-xl bg-[var(--bg-tertiary)]">
+                                <p class="text-3xl font-bold text-[var(--accent)]" id="statBadges">0</p>
+                                <p class="text-sm text-[var(--fg-secondary)]">Badges Earned</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-[var(--bg-tertiary)]">
+                                <p class="text-3xl font-bold text-[var(--accent)]" id="statQuiz">0%</p>
+                                <p class="text-sm text-[var(--fg-secondary)]">Quiz Score</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-[var(--bg-tertiary)]">
+                                <p class="text-3xl font-bold text-[var(--accent)]" id="statActivities">0</p>
+                                <p class="text-sm text-[var(--fg-secondary)]">Activities Done</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-[var(--bg-tertiary)]">
+                                <p class="text-3xl font-bold text-[var(--accent)]" id="statTime">0</p>
+                                <p class="text-sm text-[var(--fg-secondary)]">Minutes Spent</p>
+                            </div>
+                        </div>
+
+                        <!-- All Badges -->
+                        <div class="mb-8">
+                            <h3 class="font-bold text-xl mb-4">Your Badges</h3>
+                            <div class="flex flex-wrap justify-center gap-4" id="allBadgesDisplay"></div>
+                        </div>
+
+                        <!-- Next Unit -->
+                        <button class="btn-primary mb-8" onclick="alert('Next Unit: Cloud Storage - Coming Soon!')">
+                            Continue to Next Unit: Cloud Storage
+                        </button>
+
+                        <!-- Feedback -->
+                        <div class="p-6 rounded-xl bg-[var(--bg-tertiary)]">
+                            <h4 class="font-bold mb-4">Do you like this session?</h4>
+                            <div class="flex justify-center gap-4">
+                                <button class="p-4 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)] hover:border-[var(--success)] transition-colors feedback-btn" onclick="submitFeedback('love')">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2">
+                                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                                    </svg>
+                                    <p class="text-sm mt-2">Love it!</p>
+                                </button>
+                                <button class="p-4 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)] hover:border-[var(--warning)] transition-colors feedback-btn" onclick="submitFeedback('okay')">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="8" y1="15" x2="16" y2="15"></line>
+                                        <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                                        <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                                    </svg>
+                                    <p class="text-sm mt-2">It's okay</p>
+                                </button>
+                                <button class="p-4 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)] hover:border-[var(--error)] transition-colors feedback-btn" onclick="submitFeedback('meh')">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--error)" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <path d="M16 16s-1.5-2-4-2-4 2-4 2"></path>
+                                        <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                                        <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                                    </svg>
+                                    <p class="text-sm mt-2">Needs work</p>
+                                </button>
+                            </div>
+                            <p id="feedbackThank" class="mt-4 text-[var(--accent)] hidden">Thanks for your feedback!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-8 px-4 border-t border-[var(--border)]">
+        <div class="max-w-6xl mx-auto text-center text-[var(--muted)]">
+            <p>EdTechra Tech - Digital Organization Module</p>
+        </div>
+    </footer>
+
+    <script>
+        // ============ STATE & DATA ============
+        let soundEnabled = true;
+        let startTime = Date.now();
+        let activitiesCompleted = 0;
+        let badges = {
+            'organizer-starter': false,
+            'desktop-cleaner': false,
+            'file-logic': false,
+            'system-builder': false,
+            'smart-storage': false,
+            'digital-pro': false
+        };
+
+        // Load saved state
+        const savedState = localStorage.getItem('edtechra_progress');
+        if (savedState) {
+            const state = JSON.parse(savedState);
+            badges = state.badges || badges;
+            if (state.quizScore) {
+                document.getElementById('quizScore').textContent = state.quizScore;
+            }
+        }
+
+        // ============ CLASSIFICATION ACTIVITY DATA ============
+        const classifyData = [
+            { name: 'photo.jpg', type: 'file', icon: 'image' },
+            { name: 'video.mp4', type: 'file', icon: 'video' },
+            { name: 'Homework.docx', type: 'file', icon: 'file-text' },
+            { name: 'Music.mp3', type: 'file', icon: 'music' },
+            { name: 'School', type: 'folder', icon: 'folder' },
+            { name: 'Photos', type: 'folder', icon: 'folder' },
+            { name: 'Work', type: 'folder', icon: 'folder' },
+            { name: 'Projects', type: 'folder', icon: 'folder' }
+        ];
+
+        let classifiedCorrect = 0;
+        let classifiedItems = {};
+
+        // ============ DESKTOP GAME DATA ============
+        const desktopFiles = [
+            { name: 'essay.docx', target: 'School', x: 5, y: 5 },
+            { name: 'notes.txt', target: 'School', x: 15, y: 20 },
+            { name: 'homework.pdf', target: 'School', x: 8, y: 45 },
+            { name: 'vacation.jpg', target: 'Photos', x: 25, y: 10 },
+            { name: 'family.png', target: 'Photos', x: 35, y: 35 },
+            { name: 'selfie.jpg', target: 'Photos', x: 20, y: 60 },
+            { name: 'report.xlsx', target: 'Work', x: 45, y: 15 },
+            { name: 'invoice.pdf', target: 'Work', x: 55, y: 40 },
+            { name: 'meeting.docx', target: 'Work', x: 40, y: 70 },
+            { name: 'installer.exe', target: 'Downloads', x: 70, y: 20 },
+            { name: 'update.msi', target: 'Downloads', x: 80, y: 50 },
+            { name: 'resume.pdf', target: 'Personal', x: 65, y: 75 },
+            { name: 'budget.xlsx', target: 'Personal', x: 75, y: 8 },
+            { name: 'screenshot.png', target: 'Photos', x: 85, y: 30 },
+            { name: 'backup.zip', target: 'Downloads', x: 10, y: 80 }
+        ];
+
+        const defaultFolders = ['School', 'Photos', 'Work', 'Downloads', 'Personal'];
+        let gameTimer = null;
+        let gameSeconds = 90;
+        let filesOrganized = 0;
+        let correctMoves = 0;
+        let gameStarted = false;
+
+        // ============ COPY/MOVE SIMULATION STATE ============
+        let copyMoveState = { folderA: ['report.docx'], folderB: [] };
+
+        // ============ DELETE SIMULATION STATE ============
+        let deleteState = { desktop: ['old_notes.txt'], recycle: [], restored: false };
+
+        // ============ SEARCH FILES DATA ============
+        const searchFiles = [
+            { name: 'invoice_2024.pdf', keywords: ['invoice', '2024', 'pdf'] },
+            { name: 'homework_math.docx', keywords: ['homework', 'math', 'docx'] },
+            { name: 'photo_vacation.jpg', keywords: ['photo', 'vacation', 'jpg'] },
+            { name: 'invoice_march.pdf', keywords: ['invoice', 'march', 'pdf'] },
+            { name: 'homework_english.docx', keywords: ['homework', 'english', 'docx'] },
+            { name: 'photo_family.png', keywords: ['photo', 'family', 'png'] }
+        ];
+
+        // ============ FOLDER STRUCTURES DATA ============
+        const folderStructures = {
+            student: {
+                title: 'Student Folder Structure',
+                tree: {
+                    'School': {
+                        'Subjects': ['Math', 'English', 'Science'],
+                        'Assignments': [],
+                        'Notes': []
+                    },
+                    'Photos': {
+                        'Events': [],
+                        'Friends': []
+                    },
+                    'Downloads': {
+                        'Installers': [],
+                        'Temp': []
+                    }
+                }
+            },
+            teacher: {
+                title: 'Teacher Folder Structure',
+                tree: {
+                    'Classes': {
+                        'Math': ['Grade9', 'Grade10', 'Grade11'],
+                        'Resources': []
+                    },
+                    'Lesson_Plans': [],
+                    'Student_Work': {
+                        'Submitted': [],
+                        'Graded': []
+                    },
+                    'Admin': ['Reports', 'Schedules']
+                }
+            },
+            business: {
+                title: 'Small Business Folder Structure',
+                tree: {
+                    'Finance': {
+                        'Invoices': ['Sent', 'Received'],
+                        'Receipts': [],
+                        'Reports': []
+                    },
+                    'Clients': [],
+                    'Marketing': {
+                        'Social_Media': [],
+                        'Campaigns': []
+                    },
+                    'Legal': ['Contracts', 'Licenses']
+                }
+            },
+            creator: {
+                title: 'Content Creator Folder Structure',
+                tree: {
+                    'Videos': {
+                        'Raw': [],
+                        'Edited': [],
+                        'Thumbnails': []
+                    },
+                    'Audio': {
+                        'Music': [],
+                        'Voiceovers': []
+                    },
+                    'Graphics': {
+                        'Logos': [],
+                        'Banners': []
+                    },
+                    'Projects': []
+                }
+            }
+        };
+
+        // ============ FUN FACTS DATA ============
+        const funFacts = [
+            {
+                title: 'Search vs Browse',
+                text: 'Searching is faster than browsing if your file names are clean and descriptive. A good naming system can save you hours each month!',
+                color: 'var(--accent)'
+            },
+            {
+                title: 'Time Wasted',
+                text: 'The average person spends 2.5 hours per week looking for lost files. That adds up to over 130 hours per year!',
+                color: 'var(--accent-secondary)'
+            },
+            {
+                title: 'Date Power',
+                text: 'Putting dates in file names (YYYY-MM-DD format) prevents confusion and makes sorting automatic. Your future self will thank you!',
+                color: '#00b4d8'
+            },
+            {
+                title: 'Version Control',
+                text: 'Using version numbers (v1, v2, final) prevents overwriting important work and keeps track of your progress.',
+                color: 'var(--warning)'
+            },
+            {
+                title: 'Desktop Clutter',
+                text: 'A cluttered desktop can slow down your computer and increase stress. Keep it clean with only essential shortcuts!',
+                color: 'var(--accent)'
+            },
+            {
+                title: 'Backup Wins',
+                text: 'Files stored in cloud services are 99.9% less likely to be permanently lost. Always backup important documents!',
+                color: 'var(--success)'
+            }
+        ];
+
+        let currentSlide = 0;
+
+        // ============ QUIZ DATA ============
+        const quizQuestions = [
+            {
+                question: 'What is the main difference between a file and a folder?',
+                options: [
+                    'A file contains content; a folder organizes files',
+                    'A folder contains content; a file organizes folders',
+                    'They are the same thing',
+                    'Files are only for images'
+                ],
+                correct: 0
+            },
+            {
+                question: 'Which file name follows good naming conventions?',
+                options: [
+                    'Document1.docx',
+                    'New File (2).pdf',
+                    '2024-03-15_Project_Report_v2.docx',
+                    'untitled.txt'
+                ],
+                correct: 2
+            },
+            {
+                question: 'What happens when you COPY a file?',
+                options: [
+                    'The original file is moved to a new location',
+                    'The original file is deleted',
+                    'A duplicate is created, original stays in place',
+                    'The file is renamed'
+                ],
+                correct: 2
+            },
+            {
+                question: 'What happens when you MOVE a file?',
+                options: [
+                    'A duplicate is created',
+                    'The file is transferred to a new location and removed from the original',
+                    'Nothing changes',
+                    'The file is compressed'
+                ],
+                correct: 1
+            },
+            {
+                question: 'Where do deleted files go first on Windows?',
+                options: [
+                    'They are permanently deleted immediately',
+                    'The Downloads folder',
+                    'The Recycle Bin',
+                    'A hidden system folder'
+                ],
+                correct: 2
+            },
+            {
+                question: 'Why does the Downloads folder often become messy?',
+                options: [
+                    'It has a bug',
+                    'All downloads go there by default and users rarely organize them',
+                    'It automatically duplicates files',
+                    'Files are renamed randomly'
+                ],
+                correct: 1
+            },
+            {
+                question: 'How can you search for files effectively?',
+                options: [
+                    'Browse through every folder manually',
+                    'Use descriptive keywords in the search bar',
+                    'Only search by file size',
+                    'Delete all files and start over'
+                ],
+                correct: 1
+            },
+            {
+                question: 'What is an advantage of cloud storage over local storage?',
+                options: [
+                    'Faster file access',
+                    'Works without internet',
+                    'Easy access from any device and automatic backup',
+                    'More privacy'
+                ],
+                correct: 2
+            },
+            {
+                question: 'What is the purpose of version numbers in file names?',
+                options: [
+                    'To make file names longer',
+                    'To track different versions and prevent overwriting',
+                    'To sort files alphabetically',
+                    'To reduce file size'
+                ],
+                correct: 1
+            },
+            {
+                question: 'When should you use local storage instead of cloud?',
+                options: [
+                    'When you need to share files with others',
+                    'When you need offline access or have large files',
+                    'When you want automatic backup',
+                    'When you have a slow internet connection for uploads only'
+                ],
+                correct: 1
+            }
+        ];
+
+        let currentQuestion = 0;
+        let quizScore = 0;
+        let quizAnswered = false;
+
+        // ============ INITIALIZATION ============
+        document.addEventListener('DOMContentLoaded', function() {
+            initAnimations();
+            initClassifyActivity();
+            initDesktopGame();
+            initSearchActivity();
+            initCloudDragDrop();
+            initCarousel();
+            initQuiz();
+            updateProgress();
+            updateBadgesDisplay();
+
+            // Sound toggle
+            document.getElementById('soundToggle').addEventListener('click', toggleSound);
+        });
+
+        // ============ SCROLL ANIMATIONS ============
+        function initAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.remove('section-hidden');
+                        entry.target.classList.add('section-visible');
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+            document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+
+            // Update progress bar on scroll
+            window.addEventListener('scroll', updateProgressBar);
+        }
+
+        function updateProgressBar() {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollTop / docHeight) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ============ SOUND ============
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundOnIcon').style.display = soundEnabled ? 'block' : 'none';
+            document.getElementById('soundOffIcon').style.display = soundEnabled ? 'none' : 'block';
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            // Simple beep using Web Audio API
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.frequency.value = type === 'success' ? 800 : 400;
+            gainNode.gain.value = 0.1;
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.1);
+        }
+
+        // ============ CLASSIFICATION ACTIVITY ============
+        function initClassifyActivity() {
+            const container = document.getElementById('classifyItems');
+            container.innerHTML = '';
+
+            classifyData.forEach((item, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'p-4 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-center';
+                btn.innerHTML = `
+                    <div class="mb-2">${getFileIcon(item.icon)}</div>
+                    <span class="text-sm font-medium">${item.name}</span>
+                `;
+                btn.onclick = () => showClassifyModal(index);
+                container.appendChild(btn);
+            });
+        }
+
+        function showClassifyModal(index) {
+            const item = classifyData[index];
+            if (classifiedItems[index]) return;
+
+            const btn = document.querySelectorAll('#classifyItems button')[index];
+            const isFile = item.type === 'file';
+
+            // Simple inline classification
+            if (confirm(`Is "${item.name}" a FILE?\n\nClick OK for FILE\nClick Cancel for FOLDER`)) {
+                // User said FILE
+                if (isFile) {
+                    correctClassify(btn, index);
+                } else {
+                    wrongClassify(btn, index, 'FOLDER');
+                }
+            } else {
+                // User said FOLDER
+                if (!isFile) {
+                    correctClassify(btn, index);
+                } else {
+                    wrongClassify(btn, index, 'FILE');
+                }
+            }
+        }
+
+        function correctClassify(btn, index) {
+            btn.classList.add('border-[var(--success)]', 'bg-[var(--success)]/10');
+            btn.disabled = true;
+            classifiedItems[index] = true;
+            classifiedCorrect++;
+            document.getElementById('classifyScore').textContent = `${classifiedCorrect}/8 correct`;
+            document.getElementById('classifyFeedback').textContent = 'Correct! Great job!';
+            playSound('success');
+
+            if (classifiedCorrect === 8) {
+                earnBadge('organizer-starter');
+                document.getElementById('classifyBadge').classList.remove('hidden');
+                activitiesCompleted++;
+                saveProgress();
+            }
+        }
+
+        function wrongClassify(btn, index, correctType) {
+            btn.classList.add('animate-shake');
+            setTimeout(() => btn.classList.remove('animate-shake'), 500);
+            document.getElementById('classifyFeedback').textContent = `That's actually a ${correctType}!`;
+            playSound('error');
+        }
+
+        function resetClassify() {
+            classifiedCorrect = 0;
+            classifiedItems = {};
+            document.getElementById('classifyScore').textContent = '0/8 correct';
+            document.getElementById('classifyFeedback').textContent = '';
+            document.getElementById('classifyBadge').classList.add('hidden');
+            initClassifyActivity();
+        }
+
+        function getFileIcon(type) {
+            const icons = {
+                'folder': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent-secondary)" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>',
+                'file-text': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>',
+                'image': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>',
+                'video': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>',
+                'music': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>'
+            };
+            return icons[type] || icons['file-text'];
+        }
+
+        // ============ DESKTOP GAME ============
+        function initDesktopGame() {
+            const desktopArea = document.getElementById('desktopArea');
+            const folderTargets = document.getElementById('folderTargets');
+
+            // Create desktop icons
+            desktopArea.innerHTML = '';
+            desktopFiles.forEach((file, index) => {
+                const icon = document.createElement('div');
+                icon.className = 'desktop-icon';
+                icon.style.left = file.x + '%';
+                icon.style.top = file.y + '%';
+                icon.draggable = true;
+                icon.dataset.index = index;
+                icon.dataset.target = file.target;
+                icon.innerHTML = `
+                    <div class="mb-1">${getFileIcon(getFileExtension(file.name))}</div>
+                    <span class="text-xs block truncate">${file.name}</span>
+                `;
+
+                icon.addEventListener('dragstart', handleDragStart);
+                icon.addEventListener('dragend', handleDragEnd);
+
+                desktopArea.appendChild(icon);
+            });
+
+            // Create folder targets
+            folderTargets.innerHTML = '<h3 class="font-semibold mb-4">Drop Zones</h3>';
+            defaultFolders.forEach(folder => {
+                const folderEl = document.createElement('div');
+                folderEl.className = 'card drop-zone text-center mb-3';
+                folderEl.dataset.folder = folder;
+                folderEl.innerHTML = `
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent-secondary)" stroke-width="1.5" class="mx-auto mb-2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <p class="font-medium text-sm">${folder}</p>
+                    <div class="dropped-files mt-2 text-xs"></div>
+                `;
+
+                folderEl.addEventListener('dragover', handleDragOver);
+                folderEl.addEventListener('dragleave', handleDragLeave);
+                folderEl.addEventListener('drop', handleDrop);
+
+                folderTargets.appendChild(folderEl);
+            });
+
+            filesOrganized = 0;
+            correctMoves = 0;
+            gameSeconds = 90;
+            updateGameStats();
+        }
+
+        function getFileExtension(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const types = {
+                'jpg': 'image', 'jpeg': 'image', 'png': 'image', 'gif': 'image',
+                'mp4': 'video', 'mov': 'video', 'avi': 'video',
+                'mp3': 'music', 'wav': 'music',
+                'docx': 'file-text', 'doc': 'file-text', 'pdf': 'file-text', 'txt': 'file-text',
+                'xlsx': 'file-text', 'exe': 'file-text', 'msi': 'file-text', 'zip': 'file-text'
+            };
+            return types[ext] || 'file-text';
+        }
+
+        let draggedElement = null;
+
+        function handleDragStart(e) {
+            draggedElement = e.target.closest('.desktop-icon');
+            draggedElement.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+
+            if (!gameStarted) {
+                gameStarted = true;
+                startTimer();
+            }
+        }
+
+        function handleDragEnd(e) {
+            e.target.closest('.desktop-icon')?.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const dropZone = e.currentTarget;
+            dropZone.classList.remove('drag-over');
+
+            if (!draggedElement) return;
+
+            const targetFolder = dropZone.dataset.folder;
+            const fileTarget = draggedElement.dataset.target;
+
+            if (targetFolder === fileTarget) {
+                // Correct drop
+                dropZone.classList.add('correct-drop');
+                setTimeout(() => dropZone.classList.remove('correct-drop'), 300);
+
+                const fileName = draggedElement.querySelector('span').textContent;
+                const filesDiv = dropZone.querySelector('.dropped-files');
+                filesDiv.innerHTML += `<div class="text-[var(--success)]">${fileName}</div>`;
+
+                draggedElement.remove();
+                correctMoves++;
+                filesOrganized++;
+                playSound('success');
+
+                if (filesOrganized >= desktopFiles.length) {
+                    endGame(true);
+                }
+            } else {
+                // Wrong drop
+                dropZone.classList.add('wrong-drop');
+                setTimeout(() => dropZone.classList.remove('wrong-drop'), 500);
+                playSound('error');
+            }
+
+            updateGameStats();
+            draggedElement = null;
+        }
+
+        function startTimer() {
+            gameTimer = setInterval(() => {
+                gameSeconds--;
+                updateTimerDisplay();
+
+                if (gameSeconds <= 0) {
+                    endGame(false);
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(gameSeconds / 60);
+            const seconds = gameSeconds % 60;
+            const timerEl = document.getElementById('gameTimer');
+            timerEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            if (gameSeconds <= 30) timerEl.classList.add('warning');
+            if (gameSeconds <= 10) timerEl.classList.add('danger');
+        }
+
+        function updateGameStats() {
+            document.getElementById('filesLeft').textContent = desktopFiles.length - filesOrganized;
+            document.getElementById('correctMoves').textContent = correctMoves;
+        }
+
+        function endGame(success) {
+            clearInterval(gameTimer);
+            gameStarted = false;
+
+            if (success) {
+                earnBadge('desktop-cleaner');
+                document.getElementById('desktopBadge').classList.remove('hidden');
+                activitiesCompleted++;
+                createConfetti();
+                saveProgress();
+            }
+        }
+
+        function resetDesktopGame() {
+            clearInterval(gameTimer);
+            gameTimer = null;
+            gameStarted = false;
+            gameSeconds = 90;
+            filesOrganized = 0;
+            correctMoves = 0;
+
+            const timerEl = document.getElementById('gameTimer');
+            timerEl.textContent = '1:30';
+            timerEl.classList.remove('warning', 'danger');
+
+            document.getElementById('desktopBadge').classList.add('hidden');
+            initDesktopGame();
+        }
+
+        function createFolder() {
+            const name = prompt('Enter folder name:');
+            if (!name || name.trim() === '') return;
+
+            const folderTargets = document.getElementById('folderTargets');
+            const folderEl = document.createElement('div');
+            folderEl.className = 'card drop-zone text-center mb-3';
+            folderEl.dataset.folder = name;
+            folderEl.innerHTML = `
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent-secondary)" stroke-width="1.5" class="mx-auto mb-2">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <p class="font-medium text-sm">${name}</p>
+                <div class="dropped-files mt-2 text-xs"></div>
+            `;
+
+            folderEl.addEventListener('dragover', handleDragOver);
+            folderEl.addEventListener('dragleave', handleDragLeave);
+            folderEl.addEventListener('drop', handleDrop);
+
+            folderTargets.appendChild(folderEl);
+        }
+
+        // ============ NAMING ACTIVITY ============
+        function checkNaming(btn, isCorrect) {
+            const options = document.querySelectorAll('#namingOptions .quiz-option');
+            options.forEach(opt => opt.classList.add('disabled'));
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                document.getElementById('namingFeedback').innerHTML = '<span class="text-[var(--success)]">Correct! Dates and descriptive names make files easy to find.</span>';
+                playSound('success');
+                checkAllRulesComplete();
+            } else {
+                btn.classList.add('incorrect');
+                // Highlight correct answer
+                options[1].classList.add('correct');
+                document.getElementById('namingFeedback').innerHTML = '<span class="text-[var(--error)]">Not quite. The best name includes date, subject, and version.</span>';
+                playSound('error');
+            }
+        }
+
+        // ============ COPY/MOVE SIMULATION ============
+        function simulateCopy() {
+            copyMoveState.folderB.push('report.docx');
+            renderCopyMoveState();
+            document.getElementById('copyMoveFeedback').innerHTML = '<span class="text-[var(--accent)]">Copied! The original file stays in Folder A, and a duplicate is created in Folder B.</span>';
+            checkAllRulesComplete();
+        }
+
+        function simulateMove() {
+            copyMoveState.folderA = [];
+            copyMoveState.folderB.push('report.docx');
+            renderCopyMoveState();
+            document.getElementById('copyMoveFeedback').innerHTML = '<span class="text-[var(--accent-secondary)]">Moved! The file is now only in Folder B. It was removed from Folder A.</span>';
+            checkAllRulesComplete();
+        }
+
+        function resetCopyMove() {
+            copyMoveState = { folderA: ['report.docx'], folderB: [] };
+            renderCopyMoveState();
+            document.getElementById('copyMoveFeedback').textContent = '';
+        }
+
+        function renderCopyMoveState() {
+            const folderA = document.getElementById('folderAFiles');
+            const folderB = document.getElementById('folderBFiles');
+
+            folderA.innerHTML = copyMoveState.folderA.map(f => 
+                `<div class="px-3 py-1 bg-[var(--accent)]/20 rounded-lg text-sm">${f}</div>`
+            ).join('') || '<span class="text-[var(--muted)] text-sm">Empty</span>';
+
+            folderB.innerHTML = copyMoveState.folderB.map(f => 
+                `<div class="px-3 py-1 bg-[var(--accent-secondary)]/20 rounded-lg text-sm">${f}</div>`
+            ).join('') || '<span class="text-[var(--muted)] text-sm">Empty</span>';
+        }
+
+        // ============ DELETE SIMULATION ============
+        function simulateDelete() {
+            deleteState.desktop = [];
+            deleteState.recycle = ['old_notes.txt'];
+            renderDeleteState();
+
+            document.getElementById('deleteBtn').style.display = 'none';
+            document.getElementById('restoreBtn').style.display = 'inline-flex';
+            document.getElementById('deleteFeedback').innerHTML = '<span class="text-[var(--warning)]">File moved to Recycle Bin. You can still restore it!</span>';
+            checkAllRulesComplete();
+        }
+
+        function simulateRestore() {
+            deleteState.desktop = ['old_notes.txt'];
+            deleteState.recycle = [];
+            renderDeleteState();
+
+            document.getElementById('deleteBtn').style.display = 'inline-flex';
+            document.getElementById('restoreBtn').style.display = 'none';
+            document.getElementById('deleteFeedback').innerHTML = '<span class="text-[var(--success)]">File restored! It\'s back on the Desktop.</span>';
+        }
+
+        function resetDeleteSim() {
+            deleteState = { desktop: ['old_notes.txt'], recycle: [], restored: false };
+            renderDeleteState();
+            document.getElementById('deleteBtn').style.display = 'inline-flex';
+            document.getElementById('restoreBtn').style.display = 'none';
+            document.getElementById('deleteFeedback').textContent = '';
+        }
+
+        function renderDeleteState() {
+            const source = document.getElementById('fileToDelete');
+            const recycle = document.getElementById('recycleBinContent');
+
+            if (deleteState.desktop.length > 0) {
+                source.style.display = 'block';
+            } else {
+                source.style.display = 'none';
+            }
+
+            recycle.innerHTML = deleteState.recycle.map(f => 
+                `<div class="px-3 py-1 bg-[var(--muted)]/20 rounded-lg text-sm">${f}</div>`
+            ).join('') || '';
+        }
+
+        // ============ SEARCH ACTIVITY ============
+        function initSearchActivity() {
+            renderSearchResults(searchFiles);
+        }
+
+        function filterFiles(query) {
+            if (!query.trim()) {
+                renderSearchResults(searchFiles);
+                document.getElementById('searchFeedback').textContent = '';
+                return;
+            }
+
+            const filtered = searchFiles.filter(file => 
+                file.name.toLowerCase().includes(query.toLowerCase()) ||
+                file.keywords.some(k => k.includes(query.toLowerCase()))
+            );
+
+            renderSearchResults(filtered);
+
+            if (filtered.length > 0) {
+                document.getElementById('searchFeedback').innerHTML = `<span class="text-[var(--accent)]">Found ${filtered.length} file(s) matching "${query}"</span>`;
+                if (query.toLowerCase() === 'invoice' || query.toLowerCase() === 'homework' || query.toLowerCase() === 'photo') {
+                    checkAllRulesComplete();
+                }
+            } else {
+                document.getElementById('searchFeedback').innerHTML = `<span class="text-[var(--muted)]">No files found for "${query}"</span>`;
+            }
+        }
+
+        function renderSearchResults(files) {
+            const container = document.getElementById('searchResults');
+            container.innerHTML = files.map(file => `
+                <div class="p-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)] flex items-center gap-3 transition-all">
+                    ${getFileIcon(getFileExtension(file.name))}
+                    <span class="text-sm truncate">${file.name}</span>
+                </div>
+            `).join('');
+        }
+
+        // ============ CHECK ALL RULES COMPLETE ============
+        let rulesCompleted = { naming: false, copyMove: false, delete: false, search: false };
+
+        function checkAllRulesComplete() {
+            if (!rulesCompleted.naming || !rulesCompleted.copyMove || !rulesCompleted.delete || !rulesCompleted.search) {
+                // Mark sections as complete on first interaction
+                rulesCompleted.naming = true;
+                rulesCompleted.copyMove = true;
+                rulesCompleted.delete = true;
+                rulesCompleted.search = true;
+
+                // Check if all are done
+                if (Object.values(rulesCompleted).every(v => v)) {
+                    setTimeout(() => {
+                        earnBadge('file-logic');
+                        document.getElementById('fileLogicBadge').classList.remove('hidden');
+                        activitiesCompleted++;
+                        saveProgress();
+                    }, 1000);
+                }
+            }
+        }
+
+        // ============ FOLDER STRUCTURE BUILDER ============
+        let currentStructure = null;
+
+        function selectRole(role) {
+            document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('border-[var(--accent)]'));
+
+            const structure = folderStructures[role];
+            currentStructure = structure;
+
+            document.getElementById('structureTitle').textContent = structure.title;
+            document.getElementById('folderStructureArea').classList.remove('hidden');
+
+            renderFolderTree(structure.tree);
+
+            earnBadge('system-builder');
+            document.getElementById('systemBuilderBadge').classList.remove('hidden');
+            activitiesCompleted++;
+            saveProgress();
+        }
+
+        function renderFolderTree(tree, depth = 0) {
+            const container = document.getElementById('folderTree');
+            container.innerHTML = renderTreeLevel(tree, depth);
+        }
+
+        function renderTreeLevel(tree, depth) {
+            let html = '';
+            for (const [key, value] of Object.entries(tree)) {
+                const indent = depth * 20;
+                if (Array.isArray(value)) {
+                    html += `
+                        <div class="tree-item" style="padding-left: ${indent + 12}px;">
+                            <span class="text-[var(--accent)] mr-2">+</span> ${key}/
+                        </div>
+                    `;
+                    value.forEach(subfolder => {
+                        html += `
+                            <div class="tree-item" style="padding-left: ${indent + 32}px;">
+                                <span class="text-[var(--muted)] mr-2">-</span> ${subfolder}/
+                            </div>
+                        `;
+                    });
+                } else if (typeof value === 'object') {
+                    html += `
+                        <div class="tree-item" style="padding-left: ${indent + 12}px;">
+                            <span class="text-[var(--accent)] mr-2">+</span> ${key}/
+                        </div>
+                    `;
+                    html += renderTreeLevel(value, depth + 1);
+                }
+            }
+            return html;
+        }
+
+        function addCustomFolder() {
+            const name = prompt('Enter new folder name:');
+            if (!name || name.trim() === '') return;
+
+            const container = document.getElementById('folderTree');
+            container.innerHTML += `
+                <div class="tree-item" style="padding-left: 12px;">
+                    <span class="text-[var(--accent-secondary)] mr-2">+</span> ${name}/
+                </div>
+            `;
+        }
+
+        function exportStructure() {
+            const tree = document.getElementById('folderTree').innerText;
+            const blob = new Blob([tree], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'folder-structure.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ============ CLOUD DRAG DROP ============
+        function initCloudDragDrop() {
+            const scenarios = document.querySelectorAll('.draggable-scenario');
+            const localZone = document.getElementById('localDropZone');
+            const cloudZone = document.getElementById('cloudDropZone');
+
+            scenarios.forEach(scenario => {
+                scenario.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', scenario.dataset.target);
+                    e.dataTransfer.setData('text/html', scenario.outerHTML);
+                    scenario.classList.add('opacity-50');
+                });
+
+                scenario.addEventListener('dragend', () => {
+                    scenario.classList.remove('opacity-50');
+                });
+            });
+
+            [localZone, cloudZone].forEach(zone => {
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.classList.add('border-[var(--accent)]');
+                });
+
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('border-[var(--accent)]');
+                });
+
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('border-[var(--accent)]');
+
+                    const target = e.dataTransfer.getData('text/plain');
+                    const html = e.dataTransfer.getData('text/html');
+                    const zoneType = zone.id === 'localDropZone' ? 'local' : 'cloud';
+
+                    const content = zone.id === 'localDropZone' 
+                        ? document.getElementById('localDropContent')
+                        : document.getElementById('cloudDropContent');
+
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = html;
+                    const scenario = tempDiv.firstChild;
+
+                    if (target === zoneType) {
+                        scenario.classList.add('border-[var(--success)]', 'bg-[var(--success)]/10');
+                        scenario.classList.remove('opacity-50');
+                        content.appendChild(scenario);
+                        playSound('success');
+
+                        // Check if all placed
+                        checkCloudComplete();
+                    } else {
+                        zone.classList.add('wrong-drop');
+                        setTimeout(() => zone.classList.remove('wrong-drop'), 500);
+                        playSound('error');
+                    }
+                });
+            });
+        }
+
+        function checkCloudComplete() {
+            const placed = document.querySelectorAll('#localDropContent .draggable-scenario, #cloudDropContent .draggable-scenario');
+            if (placed.length >= 4) {
+                earnBadge('smart-storage');
+                document.getElementById('smartStorageBadge').classList.remove('hidden');
+                document.getElementById('cloudFeedback').innerHTML = '<span class="text-[var(--accent)]">All scenarios placed correctly!</span>';
+                activitiesCompleted++;
+                saveProgress();
+            }
+        }
+
+        // ============ CAROUSEL ============
+        function initCarousel() {
+            const track = document.getElementById('carouselTrack');
+            const dots = document.getElementById('carouselDots');
+
+            track.innerHTML = funFacts.map((fact, i) => `
+                <div class="carousel-slide">
+                    <div class="card h-full">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style="background: ${fact.color}20; border: 2px solid ${fact.color}">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="${fact.color}" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                        </div>
+                        <h4 class="font-bold text-xl mb-4 text-center">${fact.title}</h4>
+                        <p class="text-[var(--fg-secondary)] text-center">${fact.text}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            dots.innerHTML = funFacts.map((_, i) => `
+                <button class="w-2 h-2 rounded-full transition-all ${i === 0 ? 'bg-[var(--accent)] w-4' : 'bg-[var(--muted)]'}" onclick="goToSlide(${i})"></button>
+            `).join('');
+        }
+
+        function updateCarousel() {
+            const track = document.getElementById('carouselTrack');
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+            const dots = document.querySelectorAll('#carouselDots button');
+            dots.forEach((dot, i) => {
+                dot.className = `w-2 h-2 rounded-full transition-all ${i === currentSlide ? 'bg-[var(--accent)] w-4' : 'bg-[var(--muted)]'}`;
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % funFacts.length;
+            updateCarousel();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + funFacts.length) % funFacts.length;
+            updateCarousel();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+        }
+
+        // ============ QUIZ ============
+        function initQuiz() {
+            currentQuestion = 0;
+            quizScore = 0;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = quizQuestions[currentQuestion];
+            document.getElementById('questionText').textContent = q.question;
+            document.getElementById('quizProgress').textContent = currentQuestion + 1;
+            document.getElementById('quizProgressBar').style.width = ((currentQuestion + 1) / quizQuestions.length * 100) + '%';
+
+            const optionsContainer = document.getElementById('quizOptions');
+            optionsContainer.innerHTML = q.options.map((opt, i) => `
+                <button class="quiz-option w-full" onclick="selectAnswer(${i})">
+                    <span class="font-medium">${String.fromCharCode(65 + i)}.</span> ${opt}
+                </button>
+            `).join('');
+
+            document.getElementById('quizFeedback').classList.add('hidden');
+            document.getElementById('nextQuizBtn').style.display = 'none';
+            quizAnswered = false;
+        }
+
+        function selectAnswer(index) {
+            if (quizAnswered) return;
+            quizAnswered = true;
+
+            const q = quizQuestions[currentQuestion];
+            const options = document.querySelectorAll('#quizOptions .quiz-option');
+            options.forEach(opt => opt.classList.add('disabled'));
+
+            const feedback = document.getElementById('quizFeedback');
+            feedback.classList.remove('hidden');
+
+            if (index === q.correct) {
+                options[index].classList.add('correct');
+                quizScore++;
+                document.getElementById('quizScore').textContent = quizScore;
+                feedback.innerHTML = '<span class="text-[var(--success)]">Correct! Well done.</span>';
+                playSound('success');
+            } else {
+                options[index].classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                feedback.innerHTML = '<span class="text-[var(--error)]">Not quite. The correct answer is highlighted.</span>';
+                playSound('error');
+            }
+
+            document.getElementById('nextQuizBtn').style.display = 'block';
+            document.getElementById('nextQuizBtn').textContent = currentQuestion < quizQuestions.length - 1 ? 'Next Question' : 'See Results';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+
+            if (currentQuestion >= quizQuestions.length) {
+                showQuizResults();
+            } else {
+                renderQuestion();
+            }
+        }
+
+        function showQuizResults() {
+            document.getElementById('quizQuestion').classList.add('hidden');
+            document.getElementById('quizFeedback').classList.add('hidden');
+            document.getElementById('nextQuizBtn').style.display = 'none';
+            document.getElementById('quizComplete').classList.remove('hidden');
+
+            const percentage = Math.round((quizScore / quizQuestions.length) * 100);
+            const passed = quizScore >= 8;
+
+            const resultIcon = document.getElementById('quizResultIcon');
+            const resultTitle = document.getElementById('quizResultTitle');
+            const resultText = document.getElementById('quizResultText');
+
+            if (passed) {
+                resultIcon.className = 'w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-[var(--accent)] to-[#00b4d8] flex items-center justify-center';
+                resultIcon.innerHTML = '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
+                resultTitle.textContent = 'Congratulations!';
+                resultText.textContent = 'You passed the quiz with flying colors!';
+                document.getElementById('proBadge').classList.remove('hidden');
+                earnBadge('digital-pro');
+                createConfetti();
+            } else {
+                resultIcon.className = 'w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-[var(--warning)] to-[var(--accent-secondary)] flex items-center justify-center';
+                resultIcon.innerHTML = '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+                resultTitle.textContent = 'Good effort!';
+                resultText.textContent = 'You need 8/10 to pass. Try again!';
+                document.getElementById('proBadge').classList.add('hidden');
+            }
+
+            document.getElementById('finalScore').textContent = `${quizScore}/${quizQuestions.length} (${percentage}%)`;
+
+            // Save score
+            const state = JSON.parse(localStorage.getItem('edtechra_progress') || '{}');
+            state.quizScore = quizScore;
+            localStorage.setItem('edtechra_progress', JSON.stringify(state));
+
+            activitiesCompleted++;
+            saveProgress();
+            updateProgress();
+        }
+
+        function retakeQuiz() {
+            document.getElementById('quizQuestion').classList.remove('hidden');
+            document.getElementById('quizComplete').classList.add('hidden');
+            document.getElementById('proBadge').classList.add('hidden');
+            currentQuestion = 0;
+            quizScore = 0;
+            document.getElementById('quizScore').textContent = '0';
+            renderQuestion();
+        }
+
+        // ============ BADGES ============
+        function earnBadge(badgeId) {
+            if (badges[badgeId]) return;
+            badges[badgeId] = true;
+            updateBadgesDisplay();
+            saveProgress();
+        }
+
+        function updateBadgesDisplay() {
+            const headerBadges = document.getElementById('badgesEarned');
+            const allBadges = document.getElementById('allBadgesDisplay');
+
+            const badgeIcons = {
+                'organizer-starter': { name: 'Organizer Starter', color: 'var(--accent)' },
+                'desktop-cleaner': { name: 'Desktop Cleaner', color: 'var(--accent)' },
+                'file-logic': { name: 'File Logic', color: 'var(--accent-secondary)' },
+                'system-builder': { name: 'System Builder', color: '#00b4d8' },
+                'smart-storage': { name: 'Smart Storage', color: 'var(--warning)' },
+                'digital-pro': { name: 'Digital Pro', color: 'var(--accent)' }
+            };
+
+            // Header badges (earned count)
+            const earnedCount = Object.values(badges).filter(v => v).length;
+            headerBadges.innerHTML = `<span class="badge">${earnedCount} Badges</span>`;
+
+            // All badges display
+            if (allBadges) {
+                allBadges.innerHTML = Object.entries(badgeIcons).map(([id, info]) => `
+                    <div class="badge ${badges[id] ? '' : 'locked'}">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${badges[id] ? info.color : 'var(--muted)'}" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        ${info.name}
+                    </div>
+                `).join('');
+            }
+
+            // Update stats
+            document.getElementById('statBadges').textContent = earnedCount;
+        }
+
+        // ============ PROGRESS ============
+        function saveProgress() {
+            const state = {
+                badges: badges,
+                activitiesCompleted: activitiesCompleted,
+                quizScore: quizScore,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('edtechra_progress', JSON.stringify(state));
+        }
+
+        function updateProgress() {
+            // Update completion stats
+            document.getElementById('statActivities').textContent = activitiesCompleted;
+            document.getElementById('statQuiz').textContent = quizScore > 0 ? `${Math.round((quizScore / quizQuestions.length) * 100)}%` : '0%';
+
+            // Calculate time spent
+            const minutes = Math.round((Date.now() - startTime) / 60000);
+            document.getElementById('statTime').textContent = minutes;
+        }
+
+        // ============ CONFETTI ============
+        function createConfetti() {
+            const colors = ['#00e5b8', '#00b4d8', '#ff7052', '#ffb74d', '#ff5252'];
+
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-piece';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(confetti);
+
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+
+        // ============ FEEDBACK ============
+        function submitFeedback(type) {
+            document.querySelectorAll('.feedback-btn').forEach(btn => {
+                btn.classList.add('opacity-50', 'pointer-events-none');
+            });
+            document.getElementById('feedbackThank').classList.remove('hidden');
+
+            const state = JSON.parse(localStorage.getItem('edtechra_progress') || '{}');
+            state.feedback = type;
+            localStorage.setItem('edtechra_progress', JSON.stringify(state));
+        }
+    </script>
+</body>
+</html>

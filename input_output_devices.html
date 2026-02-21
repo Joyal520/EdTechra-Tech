@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EdTechra: Input and Output Devices</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background: #fffcf2;
+            scroll-behavior: smooth;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+
+        .stagger-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        .stagger-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .device-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .device-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .line-flow {
+            height: 4px;
+            background: #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-stream {
+            position: absolute;
+            height: 100%;
+            width: 20px;
+            background: #facc15;
+            animation: flow 1.5s linear infinite;
+        }
+
+        @keyframes flow {
+            0% {
+                left: -20px;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body class="overflow-x-hidden">
+    <nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-green-600 flex items-center gap-2">
+                <i class="fas fa-sign-in-alt"></i> EdTechra
+            </div>
+            <a href="lesson.html" class="font-medium text-gray-600 hover:text-green-600"><i
+                    class="fas fa-arrow-left mr-2"></i>Back to Hub</a>
+        </div>
+    </nav>
+
+    <section class="hero-gradient min-h-[50vh] flex items-center justify-center pt-24 px-6 text-white text-center">
+        <div class="max-w-4xl">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6">Input & Output</h1>
+            <p class="text-xl md:text-2xl opacity-90">How we talk to computers, and how they show us results.</p>
+        </div>
+    </section>
+
+    <!-- Content Sections -->
+    <section class="py-20 px-6">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
+            <!-- Input -->
+            <div class="stagger-fade-in">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="bg-green-100 text-green-600 p-4 rounded-2xl"><i class="fas fa-keyboard fa-2x"></i></div>
+                    <h2 class="text-3xl font-bold">Input Devices</h2>
+                </div>
+                <p class="text-gray-600 mb-8 text-lg leading-relaxed">Input devices allow us to send information
+                    <strong>into</strong> the computer. Think of it as the computer's ears and touch.
+                </p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="device-card bg-white p-6 rounded-2xl shadow-md border border-green-50 text-center">
+                        <i class="fas fa-mouse text-3xl text-green-500 mb-3"></i>
+                        <h4 class="font-bold">Mouse</h4>
+                    </div>
+                    <div class="device-card bg-white p-6 rounded-2xl shadow-md border border-green-50 text-center">
+                        <i class="fas fa-microphone text-3xl text-green-500 mb-3"></i>
+                        <h4 class="font-bold">Microphone</h4>
+                    </div>
+                    <div class="device-card bg-white p-6 rounded-2xl shadow-md border border-green-50 text-center">
+                        <i class="fas fa-camera text-3xl text-green-500 mb-3"></i>
+                        <h4 class="font-bold">Webcam</h4>
+                    </div>
+                    <div class="device-card bg-white p-6 rounded-2xl shadow-md border border-green-50 text-center">
+                        <i class="fas fa-gamepad text-3xl text-green-500 mb-3"></i>
+                        <h4 class="font-bold">Controller</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output -->
+            <div class="stagger-fade-in">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="bg-blue-100 text-blue-600 p-4 rounded-2xl"><i class="fas fa-tv fa-2x"></i></div>
+                    <h2 class="text-3xl font-bold">Output Devices</h2>
+                </div>
+                <p class="text-gray-600 mb-8 text-lg leading-relaxed">Output devices show us the
+                    <strong>results</strong> of the computer's work. Think of it as the computer's voice and face.
+                </p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="device-card bg-white p-6 rounded-2xl shadow-md border border-blue-50 text-center">
+                        <i class="fas fa-desktop text-3xl text-blue-500 mb-3"></i>
+                        <h4 class="font-bold">Monitor</h4>
+                    </div>
+                    <div class="device-card bg-white p-6 rounded-2xl shadow-md border border-blue-50 text-center">
+                        <i class="fas fa-print text-3xl text-blue-500 mb-3"></i>
+                        <h4 class="font-bold">Printer</h4>
+                    </div>
+                    <div class="device-card bg-white p-6 rounded-2xl shadow-md border border-blue-50 text-center">
+                        <i class="fas fa-volume-up text-3xl text-blue-500 mb-3"></i>
+                        <h4 class="font-bold">Speakers</h4>
+                    </div>
+                    <div class="device-card bg-white p-6 rounded-2xl shadow-md border border-blue-50 text-center">
+                        <i class="fas fa-headphones text-3xl text-blue-500 mb-3"></i>
+                        <h4 class="font-bold">Headphones</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Section -->
+    <section class="py-20 px-6 bg-slate-900 text-white overflow-hidden">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl font-bold mb-6">Interactive Data Flow</h2>
+            <p class="text-gray-400 mb-12">Click a device to see how data travels!</p>
+
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8 h-64">
+                <div id="source-device"
+                    class="w-32 h-32 bg-slate-800 rounded-3xl border border-slate-700 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-700 transition-all font-bold"
+                    onclick="startFlow('in')">
+                    <i class="fas fa-keyboard text-4xl mb-2 text-green-400"></i>
+                    INPUT
+                </div>
+
+                <div class="flex-1 flex flex-col items-center justify-center w-full">
+                    <div
+                        class="w-24 h-24 bg-indigo-600 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(79,70,229,0.5)] z-10">
+                        <i class="fas fa-microchip text-4xl"></i>
+                    </div>
+                    <div id="flow-line" class="line-flow w-full -mt-12 hidden">
+                        <div class="data-stream" id="stream"></div>
+                    </div>
+                </div>
+
+                <div id="dest-device"
+                    class="w-32 h-32 bg-slate-800 rounded-3xl border border-slate-700 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-700 transition-all font-bold"
+                    onclick="startFlow('out')">
+                    <i class="fas fa-desktop text-4xl mb-2 text-blue-400"></i>
+                    OUTPUT
+                </div>
+            </div>
+            <p id="flow-status" class="mt-8 text-indigo-400 font-mono text-sm tracking-widest uppercase">READY TO
+                TRANSMIT...</p>
+        </div>
+    </section>
+
+    <!-- Quiz -->
+    <section class="py-24 px-6 bg-white">
+        <div class="max-w-3xl mx-auto">
+            <div id="quiz-card" class="bg-green-50 p-10 rounded-3xl shadow-xl border border-green-100">
+                <h3 class="text-2xl font-bold mb-8 text-center">Short Quiz</h3>
+                <div id="question-area">
+                    <p class="text-center text-xl mb-8">Is a <strong>Microphone</strong> an Input or Output device?</p>
+                    <div class="grid gap-4">
+                        <button onclick="quizResult(true, this)"
+                            class="bg-white border-2 border-green-100 hover:border-green-600 p-5 rounded-2xl text-left transition-all font-medium">Input
+                            (Sounds go IN)</button>
+                        <button onclick="quizResult(false, this)"
+                            class="bg-white border-2 border-green-100 hover:border-green-600 p-5 rounded-2xl text-left transition-all font-medium">Output
+                            (Sounds come OUT)</button>
+                    </div>
+                </div>
+                <div id="quiz-feedback" class="hidden mt-8 text-center animate-bounce">
+                    <p class="text-2xl font-bold text-green-600">Correct! 🎤✨</p>
+                    <button onclick="location.reload()" class="mt-4 underline text-gray-500">Retry</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.stagger-fade-in').forEach(el => observer.observe(el));
+
+        function startFlow(type) {
+            const line = document.getElementById('flow-line');
+            const stream = document.getElementById('stream');
+            const status = document.getElementById('flow-status');
+            line.classList.remove('hidden');
+
+            if (type === 'in') {
+                status.innerText = "CAPTURING INPUT DATA...";
+                stream.style.animationDirection = "normal";
+            } else {
+                status.innerText = "RENDERING OUTPUT DATA...";
+                stream.style.animationDirection = "reverse";
+            }
+
+            setTimeout(() => {
+                status.innerText = "DATA FLOW COMPLETE!";
+                setTimeout(() => { status.innerText = "READY TO TRANSMIT..."; }, 2000);
+            }, 3000);
+        }
+
+        function quizResult(correct, el) {
+            if (correct) {
+                document.getElementById('question-area').classList.add('hidden');
+                document.getElementById('quiz-feedback').classList.remove('hidden');
+            } else {
+                el.classList.add('bg-red-100', 'border-red-500');
+                setTimeout(() => el.classList.remove('bg-red-100', 'border-red-500'), 500);
+            }
+        }
+    </script>
+</body>
+
+</html>

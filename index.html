@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edectra Tech - Learning Platform</title>
+    <title>Edtech Era - Interactive Learning</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React and ReactDOM -->
@@ -21,42 +21,341 @@
 
         body {
             font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            background: #000;
+            margin: 0;
+            color: white;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .content-layer {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Snake Border Animation */
+        @keyframes snake-border {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .premium-btn {
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 1;
+        }
+
+        .premium-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent,
+                    transparent,
+                    transparent,
+                    #3b82f6);
+            animation: snake-border 3s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .premium-btn:hover::before {
+            opacity: 1;
+        }
+
+        .premium-btn::after {
+            content: '';
+            position: absolute;
+            inset: 1px;
+            background: #0a0a0a;
+            border-radius: inherit;
+            z-index: -1;
+        }
+
+        .premium-btn-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .premium-btn-primary::after {
+            background: #2563eb;
+        }
+
+        .premium-btn-primary:hover::before {
+            background: conic-gradient(transparent, transparent, #fff);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 10px;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
     </style>
 </head>
 
 <body>
+    <canvas id="bg-canvas"></canvas>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef, createElement } = React;
         const { motion, AnimatePresence } = window.Motion;
 
-        // Helper for Lucide Icons in standalone HTML
-        const Icon = ({ name, size = 24, className = "" }) => {
-            const [iconSvg, setIconSvg] = useState("");
-            useEffect(() => {
-                if (window.lucide) {
-                    const svg = window.lucide.createIcons({
-                        icons: { [name]: window.lucide[name] }
-                    });
-                }
-            }, [name]);
+        /**
+         * Dynamic Icon Factory
+         */
+        const createReactIcon = (iconName) => (props) => {
+            if (!window.lucide || !window.lucide.icons) return null;
+            const iconData = window.lucide.icons[iconName.toLowerCase()];
+            if (!iconData) return null;
 
-            // We'll use a standard component approach for this demo
-            const IconComponent = window.lucide[name];
-            return IconComponent ? <IconComponent size={size} className={className} /> : null;
+            const { size = 24, className = "", color = "currentColor", strokeWidth = 2, ...others } = props;
+            const [tag, attrs, children] = iconData;
+
+            return createElement(
+                tag,
+                {
+                    ...attrs,
+                    width: size,
+                    height: size,
+                    stroke: color,
+                    strokeWidth,
+                    className: `lucide lucide-${iconName.toLowerCase()} ${className}`,
+                    ...others
+                },
+                children.map((child, i) => createElement(child[0], { key: i, ...child[1] }))
+            );
         };
 
-        // Re-mapping icons for local compatibility
-        const {
-            Cpu, Globe, ChevronRight, Code, Zap, Monitor,
-            MousePointer2, Wrench, Search, Menu, CheckCircle2,
-            ArrowLeft, BookOpen, PlayCircle, Clock, Lock,
-            Terminal, ExternalLink, Sparkles, Gamepad2, Rocket, Send
-        } = window.lucide;
+        const Cpu = createReactIcon('Cpu');
+        const Globe = createReactIcon('Globe');
+        const Code = createReactIcon('Code');
+        const Zap = createReactIcon('Zap');
+        const Monitor = createReactIcon('Monitor');
+        const ArrowLeft = createReactIcon('ArrowLeft');
+        const Terminal = createReactIcon('Terminal');
+        const Rocket = createReactIcon('Rocket');
+        const Gamepad2 = createReactIcon('Gamepad2');
+        const Users = createReactIcon('Users');
+        const User = createReactIcon('User');
+        const BookOpen = createReactIcon('BookOpen');
+        const Swords = createReactIcon('Swords');
 
-        // --- Simulation Lab Component ---
+
+        // --- Boid Simulation Logic ---
+        const initBoids = (canvas) => {
+            const ctx = canvas.getContext('2d');
+            let w, h;
+            let boids = [];
+            let textPoints = [];
+            let mouse = { x: -1000, y: -1000 };
+            let lastMouseMove = Date.now();
+
+            let ripples = [];
+            const BOID_COUNT = 400;
+            const TEXT_STRING = "EDTECH ERA";
+
+            const resize = () => {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+                if (w > 0 && h > 0) {
+                    generateTextPoints();
+                }
+            };
+
+            const generateTextPoints = () => {
+                if (!w || !h || w <= 0 || h <= 0) return;
+
+                const offscreen = document.createElement('canvas');
+                const octx = offscreen.getContext('2d');
+                offscreen.width = w;
+                offscreen.height = h;
+
+                const fontSize = Math.min(w / 6, 120);
+                octx.font = `800 ${fontSize}px Inter`;
+                octx.fillStyle = "white";
+                octx.textAlign = "center";
+                octx.textBaseline = "middle";
+                octx.fillText(TEXT_STRING, w / 2, h / 2);
+
+                try {
+                    const imageData = octx.getImageData(0, 0, w, h).data;
+                    textPoints = [];
+                    const step = 6;
+                    for (let y = 0; y < h; y += step) {
+                        for (let x = 0; x < w; x += step) {
+                            if (imageData[(y * w + x) * 4 + 3] > 128) {
+                                textPoints.push({ x, y });
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn("Canvas sampling skipped");
+                }
+            };
+
+            class Boid {
+                constructor(index) {
+                    this.index = index;
+                    this.pos = { x: Math.random() * w, y: Math.random() * h };
+                    this.vel = { x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5) * 2 };
+                    this.acc = { x: 0, y: 0 };
+                    // --- Speed Reduced for "Slow" requirement ---
+                    this.maxSpeed = 2.5 + Math.random() * 1.5;
+                    this.maxForce = 0.08;
+                    this.size = 2.5 + Math.random() * 2.5;
+                    this.color = index % 2 === 0 ? '#3b82f6' : '#8b5cf6';
+                }
+                applyForce(force) { this.acc.x += force.x; this.acc.y += force.y; }
+                behaviors() {
+                    const idleTime = Date.now() - lastMouseMove;
+                    const isIdle = idleTime > 1500;
+                    const distToMouse = Math.hypot(this.pos.x - mouse.x, this.pos.y - mouse.y);
+
+                    // Ripple Repulsion
+                    ripples.forEach(r => {
+                        const d = Math.hypot(this.pos.x - r.x, this.pos.y - r.y);
+                        if (d < r.radius) {
+                            let diff = { x: this.pos.x - r.x, y: this.pos.y - r.y };
+                            let strength = (1 - d / r.radius) * 1.2;
+                            this.applyForce({ x: (diff.x / d) * strength, y: (diff.y / d) * strength });
+                        }
+                    });
+
+                    // Mouse Gathering
+                    if (distToMouse < 400) {
+                        let strength = isIdle ? 2.5 : 1.2;
+                        let seek = this.seek(mouse);
+                        this.applyForce({ x: seek.x * strength, y: seek.y * strength });
+                    }
+
+                    if (isIdle && textPoints.length > 0 && distToMouse > 300) {
+                        this.applyForce(this.arrive(textPoints[this.index % textPoints.length]));
+                    } else if (!isIdle && distToMouse > 400) {
+                        this.applyForce({ x: (Math.random() - 0.5) * 0.1, y: (Math.random() - 0.5) * 0.1 });
+                    }
+                }
+                seek(target) {
+                    let d = { x: target.x - this.pos.x, y: target.y - this.pos.y };
+                    let mag = Math.hypot(d.x, d.y);
+                    if (mag === 0) return { x: 0, y: 0 };
+                    d = { x: (d.x / mag) * this.maxSpeed, y: (d.y / mag) * this.maxSpeed };
+                    let steer = { x: d.x - this.vel.x, y: d.y - this.vel.y };
+                    let smag = Math.hypot(steer.x, steer.y);
+                    if (smag > this.maxForce) { steer.x = (steer.x / smag) * this.maxForce; steer.y = (steer.y / smag) * this.maxForce; }
+                    return steer;
+                }
+                arrive(target) {
+                    let d = { x: target.x - this.pos.x, y: target.y - this.pos.y };
+                    let dist = Math.hypot(d.x, d.y);
+                    if (dist === 0) return { x: 0, y: 0 };
+                    // Even smoother arrival
+                    let speed = dist < 150 ? (dist / 150) * this.maxSpeed : this.maxSpeed;
+                    d = { x: (d.x / dist) * speed, y: (d.y / dist) * speed };
+                    let steer = { x: d.x - this.vel.x, y: d.y - this.vel.y };
+                    let smag = Math.hypot(steer.x, steer.y);
+                    if (smag > this.maxForce) { steer.x = (steer.x / smag) * this.maxForce; steer.y = (steer.y / smag) * this.maxForce; }
+                    return steer;
+                }
+                update() {
+                    this.behaviors();
+                    this.vel.x += this.acc.x; this.vel.y += this.acc.y;
+                    this.pos.x += this.vel.x; this.pos.y += this.vel.y;
+                    this.acc = { x: 0, y: 0 };
+                    if (this.pos.x < -20) this.pos.x = w + 20; if (this.pos.x > w + 20) this.pos.x = -20;
+                    if (this.pos.y < -20) this.pos.y = h + 20; if (this.pos.y > h + 20) this.pos.y = -20;
+                }
+                draw() {
+                    const angle = Math.atan2(this.vel.y, this.vel.x);
+                    const speed = Math.hypot(this.vel.x, this.vel.y);
+                    ctx.save(); ctx.translate(this.pos.x, this.pos.y); ctx.rotate(angle);
+                    const scaleX = 1 + speed * 0.1;
+                    ctx.scale(scaleX, 1);
+                    ctx.beginPath(); ctx.moveTo(this.size, 0); ctx.lineTo(-this.size, -this.size / 1.8); ctx.lineTo(-this.size, this.size / 1.8);
+                    ctx.closePath(); ctx.fillStyle = this.color; ctx.globalAlpha = 0.3 + (speed / this.maxSpeed) * 0.4; ctx.fill(); ctx.restore();
+                }
+            }
+
+            const animate = () => {
+                ctx.fillStyle = 'rgba(5, 5, 5, 0.4)';
+                ctx.fillRect(0, 0, w, h);
+
+                ripples = ripples.filter(r => {
+                    r.radius += 12;
+                    r.life -= 0.02;
+                    return r.life > 0;
+                });
+
+                boids.forEach(b => { b.update(); b.draw(); });
+                requestAnimationFrame(animate);
+            };
+
+            window.addEventListener('resize', resize);
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.clientX; mouse.y = e.clientY;
+                lastMouseMove = Date.now();
+            });
+            window.addEventListener('mousedown', (e) => {
+                ripples.push({ x: e.clientX, y: e.clientY, radius: 0, life: 1.0 });
+            });
+
+            resize();
+            for (let i = 0; i < BOID_COUNT; i++) boids.push(new Boid(i));
+            animate();
+        };
+
+        // --- Premium Components ---
+
+        const PremiumButton = ({ children, onClick, variant = "default", className = "" }) => {
+            const isPrimary = variant === "primary";
+            const isWhite = variant === "white";
+
+            return (
+                <motion.button
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={onClick}
+                    className={`premium-btn group px-8 py-4 rounded-2xl font-bold tracking-tight text-sm ${isPrimary ? 'premium-btn-primary' : ''} ${isWhite ? 'bg-white text-black' : 'text-white'} ${className}`}
+                >
+                    <span className="premium-btn-content flex items-center justify-center gap-3">
+                        {children}
+                    </span>
+                </motion.button>
+            );
+        };
 
         const SimulationLabView = ({ onBack }) => {
             const [activeSim, setActiveSim] = useState('pc');
@@ -70,107 +369,108 @@
             ];
 
             return (
-                <div className="min-h-screen bg-white pt-24 pb-20 px-6">
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen content-layer pt-24 pb-20 px-6">
                     <div className="max-w-6xl mx-auto">
-                        <button onClick={onBack} className="flex items-center gap-2 text-gray-500 hover:text-black transition-colors mb-8 font-semibold uppercase text-[10px] tracking-widest">
+                        <motion.button
+                            whileHover={{ x: -5 }}
+                            onClick={onBack}
+                            className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors mb-8 font-semibold uppercase text-[10px] tracking-widest"
+                        >
                             <ArrowLeft size={16} /> Back to Home
-                        </button>
+                        </motion.button>
                         <div className="grid lg:grid-cols-3 gap-12">
                             <div className="lg:col-span-1">
                                 <h1 className="text-4xl font-bold tracking-tight mb-4">Simulation Lab</h1>
-                                <p className="text-gray-500 mb-10">Safe environments to test, break, and understand technology.</p>
+                                <p className="text-gray-400 mb-10">Safe environments to test, break, and understand technology.</p>
                                 <div className="space-y-4">
                                     {simulations.map((sim) => {
                                         const IconComp = sim.icon;
                                         return (
-                                            <button
+                                            <motion.button
                                                 key={sim.id}
                                                 onClick={() => setActiveSim(sim.id)}
-                                                className={`w-full text-left p-6 rounded-3xl border transition-all ${activeSim === sim.id ? 'border-blue-500 bg-blue-50 shadow-lg shadow-blue-100' : 'border-gray-100 hover:border-gray-300'}`}
+                                                className={`relative w-full text-left p-6 rounded-3xl border transition-all ${activeSim === sim.id ? 'border-blue-500 bg-blue-500/10 shadow-lg shadow-blue-900/20' : 'border-white/10 hover:border-white/30 bg-white/5'}`}
                                             >
                                                 <div className="flex items-center gap-4 mb-2 font-bold">
-                                                    <span className={activeSim === sim.id ? 'text-blue-600' : 'text-gray-400'}><IconComp size={18} /></span>
+                                                    <span className={activeSim === sim.id ? 'text-blue-400' : 'text-gray-500'}><IconComp size={18} /></span>
                                                     {sim.title}
                                                 </div>
-                                                <p className="text-xs text-gray-500 leading-relaxed">{sim.desc}</p>
-                                            </button>
+                                                <p className="text-xs text-gray-400 leading-relaxed">{sim.desc}</p>
+                                            </motion.button>
                                         );
                                     })}
                                 </div>
                             </div>
                             <div className="lg:col-span-2">
-                                <div className="bg-gray-900 rounded-[3rem] p-1 shadow-2xl overflow-hidden aspect-video lg:aspect-square flex flex-col">
+                                <div className="bg-gray-900 rounded-[3rem] p-1 shadow-2xl overflow-hidden aspect-video lg:aspect-square flex flex-col border border-white/10">
                                     <div className="bg-gray-800 p-4 flex items-center justify-between">
                                         <div className="flex gap-1.5">
                                             <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
                                             <div className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
                                             <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
                                         </div>
-                                        <span className="text-[10px] text-gray-400 font-mono tracking-widest uppercase">active_simulation: {activeSim}_v1.0</span>
+                                        <span className="text-[10px] text-gray-400 font-mono tracking-widest uppercase">active_simulation: {activeSim}</span>
                                         <div className="w-6" />
                                     </div>
-                                    <div className="flex-1 bg-[#1a1a1a] p-8 flex flex-col items-center justify-center relative">
-                                        {activeSim === 'pc' ? (
-                                            <div className="w-full max-w-md bg-gray-800 rounded-2xl border-2 border-gray-700 p-8 relative">
-                                                <div className="absolute top-4 right-4 text-[10px] font-mono text-green-500">
-                                                    {power ? "STATUS: OPERATIONAL" : "STATUS: NO_POWER"}
-                                                </div>
-                                                <div className="grid grid-cols-2 gap-6">
-                                                    <div className="space-y-4">
-                                                        {Object.keys(components).map(c => (
-                                                            <button
-                                                                key={c}
-                                                                onClick={() => setComponents(prev => ({ ...prev, [c]: !prev[c] }))}
-                                                                className={`w-full p-3 rounded-lg text-[10px] font-bold tracking-tighter transition-all border ${components[c] ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-white/40'}`}
+                                    <div className="flex-1 bg-[#050505] p-8 flex flex-col items-center justify-center">
+                                        <AnimatePresence mode="wait">
+                                            {activeSim === 'pc' ? (
+                                                <motion.div key="pc-sim" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md bg-gray-900 rounded-2xl border-2 border-gray-800 p-8 relative">
+                                                    <div className="absolute top-4 right-4 text-[10px] font-mono text-green-500">
+                                                        {power ? "STATUS: OPERATIONAL" : "STATUS: NO_POWER"}
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-6">
+                                                        <div className="space-y-4">
+                                                            {Object.keys(components).map(c => (
+                                                                <button
+                                                                    key={c}
+                                                                    onClick={() => setComponents(prev => ({ ...prev, [c]: !prev[c] }))}
+                                                                    className={`w-full p-3 rounded-lg text-[10px] font-bold tracking-tighter transition-all border ${components[c] ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-white/40'}`}
+                                                                >
+                                                                    {components[c] ? 'INSTALLED' : `INSTALL ${c.toUpperCase()}`}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                        <div className="flex flex-col items-center justify-center">
+                                                            <motion.div
+                                                                animate={{ rotate: power ? 360 : 0 }}
+                                                                transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                                                                className={`w-24 h-24 rounded-full border-4 border-dashed flex items-center justify-center ${power ? 'border-blue-500 text-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.5)]' : 'border-white/10 text-white/10'}`}
                                                             >
-                                                                {components[c] ? 'INSTALLED' : `INSTALL ${c.toUpperCase()}`}
+                                                                <Cpu size={40} />
+                                                            </motion.div>
+                                                            <button
+                                                                disabled={!Object.values(components).every(v => v)}
+                                                                onClick={() => setPower(!power)}
+                                                                className={`mt-8 px-6 py-2 rounded-full text-[10px] font-bold tracking-widest transition-all ${Object.values(components).every(v => v) ? 'bg-blue-600 text-white cursor-pointer hover:bg-blue-500' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                                                            >
+                                                                {power ? 'SHUTDOWN' : 'BOOT SYSTEM'}
                                                             </button>
-                                                        ))}
+                                                        </div>
                                                     </div>
-                                                    <div className="flex flex-col items-center justify-center">
-                                                        <motion.div
-                                                            animate={{ rotate: power ? 360 : 0 }}
-                                                            transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                                                            className={`w-24 h-24 rounded-full border-4 border-dashed flex items-center justify-center ${power ? 'border-blue-500 text-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.5)]' : 'border-white/10 text-white/10'}`}
-                                                        >
-                                                            <Cpu size={40} />
-                                                        </motion.div>
-                                                        <button
-                                                            disabled={!Object.values(components).every(v => v)}
-                                                            onClick={() => setPower(!power)}
-                                                            className={`mt-8 px-6 py-2 rounded-full text-[10px] font-bold tracking-widest transition-all ${Object.values(components).every(v => v) ? 'bg-blue-600 text-white cursor-pointer hover:bg-blue-500' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
-                                                        >
-                                                            {power ? 'SHUTDOWN' : 'BOOT SYSTEM'}
-                                                        </button>
+                                                </motion.div>
+                                            ) : (
+                                                <div className="flex flex-col items-center gap-4 text-center">
+                                                    <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-gray-700">
+                                                        <Terminal size={32} />
                                                     </div>
+                                                    <p className="text-gray-600 font-mono text-xs">MODULE "{activeSim.toUpperCase()}" UNDER CONSTRUCTION</p>
                                                 </div>
-                                            </div>
-                                        ) : (
-                                            <div className="flex flex-col items-center gap-4 text-center">
-                                                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-gray-600">
-                                                    <Terminal size={32} />
-                                                </div>
-                                                <p className="text-gray-500 font-mono text-xs">MODULE "{activeSim.toUpperCase()}" UNDER CONSTRUCTION</p>
-                                            </div>
-                                        )}
-                                        {activeSim === 'pc' && !Object.values(components).every(v => v) && (
-                                            <p className="absolute bottom-10 text-[10px] text-blue-400 animate-pulse font-mono">
-                                                {">"} Please install all components to proceed
-                                            </p>
-                                        )}
+                                            )}
+                                        </AnimatePresence>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             );
         };
 
         const CreationLabView = ({ onBack }) => {
-            const [code, setCode] = useState("<h1>Hello Edectra!</h1>\n<p>Start typing to see magic.</p>\n\n<style>\n  body { font-family: sans-serif; text-align: center; padding-top: 50px; }\n  h1 { color: #2563eb; }\n</style>");
+            const [code, setCode] = useState("<h1>Hello Edtech Era!</h1>\n<p>Start typing to see magic.</p>\n\n<style>\n  body { font-family: sans-serif; text-align: center; padding-top: 50px; background: #000; color: #fff; }\n  h1 { color: #3b82f6; }\n</style>");
             return (
-                <div className="min-h-screen bg-[#0a0a0a] text-white pt-24 pb-20 px-6">
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen content-layer pt-24 pb-20 px-6">
                     <div className="max-w-7xl mx-auto">
                         <div className="flex items-center justify-between mb-8">
                             <button onClick={onBack} className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors font-semibold uppercase text-[10px] tracking-widest">
@@ -180,20 +480,20 @@
                                 <span className="flex items-center gap-2 text-xs font-bold text-green-400">
                                     <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" /> Live Preview
                                 </span>
-                                <button className="bg-blue-600 px-6 py-2 rounded-full text-xs font-bold hover:bg-blue-500 transition-all flex items-center gap-2">
-                                    <Rocket size={14} /> Publish Project
-                                </button>
+                                <PremiumButton className="!py-2 !px-5">
+                                    <Rocket size={14} /> Publish
+                                </PremiumButton>
                             </div>
                         </div>
                         <div className="grid lg:grid-cols-2 h-[65vh] gap-4">
-                            <div className="flex flex-col bg-[#141414] rounded-3xl border border-white/5 overflow-hidden">
+                            <div className="flex flex-col bg-[#111] rounded-3xl border border-white/10 overflow-hidden">
                                 <div className="p-4 border-b border-white/5 flex items-center gap-2 text-[10px] font-bold tracking-widest text-gray-500">
                                     <Code size={14} /> INDEX.HTML
                                 </div>
                                 <textarea
                                     value={code}
                                     onChange={(e) => setCode(e.target.value)}
-                                    className="flex-1 bg-transparent p-8 font-mono text-sm focus:outline-none resize-none text-blue-300 leading-relaxed"
+                                    className="flex-1 bg-transparent p-8 font-mono text-sm focus:outline-none resize-none text-blue-400 leading-relaxed custom-scrollbar"
                                     spellCheck="false"
                                 />
                             </div>
@@ -201,79 +501,141 @@
                                 <div className="p-4 border-b border-gray-100 flex items-center gap-2 text-[10px] font-bold tracking-widest text-gray-400">
                                     <Monitor size={14} /> BROWSER_OUTPUT
                                 </div>
-                                <iframe title="preview" srcDoc={code} className="flex-1 w-full border-none bg-white" />
+                                <iframe title="preview" srcDoc={code} className="flex-1 w-full border-none bg-black" />
                             </div>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             );
         };
 
-        const StartLearningView = ({ onBack }) => {
-            const units = [
-                { id: 1, title: "Computer Basics", description: "Understand the brain of the machine.", lessons: 5, duration: "45 mins", status: "Available", icon: Monitor, color: "bg-blue-50", textColor: "text-blue-600" },
-                { id: 2, title: "Internet & Digital Safety", description: "Explore the web safely.", lessons: 4, duration: "30 mins", status: "Locked", icon: Globe, color: "bg-purple-50", textColor: "text-purple-600" },
-                { id: 3, title: "Beginner Coding", description: "Write your first lines of code.", lessons: 8, duration: "1.5 hours", status: "Locked", icon: Code, color: "bg-orange-50", textColor: "text-orange-600" }
+        const QuizHubView = ({ onBack }) => {
+            const modes = [
+                { id: 'teacher', title: 'Teacher Mode', icon: Users, desc: 'Host a live quiz session for your class.', link: 'livequiz/host.html?mode=classic', color: 'blue' },
+                { id: 'student', title: 'Student Mode', icon: User, desc: 'Join a battle using a 6-digit PIN.', link: 'livequiz/join.html', color: 'purple' },
+                { id: 'builder', title: 'Quiz Builder', icon: BookOpen, desc: 'Create and import quizzes instantly.', link: 'livequiz/import.html', color: 'emerald' },
+                { id: 'battle', title: 'Battle Mode', icon: Swords, desc: 'High-speed competitive quiz battle.', link: 'livequiz/host.html?mode=battle', color: 'rose' }
             ];
+
             return (
-                <div className="min-h-screen bg-[#f5f5f7] pt-24 pb-20 px-6">
-                    <div className="max-w-6xl mx-auto">
-                        <button onClick={onBack} className="flex items-center gap-2 text-gray-500 hover:text-black transition-colors mb-8 font-semibold uppercase text-[10px] tracking-widest">
-                            <ArrowLeft size={16} /> Back to Home
-                        </button>
-                        <h1 className="text-4xl font-bold tracking-tight mb-4">Curriculum</h1>
-                        <div className="grid md:grid-cols-3 gap-8 mt-12">
-                            {units.map((unit) => {
-                                const Icon = unit.icon;
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="min-h-screen content-layer pt-24 pb-20 px-6">
+                    <div className="max-w-6xl mx-auto text-center">
+                        <motion.button
+                            whileHover={{ x: -5 }}
+                            onClick={onBack}
+                            className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors mb-12 font-semibold uppercase text-[10px] tracking-widest mx-auto"
+                        >
+                            <ArrowLeft size={16} /> Back to Hub
+                        </motion.button>
+
+                        <h1 className="text-5xl md:text-7xl font-black mb-4 tracking-tighter">Live Quiz Battle</h1>
+                        <p className="text-gray-400 mb-16 max-w-2xl mx-auto text-lg">Select your role and start the interactive learning experience.</p>
+
+                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {modes.map((mode, i) => {
+                                const Icon = mode.icon;
                                 return (
-                                    <motion.div key={unit.id} whileHover={unit.status === 'Available' ? { y: -5 } : {}} className={`bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-100 flex flex-col relative overflow-hidden ${unit.status === 'Locked' ? 'opacity-70' : 'cursor-pointer hover:shadow-xl'}`}>
-                                        {unit.status === 'Locked' && <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px] z-10 flex items-center justify-center"><div className="bg-white p-4 rounded-full shadow-lg text-gray-400"><Lock size={24} /></div></div>}
-                                        <div className={`w-14 h-14 ${unit.color} rounded-2xl flex items-center justify-center mb-6`}><Icon className={unit.textColor} /></div>
-                                        <div className="flex-1">
-                                            <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full mb-2 inline-block ${unit.status === 'Available' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{unit.status}</span>
-                                            <h3 className="text-2xl font-bold mb-3">{unit.title}</h3>
-                                            <p className="text-gray-500 text-sm leading-relaxed mb-6">{unit.description}</p>
+                                    <motion.div
+                                        key={mode.id}
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: i * 0.1 }}
+                                        whileHover={{ y: -10 }}
+                                        className="glass-panel p-8 rounded-[2.5rem] flex flex-col items-center group cursor-pointer border-white/5 hover:border-white/20 transition-all"
+                                        onClick={() => window.location.href = mode.link}
+                                    >
+                                        <div className={`w-16 h-16 rounded-3xl bg-white/5 flex items-center justify-center text-blue-400 mb-6 group-hover:scale-110 transition-transform`}>
+                                            <Icon size={32} />
+                                        </div>
+                                        <h3 className="text-xl font-extrabold mb-3">{mode.title}</h3>
+                                        <p className="text-xs text-gray-400 leading-relaxed mb-8">{mode.desc}</p>
+                                        <div className="mt-auto text-[10px] font-black uppercase tracking-widest text-white px-5 py-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
+                                            Enter Mode
                                         </div>
                                     </motion.div>
                                 );
                             })}
                         </div>
                     </div>
-                </div>
+                </motion.div>
             );
         };
+
 
         const App = () => {
             const [view, setView] = useState('home');
 
+            useEffect(() => {
+                const canvas = document.getElementById('bg-canvas');
+                if (canvas) {
+                    initBoids(canvas);
+                }
+            }, []);
+
             return (
-                <div className="min-h-screen bg-white text-black font-sans selection:bg-blue-600 selection:text-white antialiased">
-                    <nav className="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-xl border-b border-gray-100/50">
-                        <div className="max-w-screen-xl mx-auto px-6 h-14 flex items-center justify-between">
-                            <button onClick={() => setView('home')} className="font-bold text-xl tracking-tight">Edectra</button>
+                <div className="min-h-screen selection:bg-blue-600 selection:text-white antialiased text-white">
+                    <nav className="fixed top-0 w-full z-[100] bg-black/40 backdrop-blur-xl border-b border-white/5">
+                        <div className="max-w-screen-xl mx-auto px-6 h-16 flex items-center justify-between">
+                            <button onClick={() => setView('home')} className="font-extrabold text-2xl tracking-tighter">
+                                Edtech <span className="text-blue-500">Era</span>
+                            </button>
                             <div className="flex items-center gap-6">
-                                <button onClick={() => window.location.href = 'lessons.html'} className="bg-black text-white px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider">Start Learning</button>
+                                <button className="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors">Courses</button>
+                                <PremiumButton variant="white" className="!py-2 !px-5 !rounded-full !text-[10px] uppercase">
+                                    Sign Up
+                                </PremiumButton>
                             </div>
                         </div>
                     </nav>
 
                     <AnimatePresence mode="wait">
                         {view === 'home' && (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="pt-40 pb-32 px-6 text-center">
-                                <h1 className="text-6xl md:text-8xl font-bold tracking-tighter mb-8">
-                                    Learn Technology by <br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-orange-500">Building</span>
-                                </h1>
-                                <div className="flex flex-wrap gap-4 justify-center">
-                                    <button onClick={() => window.location.href = 'lessons.html'} className="bg-blue-600 text-white px-10 py-4 rounded-full font-bold">🚀 Start Learning</button>
-                                    <button onClick={() => window.location.href = 'simulations.html'} className="bg-white border border-gray-200 px-10 py-4 rounded-full font-bold">🎮 Try a Simulation</button>
-                                    <button onClick={() => window.location.href = 'build.html'} className="bg-black text-white px-10 py-4 rounded-full font-bold">💻 Build & Create</button>
+                            <motion.div
+                                key="home"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="min-h-screen flex flex-col items-center justify-center px-6 py-20 text-center content-layer relative z-10 overflow-hidden"
+                            >
+                                {/* EDTECHRA Label at the top blank space */}
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 0.2 }}
+                                    className="mb-8 text-[12px] font-black tracking-[1.5em] uppercase text-white"
+                                >
+                                    EDTECHRA
+                                </motion.div>
+
+                                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="mb-6 inline-block glass-panel px-5 py-2 rounded-full border border-white/10">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-400">Next-Gen Education Hub</span>
+                                </motion.div>
+                                <motion.h1 initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="text-6xl md:text-9xl font-black tracking-tighter mb-10 leading-[0.9]">
+                                    Learning by <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400">Creation.</span>
+                                </motion.h1>
+                                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="max-w-xl mx-auto text-gray-400 mb-12 text-lg font-medium leading-relaxed">
+                                    Master the digital era in our immersive virtual labs. Build real projects, run hardware simulations, and learn at your own pace.
+                                </motion.p>
+                                <div className="flex flex-wrap gap-5 justify-center">
+                                    <PremiumButton variant="primary" onClick={() => setView('quiz')}>
+                                        <Swords size={18} /> Live Quiz Battle
+                                    </PremiumButton>
+                                    <PremiumButton onClick={() => window.location.href = 'lesson.html'}>
+                                        <Rocket size={18} /> Lesson Hub
+                                    </PremiumButton>
+                                    <PremiumButton onClick={() => window.location.href = 'simulation.html'}>
+                                        <Gamepad2 size={18} /> Simulation Lab
+                                    </PremiumButton>
+                                    <PremiumButton onClick={() => window.location.href = 'build.html'}>
+                                        <Code size={18} /> Code Studio
+                                    </PremiumButton>
                                 </div>
                             </motion.div>
                         )}
-                        {view === 'learning' && <StartLearningView onBack={() => setView('home')} />}
+                        {view === 'quiz' && <QuizHubView onBack={() => setView('home')} />}
                         {view === 'sim' && <SimulationLabView onBack={() => setView('home')} />}
                         {view === 'creation' && <CreationLabView onBack={() => setView('home')} />}
+
                     </AnimatePresence>
                 </div>
             );

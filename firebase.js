@@ -53,5 +53,18 @@ export const Fire = {
   query,
   where,
   orderBy,
-  onSnapshot
+  onSnapshot,
+  addDoc,
+  deleteDoc,
+  getDocs,
+  writeBatch,
+  increment
+};
+
+// Game Status Constants
+export const GameStatus = {
+  LOBBY: "lobby",
+  QUESTION: "question",
+  REVEAL: "reveal",
+  FINISHED: "finished"
 };

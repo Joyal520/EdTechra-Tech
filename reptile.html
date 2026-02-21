@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eren's Lizard Creature - Interactive Art</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+        }
+
+        .controls {
+            position: absolute;
+            top: 100px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            min-width: 250px;
+        }
+
+        .controls h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #00ff88;
+            font-weight: 600;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #00ff88;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .control-group input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #00ff88;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .control-group span {
+            display: inline-block;
+            font-size: 0.8rem;
+            color: #00d4ff;
+            font-weight: 500;
+            margin-left: 5px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #000;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            margin: 5px 5px 5px 0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+        }
+
+        .info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            max-width: 300px;
+        }
+
+        .info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .info p {
+            font-size: 0.8rem;
+            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 5px;
+        }
+
+        canvas {
+            display: block;
+            cursor: crosshair;
+        }
+
+        .stats {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            color: #00ff88;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                top: 80px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+            
+            .info, .stats {
+                position: relative;
+                margin: 10px;
+                max-width: none;
+            }
+            
+            .header h1 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-dragon"></i> Eren's Lizard Creature</h1>
+        <p>Interactive procedural creature simulation - Move your mouse to guide the lizard</p>
+    </div>
+
+    <div class="controls">
+        <h3><i class="fas fa-sliders-h"></i> Controls</h3>
+        
+        <div class="control-group">
+            <label>Leg Count: <span id="legCount">6</span></label>
+            <input type="range" id="legs" min="1" max="12" value="6">
+        </div>
+        
+        <div class="control-group">
+            <label>Tail Length: <span id="tailLength">32</span></label>
+            <input type="range" id="tail" min="4" max="64" value="32">
+        </div>
+        
+        <div class="control-group">
+            <label>Size: <span id="creatureSize">3.0</span></label>
+            <input type="range" id="size" min="1" max="8" value="3" step="0.5">
+        </div>
+        
+        <button class="btn" onclick="regenerateCreature()">
+            <i class="fas fa-sync"></i> Regenerate
+        </button>
+        <button class="btn" onclick="resetToDefault()">
+            <i class="fas fa-undo"></i> Reset
+        </button>
+    </div>
+
+    <div class="info">
+        <h4><i class="fas fa-info-circle"></i> How to Use</h4>
+        <p>• Move your mouse to guide the lizard</p>
+        <p>• Adjust leg count, tail length, and size</p>
+        <p>• Click "Regenerate" to create a new creature</p>
+        <p>• The creature uses procedural animation</p>
+    </div>
+
+    <div class="stats" id="stats">
+        <div>FPS: <span id="fps">60</span></div>
+        <div>Segments: <span id="segmentCount">0</span></div>
+        <div>Mouse: (<span id="mouseX">0</span>, <span id="mouseY">0</span>)</div>
+    </div>
+
+    <script>
+        // Input handling system
+        var Input = {
+            keys: [],
+            mouse: {
+                left: false,
+                right: false,
+                middle: false,
+                x: 0,
+                y: 0
+            }
+        };
+
+        // Initialize key array
+        for (var i = 0; i < 230; i++) {
+            Input.keys.push(false);
+        }
+
+        // Event listeners
+        document.addEventListener("keydown", function(event) {
+            Input.keys[event.keyCode] = true;
+        });
+
+        document.addEventListener("keyup", function(event) {
+            Input.keys[event.keyCode] = false;
+        });
+
+        document.addEventListener("mousedown", function(event) {
+            if (event.button === 0) {
+                Input.mouse.left = true;
+            }
+            if (event.button === 1) {
+                Input.mouse.middle = true;
+            }
+            if (event.button === 2) {
+                Input.mouse.right = true;
+            }
+        });
+
+        document.addEventListener("mouseup", function(event) {
+            if (event.button === 0) {
+                Input.mouse.left = false;
+            }
+            if (event.button === 1) {
+                Input.mouse.middle = false;
+            }
+            if (event.button === 2) {
+                Input.mouse.right = false;
+            }
+        });
+
+        document.addEventListener("mousemove", function(event) {
+            Input.mouse.x = event.clientX;
+            Input.mouse.y = event.clientY;
+            
+            // Update mouse position display
+            document.getElementById('mouseX').textContent = event.clientX;
+            document.getElementById('mouseY').textContent = event.clientY;
+        });
+
+        // Canvas setup
+        var canvas = document.createElement("canvas");
+        document.body.appendChild(canvas);
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        canvas.style.position = "absolute";
+        canvas.style.left = "0px";
+        canvas.style.top = "0px";
+        canvas.style.zIndex = "1";
+        document.body.style.overflow = "hidden";
+        var ctx = canvas.getContext("2d");
+
+        // Global variables
+        var segmentCount = 0;
+        var critter = null;
+        var animationId = null;
+        var lastTime = 0;
+        var fps = 0;
+
+        // Segment class for creature body parts
+        class Segment {
+            constructor(parent, size, angle, range, stiffness) {
+                segmentCount++;
+                this.isSegment = true;
+                this.parent = parent;
+                if (typeof parent.children == "object") {
+                    parent.children.push(this);
+                }
+                this.children = [];
+                this.size = size;
+                this.relAngle = angle;
+                this.defAngle = angle;
+                this.absAngle = parent.absAngle + angle;
+                this.range = range;
+                this.stiffness = stiffness;
+                this.updateRelative(false, true);
+            }
+
+            updateRelative(iter, flex) {
+                this.relAngle = this.relAngle - 2 * Math.PI * Math.floor((this.relAngle - this.defAngle) / 2 / Math.PI + 1 / 2);
+                if (flex) {
+                    this.relAngle = Math.min(
+                        this.defAngle + this.range / 2,
+                        Math.max(
+                            this.defAngle - this.range / 2,
+                            (this.relAngle - this.defAngle) / this.stiffness + this.defAngle
+                        )
+                    );
+                }
+                this.absAngle = this.parent.absAngle + this.relAngle;
+                this.x = this.parent.x + Math.cos(this.absAngle) * this.size;
+                this.y = this.parent.y + Math.sin(this.absAngle) * this.size;
+                if (iter) {
+                    for (var i = 0; i < this.children.length; i++) {
+                        this.children[i].updateRelative(iter, flex);
+                    }
+                }
+            }
+
+            draw(iter) {
+                ctx.beginPath();
+                ctx.moveTo(this.parent.x, this.parent.y);
+                ctx.lineTo(this.x, this.y);
+                ctx.stroke();
+                if (iter) {
+                    for (var i = 0; i < this.children.length; i++) {
+                        this.children[i].draw(true);
+                    }
+                }
+            }
+
+            follow(iter) {
+                var x = this.parent.x;
+                var y = this.parent.y;
+                var dist = ((this.x - x) ** 2 + (this.y - y) ** 2) ** 0.5;
+                this.x = x + this.size * (this.x - x) / dist;
+                this.y = y + this.size * (this.y - y) / dist;
+                this.absAngle = Math.atan2(this.y - y, this.x - x);
+                this.relAngle = this.absAngle - this.parent.absAngle;
+                this.updateRelative(false, true);
+                if (iter) {
+                    for (var i = 0; i < this.children.length; i++) {
+                        this.children[i].follow(true);
+                    }
+                }
+            }
+        }
+
+        // Limb system for tentacles and arms
+        class LimbSystem {
+            constructor(end, length, speed, creature) {
+                this.end = end;
+                this.length = Math.max(1, length);
+                this.creature = creature;
+                this.speed = speed;
+                creature.systems.push(this);
+                this.nodes = [];
+                var node = end;
+                for (var i = 0; i < length; i++) {
+                    this.nodes.unshift(node);
+                    node = node.parent;
+                    if (!node.isSegment) {
+                        this.length = i + 1;
+                        break;
+                    }
+                }
+                this.hip = this.nodes[0].parent;
+            }
+
+            moveTo(x, y) {
+                this.nodes[0].updateRelative(true, true);
+                var dist = ((x - this.end.x) ** 2 + (y - this.end.y) ** 2) ** 0.5;
+                var len = Math.max(0, dist - this.speed);
+                for (var i = this.nodes.length - 1; i >= 0; i--) {
+                    var node = this.nodes[i];
+                    var ang = Math.atan2(node.y - y, node.x - x);
+                    node.x = x + len * Math.cos(ang);
+                    node.y = y + len * Math.sin(ang);
+                    x = node.x;
+                    y = node.y;
+                    len = node.size;
+                }
+                for (var i = 0; i < this.nodes.length; i++) {
+                    var node = this.nodes[i];
+                    node.absAngle = Math.atan2(node.y - node.parent.y, node.x - node.parent.x);
+                    node.relAngle = node.absAngle - node.parent.absAngle;
+                    for (var ii = 0; ii < node.children.length; ii++) {
+                        var childNode = node.children[ii];
+                        if (!this.nodes.includes(childNode)) {
+                            childNode.updateRelative(true, false);
+                        }
+                    }
+                }
+            }
+
+            update() {
+                this.moveTo(Input.mouse.x, Input.mouse.y);
+            }
+        }
+
+        // Leg system for walking creatures
+        class LegSystem extends LimbSystem {
+            constructor(end, length, speed, creature) {
+                super(end, length, speed, creature);
+                this.goalX = end.x;
+                this.goalY = end.y;
+                this.step = 0;
+                this.forwardness = 0;
+                this.reach = 0.9 * ((this.end.x - this.hip.x) ** 2 + (this.end.y - this.hip.y) ** 2) ** 0.5;
+                var relAngle = this.creature.absAngle - Math.atan2(this.end.y - this.hip.y, this.end.x - this.hip.x);
+                relAngle -= 2 * Math.PI * Math.floor(relAngle / 2 / Math.PI + 1 / 2);
+                this.swing = -relAngle + (2 * (relAngle < 0) - 1) * Math.PI / 2;
+                this.swingOffset = this.creature.absAngle - this.hip.absAngle;
+            }
+
+            update(x, y) {
+                this.moveTo(this.goalX, this.goalY);
+                if (this.step == 0) {
+                    var dist = ((this.end.x - this.goalX) ** 2 + (this.end.y - this.goalY) ** 2) ** 0.5;
+                    if (dist > 1) {
+                        this.step = 1;
+                        this.goalX = this.hip.x + this.reach * Math.cos(this.swing + this.hip.absAngle + this.swingOffset) + (2 * Math.random() - 1) * this.reach / 2;
+                        this.goalY = this.hip.y + this.reach * Math.sin(this.swing + this.hip.absAngle + this.swingOffset) + (2 * Math.random() - 1) * this.reach / 2;
+                    }
+                } else if (this.step == 1) {
+                    var theta = Math.atan2(this.end.y - this.hip.y, this.end.x - this.hip.x) - this.hip.absAngle;
+                    var dist = ((this.end.x - this.hip.x) ** 2 + (this.end.y - this.hip.y) ** 2) ** 0.5;
+                    var forwardness2 = dist * Math.cos(theta);
+                    var dF = this.forwardness - forwardness2;
+                    this.forwardness = forwardness2;
+                    if (dF * dF < 1) {
+                        this.step = 0;
+                        this.goalX = this.hip.x + (this.end.x - this.hip.x);
+                        this.goalY = this.hip.y + (this.end.y - this.hip.y);
+                    }
+                }
+            }
+        }
+
+        // Main creature class
+        class Creature {
+            constructor(x, y, angle, fAccel, fFric, fRes, fThresh, rAccel, rFric, rRes, rThresh) {
+                this.x = x;
+                this.y = y;
+                this.absAngle = angle;
+                this.fSpeed = 0;
+                this.fAccel = fAccel;
+                this.fFric = fFric;
+                this.fRes = fRes;
+                this.fThresh = fThresh;
+                this.rSpeed = 0;
+                this.rAccel = rAccel;
+                this.rFric = rFric;
+                this.rRes = rRes;
+                this.rThresh = rThresh;
+                this.children = [];
+                this.systems = [];
+            }
+
+            follow(x, y) {
+                var dist = ((this.x - x) ** 2 + (this.y - y) ** 2) ** 0.5;
+                var angle = Math.atan2(y - this.y, x - this.x);
+                
+                var accel = this.fAccel;
+                if (this.systems.length > 0) {
+                    var sum = 0;
+                    for (var i = 0; i < this.systems.length; i++) {
+                        sum += this.systems[i].step == 0;
+                    }
+                    accel *= sum / this.systems.length;
+                }
+                
+                this.fSpeed += accel * (dist > this.fThresh);
+                this.fSpeed *= 1 - this.fRes;
+                this.speed = Math.max(0, this.fSpeed - this.fFric);
+                
+                var dif = this.absAngle - angle;
+                dif -= 2 * Math.PI * Math.floor(dif / (2 * Math.PI) + 1 / 2);
+                if (Math.abs(dif) > this.rThresh && dist > this.fThresh) {
+                    this.rSpeed -= this.rAccel * (2 * (dif > 0) - 1);
+                }
+                this.rSpeed *= 1 - this.rRes;
+                if (Math.abs(this.rSpeed) > this.rFric) {
+                    this.rSpeed -= this.rFric * (2 * (this.rSpeed > 0) - 1);
+                } else {
+                    this.rSpeed = 0;
+                }
+                
+                this.absAngle += this.rSpeed;
+                this.absAngle -= 2 * Math.PI * Math.floor(this.absAngle / (2 * Math.PI) + 1 / 2);
+                this.x += this.speed * Math.cos(this.absAngle);
+                this.y += this.speed * Math.sin(this.absAngle);
+                this.absAngle += Math.PI;
+                
+                for (var i = 0; i < this.children.length; i++) {
+                    this.children[i].follow(true, true);
+                }
+                for (var i = 0; i < this.systems.length; i++) {
+                    this.systems[i].update(x, y);
+                }
+                this.absAngle -= Math.PI;
+                this.draw(true);
+            }
+
+            draw(iter) {
+                var r = 4;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, r, Math.PI / 4 + this.absAngle, 7 * Math.PI / 4 + this.absAngle);
+                ctx.moveTo(this.x + r * Math.cos(7 * Math.PI / 4 + this.absAngle), this.y + r * Math.sin(7 * Math.PI / 4 + this.absAngle));
+                ctx.lineTo(this.x + r * Math.cos(this.absAngle) * 2 ** 0.5, this.y + r * Math.sin(this.absAngle) * 2 ** 0.5);
+                ctx.lineTo(this.x + r * Math.cos(Math.PI / 4 + this.absAngle), this.y + r * Math.sin(Math.PI / 4 + this.absAngle));
+                ctx.stroke();
+                if (iter) {
+                    for (var i = 0; i < this.children.length; i++) {
+                        this.children[i].draw(true);
+                    }
+                }
+            }
+        }
+
+        // Creature creation functions
+        function setupLizard(size, legs, tail) {
+            if (critter !== null) {
+                cancelAnimationFrame(animationId);
+            }
+            
+            segmentCount = 0;
+            var s = size;
+            critter = new Creature(
+                window.innerWidth / 2,
+                window.innerHeight / 2,
+                0,
+                s * 10,
+                s * 2,
+                0.5,
+                16,
+                0.5,
+                0.085,
+                0.5,
+                0.3
+            );
+            
+            var spinal = critter;
+            
+            // Neck
+            for (var i = 0; i < 6; i++) {
+                spinal = new Segment(spinal, s * 4, 0, 3.1415 * 2 / 3, 1.1);
+                for (var ii = -1; ii <= 1; ii += 2) {
+                    var node = new Segment(spinal, s * 3, ii, 0.1, 2);
+                    for (var iii = 0; iii < 3; iii++) {
+                        node = new Segment(node, s * 0.1, -ii * 0.1, 0.1, 2);
+                    }
+                }
+            }
+            
+            // Torso and legs
+            for (var i = 0; i < legs; i++) {
+                if (i > 0) {
+                    for (var ii = 0; ii < 6; ii++) {
+                        spinal = new Segment(spinal, s * 4, 0, 1.571, 1.5);
+                        for (var iii = -1; iii <= 1; iii += 2) {
+                            var node = new Segment(spinal, s * 3, iii * 1.571, 0.1, 1.5);
+                            for (var iv = 0; iv < 3; iv++) {
+                                node = new Segment(node, s * 3, -iii * 0.3, 0.1, 2);
+                            }
+                        }
+                    }
+                }
+                
+                // Legs and shoulders
+                for (var ii = -1; ii <= 1; ii += 2) {
+                    var node = new Segment(spinal, s * 12, ii * 0.785, 0, 8);
+                    node = new Segment(node, s * 16, -ii * 0.785, 6.28, 1);
+                    node = new Segment(node, s * 16, ii * 1.571, 3.1415, 2);
+                    
+                    for (var iii = 0; iii < 4; iii++) {
+                        new Segment(node, s * 4, (iii / 3 - 0.5) * 1.571, 0.1, 4);
+                    }
+                    new LegSystem(node, 3, s * 12, critter);
+                }
+            }
+            
+            // Tail
+            for (var i = 0; i < tail; i++) {
+                spinal = new Segment(spinal, s * 4, 0, 3.1415 * 2 / 3, 1.1);
+                for (var ii = -1; ii <= 1; ii += 2) {
+                    var node = new Segment(spinal, s * 3, ii, 0.1, 2);
+                    for (var iii = 0; iii < 3; iii++) {
+                        node = new Segment(node, s * 3 * (tail - i) / tail, -ii * 0.1, 0.1, 2);
+                    }
+                }
+            }
+            
+            // Update segment count display
+            document.getElementById('segmentCount').textContent = segmentCount;
+            
+            animate();
+        }
+
+        // Animation loop
+        function animate() {
+            var currentTime = performance.now();
+            if (lastTime !== 0) {
+                fps = Math.round(1000 / (currentTime - lastTime));
+                document.getElementById('fps').textContent = fps;
+            }
+            lastTime = currentTime;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            critter.follow(Input.mouse.x, Input.mouse.y);
+            
+            animationId = requestAnimationFrame(animate);
+        }
+
+        // Control functions
+        function regenerateCreature() {
+            var legs = parseInt(document.getElementById('legs').value);
+            var tail = parseInt(document.getElementById('tail').value);
+            var size = parseFloat(document.getElementById('size').value);
+            
+            setupLizard(size, legs, tail);
+        }
+
+        function resetToDefault() {
+            document.getElementById('legs').value = 6;
+            document.getElementById('tail').value = 32;
+            document.getElementById('size').value = 3;
+            
+            document.getElementById('legCount').textContent = '6';
+            document.getElementById('tailLength').textContent = '32';
+            document.getElementById('creatureSize').textContent = '3.0';
+            
+            setupLizard(3, 6, 32);
+        }
+
+        // Control event listeners
+        document.getElementById('legs').addEventListener('input', function() {
+            document.getElementById('legCount').textContent = this.value;
+        });
+
+        document.getElementById('tail').addEventListener('input', function() {
+            document.getElementById('tailLength').textContent = this.value;
+        });
+
+        document.getElementById('size').addEventListener('input', function() {
+            document.getElementById('creatureSize').textContent = this.value;
+        });
+
+        // Window resize handling
+        window.addEventListener('resize', function() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Initialize
+        canvas.style.backgroundColor = "black";
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 1;
+
+        // Start with default lizard
+        setupLizard(3, 6, 32);
+    </script>
+</body>
+</html>

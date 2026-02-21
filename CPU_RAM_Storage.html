@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The PC Builder's Lab | Interactive Hardware Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+
+        .hardware-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .hardware-card:hover {
+            border-color: #38bdf8;
+            transform: translateY(-5px);
+        }
+
+        .cpu-pulse {
+            animation: pulse 1s infinite cubic-bezier(0.4, 0, 0.6, 1);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+
+        .ram-bar {
+            height: 24px;
+            background: #334155;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .ram-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .data-bit {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #fbbf24;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Header -->
+    <header class="max-w-6xl mx-auto text-center mb-12">
+        <h1 class="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-indigo-500 mb-4">
+            The Hardware Lab
+        </h1>
+        <p class="text-slate-400 text-lg">Master the inner workings of your computer through interactive play.</p>
+    </header>
+
+    <main class="max-w-6xl mx-auto space-y-12">
+        
+        <!-- CPU Section -->
+        <section id="cpu-sim" class="hardware-card rounded-3xl p-8">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="p-3 bg-sky-500/20 rounded-xl text-sky-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                            </svg>
+                        </span>
+                        <h2 class="text-3xl font-bold text-sky-400">The CPU</h2>
+                    </div>
+                    <p class="text-slate-300 mb-6 italic">"The Brain: Fast, precise, but gets hot under pressure!"</p>
+                    <ul class="space-y-3 text-slate-400 mb-8">
+                        <li class="flex items-start gap-2"><span>⚡</span> Handles billions of calculations every second.</li>
+                        <li class="flex items-start gap-2"><span>🌡️</span> Generates high heat; needs a fan or liquid cooling.</li>
+                        <li class="flex items-start gap-2"><span>🎯</span> Measured in Gigahertz (GHz) or 'Cycles per Second'.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-900/50 p-6 rounded-2xl text-center border border-white/5">
+                    <h3 class="text-xl font-semibold mb-4">Overclocking Sim</h3>
+                    <div id="cpu-chip" class="w-32 h-32 bg-slate-800 border-4 border-slate-700 mx-auto rounded-xl flex items-center justify-center mb-6 relative">
+                        <div id="cpu-inner" class="w-20 h-20 bg-sky-500 rounded-lg shadow-[0_0_20px_rgba(56,189,248,0.5)]"></div>
+                    </div>
+                    <div class="text-2xl font-mono mb-4"><span id="clock-speed">1.2</span> GHz</div>
+                    <button onclick="overclock()" class="bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 px-8 rounded-full transition-all active:scale-95">
+                        Boost Clock Speed
+                    </button>
+                    <p id="cpu-msg" class="mt-4 text-sm text-slate-500 italic">Click to speed up the processor!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- RAM Section -->
+        <section id="ram-sim" class="hardware-card rounded-3xl p-8">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="order-2 md:order-1 bg-slate-900/50 p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Multi-Tasking Sim</h3>
+                    <div class="ram-bar mb-6">
+                        <div id="ram-progress" class="ram-progress" style="width: 10%;"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <button onclick="addProcess('Chrome Tab', 15)" class="bg-slate-700 p-2 rounded-lg text-sm hover:bg-slate-600">Open Chrome Tab</button>
+                        <button onclick="addProcess('Photoshop', 40)" class="bg-slate-700 p-2 rounded-lg text-sm hover:bg-slate-600">Launch Photoshop</button>
+                        <button onclick="addProcess('Discord', 10)" class="bg-slate-700 p-2 rounded-lg text-sm hover:bg-slate-600">Open Discord</button>
+                        <button onclick="addProcess('4K Video', 30)" class="bg-slate-700 p-2 rounded-lg text-sm hover:bg-slate-600">Play 4K Video</button>
+                    </div>
+                    <button onclick="resetRam()" class="w-full border border-slate-600 py-2 rounded-lg text-slate-400 hover:bg-red-500/10 hover:border-red-500/50">Clear Memory (Reboot)</button>
+                    <div id="ram-usage-text" class="text-center mt-4 font-mono text-indigo-400">Usage: 10%</div>
+                </div>
+                
+                <div class="order-1 md:order-2">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="p-3 bg-indigo-500/20 rounded-xl text-indigo-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                            </svg>
+                        </span>
+                        <h2 class="text-3xl font-bold text-indigo-400">RAM</h2>
+                    </div>
+                    <p class="text-slate-300 mb-6 italic">"Short-Term Memory: Extremely fast, but forgets everything when the power is off!"</p>
+                    <ul class="space-y-3 text-slate-400">
+                        <li class="flex items-start gap-2"><span>🧠</span> Holds open apps so you can switch instantly.</li>
+                        <li class="flex items-start gap-2"><span>🔌</span> Known as "Volatile" memory. No power = No data.</li>
+                        <li class="flex items-start gap-2"><span>🏃</span> More RAM lets you open more apps simultaneously.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Storage Section -->
+        <section id="storage-sim" class="hardware-card rounded-3xl p-8">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="p-3 bg-amber-500/20 rounded-xl text-amber-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                        </span>
+                        <h2 class="text-3xl font-bold text-amber-400">Storage (SSD/HDD)</h2>
+                    </div>
+                    <p class="text-slate-300 mb-6 italic">"Long-Term Memory: Slower than RAM, but remembers everything forever!"</p>
+                    <ul class="space-y-3 text-slate-400 mb-8">
+                        <li class="flex items-start gap-2"><span>📸</span> Where your photos, videos, and games live.</li>
+                        <li class="flex items-start gap-2"><span>🔒</span> Non-volatile: Keeps data even without power.</li>
+                        <li class="flex items-start gap-2"><span>🚀</span> SSDs (Solid State) are much faster than HDDs.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-900/50 p-6 rounded-2xl border border-white/5 relative overflow-hidden" id="storage-container">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Data Archiving</h3>
+                    <div class="flex flex-col items-center gap-4">
+                        <div id="drive-icon" class="w-24 h-24 bg-slate-800 border-2 border-amber-500/30 rounded-lg flex items-center justify-center relative">
+                            <span class="text-4xl">💾</span>
+                        </div>
+                        <div id="file-system" class="flex flex-wrap gap-2 justify-center min-h-[100px] w-full p-4 bg-black/20 rounded-xl">
+                            <!-- Files appear here -->
+                        </div>
+                        <button onclick="saveData()" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-lg transition-all">
+                            Save Data File
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section id="quiz" class="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-3xl p-8 md:p-12 shadow-2xl border-t-2 border-indigo-400/30">
+            <div class="max-w-3xl mx-auto">
+                <h2 class="text-4xl font-bold text-center mb-8">Final Hardware Quiz</h2>
+                
+                <div id="quiz-content">
+                    <div id="question-card" class="bg-white/5 p-8 rounded-2xl border border-white/10 mb-6">
+                        <p id="question-text" class="text-xl md:text-2xl mb-6 font-medium">Loading question...</p>
+                        <div id="options-container" class="space-y-3">
+                            <!-- Options -->
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center text-slate-400">
+                        <p>Question <span id="q-num">1</span> of 5</p>
+                        <p>Score: <span id="score">0</span></p>
+                    </div>
+                </div>
+
+                <div id="quiz-result" class="hidden text-center py-10">
+                    <h3 class="text-5xl font-bold text-sky-400 mb-4">Great Job!</h3>
+                    <p class="text-2xl mb-8 text-slate-300">You scored <span id="final-score">0</span> out of 5!</p>
+                    <button onclick="restartQuiz()" class="bg-white text-indigo-900 font-bold py-3 px-8 rounded-full hover:bg-slate-200 transition-colors">
+                        Try Again
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="mt-20 text-center text-slate-500 pb-10">
+        <p>&copy; 2025 Hardware Lab. Learn, Build, Explore.</p>
+    </footer>
+
+    <script>
+        // --- CPU Simulation Logic ---
+        let clock = 1.2;
+        let cpuActive = false;
+        function overclock() {
+            if (clock >= 5.0) {
+                document.getElementById('cpu-msg').innerText = "⚠️ THERMAL THROTTLING! Too hot!";
+                document.getElementById('cpu-msg').className = "mt-4 text-sm text-red-400 font-bold";
+                document.getElementById('cpu-chip').classList.add('cpu-pulse');
+                document.getElementById('cpu-inner').style.backgroundColor = '#ef4444';
+                return;
+            }
+            clock = parseFloat((clock + 0.2).toFixed(1));
+            document.getElementById('clock-speed').innerText = clock;
+            
+            // Visual feedback
+            const chip = document.getElementById('cpu-inner');
+            const scale = 1 + (clock - 1.2) * 0.1;
+            chip.style.transform = `scale(${scale})`;
+            
+            if (clock > 3.5) {
+                chip.style.backgroundColor = '#f97316';
+                document.getElementById('cpu-msg').innerText = "Speeding up! Getting warm...";
+            }
+        }
+
+        // --- RAM Simulation Logic ---
+        let ramUsage = 10;
+        function addProcess(name, amount) {
+            if (ramUsage + amount > 100) {
+                alert("OUT OF MEMORY! Computer is lagging! Restarting services...");
+                resetRam();
+                return;
+            }
+            ramUsage += amount;
+            updateRamDisplay();
+        }
+        function resetRam() {
+            ramUsage = 10;
+            updateRamDisplay();
+        }
+        function updateRamDisplay() {
+            const bar = document.getElementById('ram-progress');
+            const text = document.getElementById('ram-usage-text');
+            bar.style.width = ramUsage + '%';
+            text.innerText = `Usage: ${ramUsage}%`;
+            
+            if (ramUsage > 80) bar.style.background = '#ef4444';
+            else if (ramUsage > 50) bar.style.background = '#fbbf24';
+            else bar.style.background = 'linear-gradient(90deg, #38bdf8, #818cf8)';
+        }
+
+        // --- Storage Simulation Logic ---
+        function saveData() {
+            const container = document.getElementById('file-system');
+            if (container.children.length >= 15) {
+                alert("Disk Full! Time to delete some old memes.");
+                container.innerHTML = '';
+                return;
+            }
+            
+            const file = document.createElement('div');
+            file.className = "w-10 h-12 bg-amber-500/20 border border-amber-500/50 rounded flex items-center justify-center text-lg animate-bounce";
+            file.innerHTML = "📄";
+            container.appendChild(file);
+
+            // Animated bit path
+            const startRect = document.getElementById('drive-icon').getBoundingClientRect();
+            const bit = document.createElement('div');
+            bit.className = "data-bit";
+            bit.style.left = "50%";
+            bit.style.top = "50%";
+            document.getElementById('storage-container').appendChild(bit);
+            
+            setTimeout(() => bit.remove(), 1000);
+        }
+
+        // --- Quiz System ---
+        const questions = [
+            {
+                q: "Which component acts as the 'Short-Term Memory' of the PC?",
+                options: ["CPU", "RAM", "SSD", "Motherboard"],
+                correct: 1
+            },
+            {
+                q: "What happens to data in RAM when the power goes off?",
+                options: ["It is saved automatically", "It is deleted (Volatile)", "It moves to the CPU", "It stays there forever"],
+                correct: 1
+            },
+            {
+                q: "Which storage type is usually faster for loading games?",
+                options: ["Hard Disk Drive (HDD)", "Floppy Disk", "Solid State Drive (SSD)", "CD-ROM"],
+                correct: 2
+            },
+            {
+                q: "A CPU's speed is typically measured in what unit?",
+                options: ["Gigabytes (GB)", "Watts", "Megapixels", "Gigahertz (GHz)"],
+                correct: 3
+            },
+            {
+                q: "What is the main job of the Storage (SSD/HDD)?",
+                options: ["Doing math", "Long-term data retention", "Cooling the PC", "Rendering graphics"],
+                correct: 1
+            }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            const q = questions[currentQ];
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('q-num').innerText = currentQ + 1;
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            q.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-xl border border-white/10 hover:bg-white/10 hover:border-indigo-400 transition-all";
+                btn.innerText = opt;
+                btn.onclick = () => selectOption(i);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectOption(index) {
+            if (index === questions[currentQ].correct) {
+                score++;
+                document.getElementById('score').innerText = score;
+            }
+            
+            if (currentQ < questions.length - 1) {
+                currentQ++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-content').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+        }
+
+        function restartQuiz() {
+            currentQ = 0;
+            score = 0;
+            document.getElementById('score').innerText = 0;
+            document.getElementById('quiz-content').classList.remove('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            loadQuestion();
+        }
+
+        // Initialize quiz
+        loadQuestion();
+    </script>
+</body>
+</html>

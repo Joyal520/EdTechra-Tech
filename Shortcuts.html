@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EdTechra Tech | Keyboard Shortcuts Masterclass</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
+        :root {
+            --primary: #6366f1;
+            --secondary: #4f46e5;
+            --accent: #f43f5e;
+            --bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: #1e293b;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
+        }
+
+        .shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shimmer::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0) 40%,
+                rgba(255,255,255,0.6) 50%,
+                rgba(255,255,255,0) 60%,
+                rgba(255,255,255,0) 100%
+            );
+            transform: rotate(45deg);
+            animation: shimmer-effect 3s infinite;
+        }
+
+        @keyframes shimmer-effect {
+            0% { transform: translateX(-150%) rotate(45deg); }
+            100% { transform: translateX(150%) rotate(45deg); }
+        }
+
+        .key-cap {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 45px;
+            height: 45px;
+            padding: 0 12px;
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            border-bottom: 5px solid #cbd5e1;
+            border-radius: 8px;
+            font-weight: 700;
+            margin: 0 4px;
+            transition: all 0.1s ease;
+            user-select: none;
+        }
+
+        .section-fade {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .section-fade.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .hidden-section { display: none; }
+        
+        .hover-sound:hover {
+            transform: translateY(-4px);
+            filter: brightness(1.1);
+        }
+
+        .shortcut-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0.85rem;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        .unlock-step-active {
+            animation: pulse-border 1.5s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { border-color: #6366f1; box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            70% { border-color: #4f46e5; box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+            100% { border-color: #6366f1; box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Progress Tracker -->
+    <div class="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur shadow-sm p-4">
+        <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold">ET</div>
+                <span class="font-bold text-lg hidden sm:block">EdTechra Tech</span>
+            </div>
+            <div class="flex-1 max-w-md">
+                <div class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                    <span>COURSE PROGRESS</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="main-progress-fill" class="progress-fill"></div>
+                </div>
+            </div>
+            <div id="badge-count" class="flex gap-1"></div>
+        </div>
+    </div>
+
+    <!-- 1) HERO SECTION -->
+    <section id="hero" class="min-h-screen relative pt-32 pb-20 px-6 flex items-center">
+        <div class="max-w-4xl mx-auto text-center">
+            <span class="inline-block px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-full text-sm font-bold mb-6">UNLOCK CHALLENGE</span>
+            <h1 class="text-6xl md:text-7xl font-extrabold tracking-tight text-slate-900 mb-6 leading-tight">
+                Master the <span class="text-indigo-600">Keys</span>
+            </h1>
+            <p class="text-xl text-slate-600 mb-10 max-w-2xl mx-auto">
+                The shortcut panel is locked. Complete the 10-step sequence below to prove your speed and unlock the mastery guide.
+            </p>
+            <button onclick="scrollToSection('concept')" class="hover-sound px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-all">
+                Start Unlock Sequence
+            </button>
+        </div>
+    </section>
+
+    <!-- 2) UNLOCK SEQUENCE & GUIDE -->
+    <section id="concept" class="section-fade py-20 px-6 bg-slate-50">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-4xl font-extrabold mb-6">Unlock the Guide</h2>
+                    <p class="text-lg text-slate-600 mb-8">Follow the prompts. You must complete 10 shortcuts in order, including the <span class="font-bold">Print</span> command.</p>
+                    
+                    <div id="unlock-zone" class="glass-card p-8 bg-white border-indigo-200 unlock-step-active transition-all duration-300">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-sm font-bold text-indigo-500 uppercase tracking-widest">Step <span id="current-step-num">1</span> of 10</span>
+                            <span id="step-name" class="text-xs bg-indigo-50 px-2 py-1 rounded-md text-indigo-600 font-bold">READY?</span>
+                        </div>
+                        <p class="text-2xl font-bold mb-6" id="step-instruction">Press <span class="text-indigo-600">Ctrl + C</span> to Copy</p>
+                        
+                        <div class="flex items-center gap-2" id="keys-display">
+                            <div class="key-cap">Ctrl</div>
+                            <div class="font-bold text-slate-300">+</div>
+                            <div class="key-cap" id="dynamic-key">C</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center h-full">
+                    <div id="guide-container" class="relative w-full max-w-lg min-h-[500px] glass-card flex flex-col items-center justify-center p-6 overflow-hidden border-dashed border-2 border-slate-200">
+                        <div id="locked-state" class="text-center transition-all duration-500">
+                            <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <i class="fas fa-lock text-3xl text-slate-400"></i>
+                            </div>
+                            <p class="text-2xl font-bold text-slate-400">Panel Locked</p>
+                            <p class="text-sm text-slate-400 mt-2">Complete the 10-step sequence</p>
+                        </div>
+                        
+                        <!-- The Glassmorphism List (Hidden until 10 steps finished) -->
+                        <div id="mastery-panel" class="absolute inset-0 bg-white/40 backdrop-blur-xl shimmer flex flex-col items-center justify-start py-8 px-6 opacity-0 pointer-events-none transition-all duration-700 scale-95 translate-y-10">
+                            <div class="w-full text-center mb-6">
+                                <i class="fas fa-check-circle text-4xl mb-2 text-indigo-600"></i>
+                                <h3 class="text-2xl font-black text-indigo-900 tracking-tight uppercase">Mastery Unlocked</h3>
+                            </div>
+                            
+                            <div class="w-full space-y-2 overflow-y-auto pr-2 max-h-[350px]">
+                                <div class="shortcut-item"><span><i class="fas fa-copy w-6"></i> Copy</span> <kbd class="bg-indigo-100 px-2 py-0.5 rounded text-indigo-700 font-bold text-sm">Ctrl + C</kbd></div>
+                                <div class="shortcut-item"><span><i class="fas fa-paste w-6"></i> Paste</span> <kbd class="bg-indigo-100 px-2 py-0.5 rounded text-indigo-700 font-bold text-sm">Ctrl + V</kbd></div>
+                                <div class="shortcut-item"><span><i class="fas fa-undo w-6"></i> Undo</span> <kbd class="bg-indigo-100 px-2 py-0.5 rounded text-indigo-700 font-bold text-sm">Ctrl + Z</kbd></div>
+                                <div class="shortcut-item"><span><i class="fas fa-save w-6"></i> Save</span> <kbd class="bg-indigo-100 px-2 py-0.5 rounded text-indigo-700 font-bold text-sm">Ctrl + S</kbd></div>
+                                <div class="shortcut-item"><span><i class="fas fa-print w-6"></i> Print</span> <kbd class="bg-indigo-100 px-2 py-0.5 rounded text-indigo-700 font-bold text-sm">Ctrl + P</kbd></div>
+                                <div class="shortcut-item"><span><i class="fas fa-search w-6"></i> Find</span> <kbd class="bg-indigo-100 px-2 py-0.5 rounded text-indigo-700 font-bold text-sm">Ctrl + F</kbd></div>
+                                <div class="shortcut-item"><span><i class="fas fa-check-double w-6"></i> Select All</span> <kbd class="bg-indigo-100 px-2 py-0.5 rounded text-indigo-700 font-bold text-sm">Ctrl + A</kbd></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playTone(freq, type, duration, volume = 0.1) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.start(); osc.stop(audioCtx.currentTime + duration);
+        }
+
+        const UNLOCK_SEQUENCE = [
+            { key: 'c', label: 'Copy', full: 'Ctrl + C' },
+            { key: 'v', label: 'Paste', full: 'Ctrl + V' },
+            { key: 'z', label: 'Undo', full: 'Ctrl + Z' },
+            { key: 's', label: 'Save', full: 'Ctrl + S' },
+            { key: 'p', label: 'Print', full: 'Ctrl + P' },
+            { key: 'f', label: 'Find', full: 'Ctrl + F' },
+            { key: 'a', label: 'Select All', full: 'Ctrl + A' },
+            { key: 'c', label: 'Copy (Again)', full: 'Ctrl + C' },
+            { key: 'v', label: 'Paste (Again)', full: 'Ctrl + V' },
+            { key: 'p', label: 'Print (Final)', full: 'Ctrl + P' }
+        ];
+
+        let currentUnlockStep = 0;
+        let isUnlocked = false;
+
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && ['c', 'v', 'z', 's', 'p', 'f', 'a'].includes(e.key.toLowerCase())) {
+                e.preventDefault();
+                handleUnlockStep(e.key.toLowerCase());
+            }
+        });
+
+        function handleUnlockStep(pressedKey) {
+            if (isUnlocked) return;
+
+            const target = UNLOCK_SEQUENCE[currentUnlockStep];
+            if (pressedKey === target.key) {
+                currentUnlockStep++;
+                playTone(400 + (currentUnlockStep * 50), 'sine', 0.1);
+                
+                if (currentUnlockStep >= UNLOCK_SEQUENCE.length) {
+                    completeUnlock();
+                } else {
+                    updateUnlockUI();
+                }
+            } else {
+                // Shake effect on error
+                const zone = document.getElementById('unlock-zone');
+                zone.classList.add('translate-x-2');
+                setTimeout(() => zone.classList.remove('translate-x-2'), 100);
+                playTone(150, 'sawtooth', 0.2);
+            }
+        }
+
+        function updateUnlockUI() {
+            const target = UNLOCK_SEQUENCE[currentUnlockStep];
+            document.getElementById('current-step-num').innerText = currentUnlockStep + 1;
+            document.getElementById('step-name').innerText = target.label.toUpperCase();
+            document.getElementById('step-instruction').innerHTML = `Press <span class="text-indigo-600">${target.full}</span> to ${target.label}`;
+            document.getElementById('dynamic-key').innerText = target.key.toUpperCase();
+            
+            // Visual feedback on the box
+            const zone = document.getElementById('unlock-zone');
+            zone.style.transform = "scale(1.02)";
+            setTimeout(() => zone.style.transform = "scale(1)", 100);
+        }
+
+        function completeUnlock() {
+            isUnlocked = true;
+            playTone(880, 'sine', 0.5);
+            
+            // Hide prompts
+            document.getElementById('unlock-zone').innerHTML = `
+                <div class="text-center py-4">
+                    <i class="fas fa-check-circle text-5xl text-green-500 mb-4"></i>
+                    <h3 class="text-2xl font-bold">Sequence Complete!</h3>
+                    <p class="text-slate-500">Shortcuts guide is now active.</p>
+                </div>
+            `;
+            document.getElementById('unlock-zone').classList.remove('unlock-step-active');
+
+            // Show Panel
+            document.getElementById('locked-state').style.opacity = '0';
+            const panel = document.getElementById('mastery-panel');
+            panel.style.opacity = '1';
+            panel.style.pointerEvents = 'auto';
+            panel.style.transform = 'scale(1) translateY(0)';
+            
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            
+            updateProgress(50);
+        }
+
+        function updateProgress(val) {
+            const fill = document.getElementById('main-progress-fill');
+            const percent = document.getElementById('progress-percent');
+            fill.style.width = val + '%';
+            percent.innerText = val + '%';
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        window.onload = () => {
+            const observer = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('visible')));
+            document.querySelectorAll('.section-fade').forEach(s => observer.observe(s));
+            document.addEventListener('mousedown', () => { if (audioCtx.state === 'suspended') audioCtx.resume(); }, { once: true });
+        };
+    </script>
+</body>
+</html>

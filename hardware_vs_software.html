@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EdTechra: Hardware vs Software</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background: #f0f7ff;
+            scroll-behavior: smooth;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .stagger-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        .stagger-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .category-slot {
+            min-height: 200px;
+            transition: all 0.3s;
+        }
+
+        .draggable-item {
+            cursor: grab;
+            transition: transform 0.2s;
+        }
+
+        .draggable-item:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        .drop-target-active {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body class="overflow-x-hidden">
+    <nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-blue-600 flex items-center gap-2">
+                <i class="fas fa-hammer"></i> EdTechra
+            </div>
+            <a href="lesson.html" class="font-medium text-gray-600 hover:text-blue-600"><i
+                    class="fas fa-arrow-left mr-2"></i>Back to Hub</a>
+        </div>
+    </nav>
+
+    <section class="hero-gradient min-h-[50vh] flex items-center justify-center pt-24 px-6 text-white text-center">
+        <div class="max-w-4xl">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6">Hardware vs Software</h1>
+            <p class="text-xl md:text-2xl opacity-90">The physical tools vs the digital magic.</p>
+        </div>
+    </section>
+
+    <section class="py-20 px-6">
+        <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-12">
+            <div class="stagger-fade-in p-8 bg-white rounded-[2rem] shadow-xl border border-blue-100">
+                <i class="fas fa-hdd text-5xl text-blue-500 mb-6"></i>
+                <h2 class="text-3xl font-bold mb-4">What is Hardware?</h2>
+                <p class="text-gray-600 leading-relaxed mb-6">Hardware refers to the <strong>physical parts</strong> of
+                    a computer that you can see and touch.</p>
+                <ul class="space-y-3 text-blue-800 font-medium">
+                    <li><i class="fas fa-check-circle mr-2"></i> Keyboard & Mouse</li>
+                    <li><i class="fas fa-check-circle mr-2"></i> Monitor & CPU</li>
+                    <li><i class="fas fa-check-circle mr-2"></i> Motherboard & RAM</li>
+                </ul>
+            </div>
+            <div class="stagger-fade-in p-8 bg-white rounded-[2rem] shadow-xl border border-purple-100">
+                <i class="fas fa-ghost text-5xl text-purple-500 mb-6"></i>
+                <h2 class="text-3xl font-bold mb-4">What is Software?</h2>
+                <p class="text-gray-600 leading-relaxed mb-6">Software is a set of <strong>instructions</strong> that
+                    tells the hardware what to do. You cannot touch it!</p>
+                <ul class="space-y-3 text-purple-800 font-medium">
+                    <li><i class="fas fa-check-circle mr-2"></i> Windows / macOS</li>
+                    <li><i class="fas fa-check-circle mr-2"></i> Google Chrome</li>
+                    <li><i class="fas fa-check-circle mr-2"></i> Minecraft / Roblox</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Simulation -->
+    <section class="py-20 px-6 bg-slate-900 text-white">
+        <div class="max-w-5xl mx-auto text-center">
+            <h2 class="text-4xl font-bold mb-4">Simulation: Sort the Items!</h2>
+            <p class="text-gray-400 mb-12">Click an item to sort it into the correct box.</p>
+
+            <div class="flex flex-wrap justify-center gap-4 mb-12" id="items-to-sort">
+                <div onclick="sortItem('hw', this)"
+                    class="draggable-item bg-blue-600 px-6 py-3 rounded-2xl font-bold shadow-lg">Monitor</div>
+                <div onclick="sortItem('sw', this)"
+                    class="draggable-item bg-purple-600 px-6 py-3 rounded-2xl font-bold shadow-lg">Chrome</div>
+                <div onclick="sortItem('hw', this)"
+                    class="draggable-item bg-blue-600 px-6 py-3 rounded-2xl font-bold shadow-lg">Mouse</div>
+                <div onclick="sortItem('sw', this)"
+                    class="draggable-item bg-purple-600 px-6 py-3 rounded-2xl font-bold shadow-lg">WhatsApp</div>
+                <div onclick="sortItem('hw', this)"
+                    class="draggable-item bg-blue-600 px-6 py-3 rounded-2xl font-bold shadow-lg">Keyboard</div>
+                <div onclick="sortItem('sw', this)"
+                    class="draggable-item bg-purple-600 px-6 py-3 rounded-2xl font-bold shadow-lg">Windows</div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div id="hw-box" class="category-slot border-4 border-dashed border-blue-500 rounded-[2.5rem] p-8">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-400">HARDWARE</h3>
+                    <div id="hw-items" class="flex flex-wrap gap-2 justify-center"></div>
+                </div>
+                <div id="sw-box" class="category-slot border-4 border-dashed border-purple-500 rounded-[2.5rem] p-8">
+                    <h3 class="text-2xl font-bold mb-4 text-purple-400">SOFTWARE</h3>
+                    <div id="sw-items" class="flex flex-wrap gap-2 justify-center"></div>
+                </div>
+            </div>
+
+            <div id="congrats" class="mt-8 hidden animate-bounce">
+                <p class="text-2xl font-bold text-green-400">🎉 Perfect Sorting!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quiz -->
+    <section id="quiz" class="py-24 px-6 bg-white">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-blue-900">Hardware vs Software Quiz</h2>
+                <p class="text-gray-500 mt-2">Test your knowledge!</p>
+            </div>
+            <div id="quiz-card" class="bg-blue-50 p-10 rounded-3xl shadow-xl border border-blue-100">
+                <div id="quiz-question-container">
+                    <h3 id="q-text" class="text-2xl font-semibold mb-8 text-slate-800">1. Can you touch Software?</h3>
+                    <div id="q-options" class="grid gap-4">
+                        <button onclick="checkAnswer(false, this)"
+                            class="bg-white border-2 border-blue-100 hover:border-blue-600 p-5 rounded-2xl text-left transition-all font-medium text-slate-700">Yes,
+                            it's physical</button>
+                        <button onclick="checkAnswer(true, this)"
+                            class="bg-white border-2 border-blue-100 hover:border-blue-600 p-5 rounded-2xl text-left transition-all font-medium text-slate-700">No,
+                            it's digital instructions</button>
+                    </div>
+                </div>
+                <div id="quiz-next" class="hidden mt-8 text-center">
+                    <p id="feedback" class="text-xl font-bold mb-4"></p>
+                    <button onclick="resetQuiz()" class="bg-blue-600 text-white px-10 py-4 rounded-full font-bold">Try
+                        Again</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 px-6 text-center border-t">
+        <p class="text-blue-600 font-bold text-2xl mb-2">EdTechra</p>
+        <p class="text-slate-300 text-xs mt-6">© 2026 EdTechra Learning Hub</p>
+    </footer>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.stagger-fade-in').forEach(el => observer.observe(el));
+
+        let sortedCount = 0;
+        function sortItem(type, el) {
+            const targetId = type + '-items';
+            const targetBox = document.getElementById(targetId);
+            const clone = el.cloneNode(true);
+            clone.onclick = null;
+            clone.classList.remove('draggable-item');
+            clone.classList.add('animate-pulse');
+            targetBox.appendChild(clone);
+            el.style.display = 'none';
+            sortedCount++;
+            if (sortedCount === 6) {
+                document.getElementById('congrats').classList.remove('hidden');
+            }
+        }
+
+        function checkAnswer(correct, el) {
+            const feedback = document.getElementById('feedback');
+            if (correct) {
+                el.classList.add('bg-green-100', 'border-green-500');
+                feedback.innerText = "Correct! Software is digital.";
+                feedback.className = "text-xl font-bold mb-4 text-green-600";
+            } else {
+                el.classList.add('bg-red-100', 'border-red-500');
+                feedback.innerText = "Not quite! You can't touch software.";
+                feedback.className = "text-xl font-bold mb-4 text-red-600";
+            }
+            document.getElementById('quiz-options').style.pointerEvents = 'none';
+            document.getElementById('quiz-next').classList.remove('hidden');
+        }
+
+        function resetQuiz() {
+            document.getElementById('quiz-options').style.pointerEvents = 'auto';
+            document.getElementById('quiz-next').classList.add('hidden');
+            document.querySelectorAll('#q-options button').forEach(b => b.className = "bg-white border-2 border-blue-100 hover:border-blue-600 p-5 rounded-2xl text-left transition-all font-medium text-slate-700");
+        }
+    </script>
+</body>
+
+</html>

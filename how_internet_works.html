@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EdTechra: How the Internet Works</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background: #f0fdf4;
+            scroll-behavior: smooth;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #0d9488 0%, #0f172a 100%);
+        }
+
+        .stagger-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        .stagger-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .packet {
+            width: 40px;
+            height: 40px;
+            background: #fbbf24;
+            border-radius: 8px;
+            position: absolute;
+            z-index: 20;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+            display: flex;
+            items-center;
+            justify-content: center;
+            color: #000;
+            font-weight: bold;
+            font-size: 10px;
+        }
+
+        .router {
+            width: 60px;
+            height: 60px;
+            background: #334155;
+            border-radius: 50%;
+            display: flex;
+            items-center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .router::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 4px solid #475569;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="overflow-x-hidden">
+    <nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-teal-600 flex items-center gap-2">
+                <i class="fas fa-network-wired"></i> EdTechra
+            </div>
+            <a href="lesson.html" class="font-medium text-gray-600 hover:text-teal-600"><i
+                    class="fas fa-arrow-left mr-2"></i>Back to Hub</a>
+        </div>
+    </nav>
+
+    <section class="hero-gradient min-h-[50vh] flex items-center justify-center pt-24 px-6 text-white text-center">
+        <div class="max-w-4xl">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6">How the Internet Works</h1>
+            <p class="text-xl md:text-2xl opacity-90">Servers, packets, and the world's biggest network.</p>
+        </div>
+    </section>
+
+    <!-- Core Concepts -->
+    <section class="py-20 px-6">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
+            <div class="stagger-fade-in p-8 bg-white rounded-3xl shadow-xl border border-teal-50">
+                <i class="fas fa-server text-4xl text-teal-500 mb-4"></i>
+                <h3 class="text-2xl font-bold mb-3">The Server</h3>
+                <p class="text-gray-600 text-sm">A powerful computer that "serves" data. Websites live here!</p>
+            </div>
+            <div class="stagger-fade-in p-8 bg-white rounded-3xl shadow-xl border border-teal-50">
+                <i class="fas fa-box text-4xl text-teal-500 mb-4"></i>
+                <h3 class="text-2xl font-bold mb-3">The Packet</h3>
+                <p class="text-gray-600 text-sm">Data is broken into tiny pieces called packets to travel faster.</p>
+            </div>
+            <div class="stagger-fade-in p-8 bg-white rounded-3xl shadow-xl border border-teal-50">
+                <i class="fas fa-route text-4xl text-teal-500 mb-4"></i>
+                <h3 class="text-2xl font-bold mb-3">The Router</h3>
+                <p class="text-gray-600 text-sm">Traffic police for data. It tells packets which way to go.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Simulation -->
+    <section class="py-24 px-6 bg-slate-900 text-white overflow-hidden relative" id="simulation">
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <h2 class="text-4xl font-bold mb-4">Packet Delivery Simulation</h2>
+            <p class="text-gray-400 mb-12">Click "Send Data" to watch packets travel across the world.</p>
+
+            <div
+                class="flex flex-col md:flex-row items-center justify-between gap-12 min-h-[300px] border-2 border-slate-800 rounded-[3rem] p-12 bg-slate-900/50 backdrop-blur-xl relative">
+                <!-- Client -->
+                <div class="flex flex-col items-center">
+                    <div
+                        class="w-20 h-20 bg-teal-500 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg relative z-10">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <p class="mt-4 font-bold tracking-widest text-[10px]">YOU (CLIENT)</p>
+                </div>
+
+                <!-- Path & Router -->
+                <div class="flex-1 w-full flex items-center justify-center relative">
+                    <div class="w-full h-1 bg-slate-800 absolute"></div>
+                    <div class="router shadow-lg"><i class="fas fa-random text-white"></i></div>
+                </div>
+
+                <!-- Server -->
+                <div class="flex flex-col items-center">
+                    <div
+                        class="w-20 h-20 bg-purple-500 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg relative z-10">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <p class="mt-4 font-bold tracking-widest text-[10px]">WEBSITE (SERVER)</p>
+                </div>
+            </div>
+
+            <button onclick="sendPacket()" id="send-btn"
+                class="mt-12 bg-teal-500 text-white px-12 py-4 rounded-full font-bold shadow-xl hover:bg-teal-400 transition-all flex items-center gap-3 mx-auto">
+                <i class="fas fa-paper-plane"></i> Send Data
+            </button>
+        </div>
+    </section>
+
+    <!-- Quiz -->
+    <section class="py-24 px-6 bg-white">
+        <div class="max-w-3xl mx-auto">
+            <div id="quiz-card" class="bg-teal-50 p-10 rounded-3xl shadow-xl border border-teal-100">
+                <h3 class="text-2xl font-bold mb-8 text-center text-teal-900">Internet Quick Quiz</h3>
+                <div id="q-container">
+                    <p class="text-center text-xl mb-8 font-medium">What is a tiny piece of information called when it
+                        travels on the internet?</p>
+                    <div class="grid gap-4">
+                        <button onclick="ans(true, this)"
+                            class="bg-white border-2 border-teal-100 hover:border-teal-500 p-5 rounded-2xl text-left transition-all font-bold">A
+                            Packet</button>
+                        <button onclick="ans(false, this)"
+                            class="bg-white border-2 border-teal-100 hover:border-teal-500 p-5 rounded-2xl text-left transition-all font-bold">A
+                            Folder</button>
+                        <button onclick="ans(false, this)"
+                            class="bg-white border-2 border-teal-100 hover:border-teal-500 p-5 rounded-2xl text-left transition-all font-bold">A
+                            Router</button>
+                    </div>
+                </div>
+                <div id="res" class="hidden text-center animate-bounce mt-8">
+                    <p class="text-3xl font-bold text-teal-600">Correct! 📦🌐</p>
+                    <button onclick="location.reload()" class="mt-4 underline text-teal-400 font-bold">Restart
+                        Simulation</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 px-6 text-center border-t">
+        <p class="text-teal-600 font-bold text-2xl mb-2">EdTechra</p>
+        <p class="text-slate-300 text-xs mt-6">© 2026 EdTechra Learning Hub</p>
+    </footer>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.stagger-fade-in').forEach(el => observer.observe(el));
+
+        function sendPacket() {
+            const btn = document.getElementById('send-btn');
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => createPacket(i), i * 500);
+            }
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }, 3500);
+        }
+
+        function createPacket(id) {
+            const p = document.createElement('div');
+            p.className = 'packet';
+            p.innerText = id + 1;
+            document.getElementById('simulation').appendChild(p);
+
+            const startX = window.innerWidth / 2 - 200;
+            const startY = window.innerHeight / 2;
+
+            p.style.left = startX + 'px';
+            p.style.top = '380px';
+            p.style.transition = 'all 1s linear';
+
+            // Phase 1: To Router
+            setTimeout(() => {
+                p.style.left = (window.innerWidth / 2 - 20) + 'px';
+            }, 100);
+
+            // Phase 2: From Router to Server
+            setTimeout(() => {
+                p.style.left = (window.innerWidth / 2 + 180) + 'px';
+                p.style.opacity = '0';
+            }, 1200);
+
+            setTimeout(() => p.remove(), 2500);
+        }
+
+        function ans(correct, el) {
+            if (correct) {
+                document.getElementById('q-container').classList.add('hidden');
+                document.getElementById('res').classList.remove('hidden');
+            } else {
+                el.classList.add('bg-red-100', 'border-red-500');
+                setTimeout(() => el.classList.remove('bg-red-100', 'border-red-500'), 500);
+            }
+        }
+    </script>
+</body>
+
+</html>

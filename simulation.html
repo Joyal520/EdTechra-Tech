@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edectra | Simulation Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Locked State */
+        .locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .locked::after {
+            content: '\f023';
+            /* Fa-lock */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .status-badge {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 4px 8px;
+            border-radius: 99px;
+            font-weight: 700;
+        }
+
+        .status-locked {
+            background: rgba(148, 163, 184, 0.1);
+            color: #94a3b8;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        /* Background Orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: #3b82f6;
+            top: -10%;
+            right: -10%;
+            animation-delay: 0s;
+            opacity: 0.4;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: #10b981;
+            bottom: 10%;
+            left: -5%;
+            animation-delay: -5s;
+            opacity: 0.3;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(30px, 50px);
+            }
+        }
+    </style>
+</head>
+
+<body class="p-6 md:p-12">
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <nav class="flex items-center justify-between mb-16 max-w-7xl mx-auto">
+        <a href="index.html" class="flex items-center gap-3 text-white/80 hover:text-white transition group">
+            <div
+                class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <span class="font-semibold tracking-wide">Back to Home</span>
+        </a>
+        <div class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-green-400">
+            Edectra Simulation Lab
+        </div>
+        <div class="w-10"></div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <!-- PC Builder -->
+            <a href="index.html" class="glass-card p-6 flex flex-col h-64 cursor-pointer group">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 text-xl group-hover:bg-blue-500 group-hover:text-white transition">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <span class="status-badge status-available">Live</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2 text-white">PC Builder</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Assemble a virtual computer component by component.</p>
+            </a>
+
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center text-green-400 text-xl">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Network Flow</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Visualize how data packets travel across the web.</p>
+            </div>
+
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center text-yellow-400 text-xl">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Logic Gate Designer</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Connect AND/OR gates to build digital circuits.</p>
+            </div>
+
+            <div class="glass-card p-6 flex flex-col h-64 locked">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-xl">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <span class="status-badge status-locked">Coming Soon</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Robot Simulator</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">Program a virtual robot to navigate a maze.</p>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+
+</html>
