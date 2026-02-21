@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ElectraTech Live Quiz — Join</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; max-width: 720px; }
+    .box { padding: 16px; border: 2px solid #ddd; border-radius: 12px; }
+    input { width: 100%; padding: 12px; font-size: 16px; margin: 8px 0; box-sizing: border-box; }
+    button { padding: 10px 14px; font-size: 16px; cursor: pointer; width: 100%; }
+    .muted { color: #666; }
+    .ok { color: #0a7; font-weight: 700; }
+    .err { color: #c00; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <h1>Join ElectraTech Live Quiz</h1>
+
+  <div class="box" id="joinBox">
+    <p class="muted">Enter the PIN shown on the projector, then your name.</p>
+
+    <input id="pin" placeholder="Game PIN (6 digits)" inputmode="numeric" />
+    <input id="name" placeholder="Your name (e.g., Nimal)" />
+    <button id="joinBtn">Join Game</button>
+
+    <p id="msg"></p>
+  </div>
+
+  <div class="box" id="joinedBox" style="display:none;">
+    <p class="ok">✅ Joined! Now wait for the teacher.</p>
+    <p class="muted">Your score will appear on the leaderboard.</p>
+    <p><b>Name:</b> <span id="showName"></span></p>
+    <p><b>PIN:</b> <span id="showPin"></span></p>
+  </div>
+
+  <script type="module">
+    import { db, ensureAnonAuth, Fire } from "./firebase.js";
+
+    const { doc, getDoc, setDoc } = Fire;
+
+    const pinEl = document.getElementById("pin");
+    const nameEl = document.getElementById("name");
+    const msgEl = document.getElementById("msg");
+    const joinBox = document.getElementById("joinBox");
+    const joinedBox = document.getElementById("joinedBox");
+    const showName = document.getElementById("showName");
+    const showPin = document.getElementById("showPin");
+
+    function say(text, type) {
+      msgEl.className = type === "err" ? "err" : "ok";
+      msgEl.textContent = text;
+    }
+
+    document.getElementById("joinBtn").addEventListener("click", async () => {
+      const pin = pinEl.value.trim();
+      const name = nameEl.value.trim();
+
+      if (!/^\d{6}$/.test(pin)) return say("Enter a 6-digit PIN.", "err");
+      if (name.length < 2) return say("Enter your name (at least 2 letters).", "err");
+
+      // Make sure student has a Firebase identity
+      const user = await ensureAnonAuth();
+
+      // 1) Find gameId from PIN
+      const pinSnap = await getDoc(doc(db, "pins", pin));
+      if (!pinSnap.exists()) return say("PIN not found. Check the number on the projector.", "err");
+
+      const { gameId } = pinSnap.data();
+
+      // 2) Create/update player doc inside that game
+      await setDoc(doc(db, "games", gameId, "players", user.uid), {
+        name,
+        score: 0,
+        lastAnsweredIndex: -1
+      }, { merge: true });
+
+      // UI success
+      joinBox.style.display = "none";
+      joinedBox.style.display = "block";
+      showName.textContent = name;
+      showPin.textContent = pin;
+    });
+  </script>
+</body>
+</html>

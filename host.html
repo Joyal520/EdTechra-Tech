@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ElectraTech Live Quiz — Host</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    .box { padding: 16px; border: 2px solid #ddd; border-radius: 12px; max-width: 720px; }
+    button { padding: 10px 14px; font-size: 16px; cursor: pointer; }
+    #pin { font-size: 44px; font-weight: 800; letter-spacing: 4px; margin: 12px 0; }
+    ol { padding-left: 20px; }
+    .muted { color: #666; }
+  </style>
+</head>
+<body>
+  <h1>ElectraTech Live Quiz — Host (Teacher)</h1>
+
+  <div class="box">
+    <p class="muted">Step: Click "Create Game". Then show the PIN on the projector. Students join with their phones.</p>
+
+    <button id="createBtn">Create Game</button>
+
+    <div id="gameArea" style="display:none;">
+      <p>Game PIN:</p>
+      <div id="pin">------</div>
+
+      <h2>Leaderboard</h2>
+      <p class="muted">This will update live when students join.</p>
+      <ol id="leaderboard"></ol>
+    </div>
+  </div>
+
+  <script type="module">
+    import { db, ensureAnonAuth, TS, Fire } from "./firebase.js";
+
+    const { doc, setDoc, collection, query, orderBy, onSnapshot } = Fire;
+
+    const createBtn = document.getElementById("createBtn");
+    const gameArea = document.getElementById("gameArea");
+    const pinBox = document.getElementById("pin");
+    const leaderboardEl = document.getElementById("leaderboard");
+
+    function makePin() {
+      return String(Math.floor(100000 + Math.random() * 900000)); // 6 digits
+    }
+
+    function makeGameId() {
+      return crypto.randomUUID();
+    }
+
+    createBtn.addEventListener("click", async () => {
+      // Ensure teacher has a Firebase identity
+      const user = await ensureAnonAuth();
+
+      const pin = makePin();
+      const gameId = makeGameId();
+
+      // 1) Create game document
+      await setDoc(doc(db, "games", gameId), {
+        pin,
+        status: "lobby",
+        currentQuestionIndex: -1,
+        createdAt: TS(),
+        hostUid: user.uid
+      });
+
+      // 2) Create pin lookup doc (so students can find the game by PIN)
+      await setDoc(doc(db, "pins", pin), { gameId });
+
+      // UI
+      pinBox.textContent = pin;
+      gameArea.style.display = "block";
+
+      // 3) Live leaderboard listener
+      const playersRef = collection(db, "games", gameId, "players");
+      const qPlayers = query(playersRef, orderBy("score", "desc"));
+
+      onSnapshot(qPlayers, (snap) => {
+        leaderboardEl.innerHTML = "";
+        if (snap.empty) {
+          const li = document.createElement("li");
+          li.textContent = "No players yet…";
+          leaderboardEl.appendChild(li);
+          return;
+        }
+
+        snap.forEach((d) => {
+          const p = d.data();
+          const li = document.createElement("li");
+          li.textContent = `${p.name || "Player"} — ${p.score || 0}`;
+          leaderboardEl.appendChild(li);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
