@@ -4,39 +4,72 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ElectraTech Live Quiz — Join</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; margin: 24px; max-width: 720px; }
-    .box { padding: 16px; border: 2px solid #ddd; border-radius: 12px; }
-    input { width: 100%; padding: 12px; font-size: 16px; margin: 8px 0; box-sizing: border-box; }
-    button { padding: 10px 14px; font-size: 16px; cursor: pointer; width: 100%; }
-    .muted { color: #666; }
-    .ok { color: #0a7; font-weight: 700; }
-    .err { color: #c00; font-weight: 700; }
+    :root{
+      --bg:#08101f; --card:rgba(255,255,255,.08); --border:rgba(255,255,255,.14);
+      --text:#eaf0ff; --muted:rgba(234,240,255,.7);
+      --accent:#22d3ee; --accent2:#6d5efc;
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:"Plus Jakarta Sans",system-ui,Arial; color:var(--text);
+      background: radial-gradient(900px 500px at 20% 10%, rgba(34,211,238,.22), transparent 60%),
+                  radial-gradient(900px 500px at 80% 20%, rgba(109,94,252,.25), transparent 55%),
+                  linear-gradient(180deg, #050914, var(--bg));
+      min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+    }
+    .card{
+      width:min(620px,100%);
+      padding:20px; border-radius:var(--radius);
+      background:var(--card); border:1px solid var(--border);
+      box-shadow: 0 20px 50px rgba(0,0,0,.35);
+      backdrop-filter: blur(10px);
+    }
+    h1{margin:0 0 6px; font-size:32px}
+    p{margin:0 0 14px; color:var(--muted)}
+    input{
+      width:100%; padding:14px 14px; font-size:16px; border-radius:14px;
+      border:1px solid rgba(255,255,255,.16); background: rgba(0,0,0,.25);
+      color:var(--text); outline:none; margin:8px 0;
+    }
+    input:focus{border-color: rgba(34,211,238,.6)}
+    .btn{
+      width:100%; padding:14px 16px; margin-top:10px;
+      border:0; border-radius:14px; cursor:pointer;
+      background: linear-gradient(135deg, var(--accent), #38bdf8);
+      color:#03202a; font-weight:900; font-size:16px;
+    }
+    .msg{margin-top:12px; font-weight:800}
+    .ok{color:#7CFFB2}
+    .err{color:#ff6b6b}
   </style>
 </head>
 <body>
-  <h1>Join ElectraTech Live Quiz</h1>
+  <div class="card">
+    <div id="joinBox">
+      <h1>Join Live Quiz</h1>
+      <p>Enter the PIN on the projector and your name.</p>
 
-  <div class="box" id="joinBox">
-    <p class="muted">Enter the PIN shown on the projector, then your name.</p>
+      <input id="pin" placeholder="Game PIN (6 digits)" inputmode="numeric" />
+      <input id="name" placeholder="Your name (e.g., Nimal)" />
+      <button class="btn" id="joinBtn">Join Game</button>
+      <div id="msg" class="msg"></div>
+    </div>
 
-    <input id="pin" placeholder="Game PIN (6 digits)" inputmode="numeric" />
-    <input id="name" placeholder="Your name (e.g., Nimal)" />
-    <button id="joinBtn">Join Game</button>
-
-    <p id="msg"></p>
-  </div>
-
-  <div class="box" id="joinedBox" style="display:none;">
-    <p class="ok">✅ Joined! Now wait for the teacher.</p>
-    <p class="muted">Your score will appear on the leaderboard.</p>
-    <p><b>Name:</b> <span id="showName"></span></p>
-    <p><b>PIN:</b> <span id="showPin"></span></p>
+    <div id="joinedBox" style="display:none;">
+      <h1>✅ Joined!</h1>
+      <p>Now wait for the teacher to start.</p>
+      <p><b>Name:</b> <span id="showName"></span><br/>
+         <b>PIN:</b> <span id="showPin"></span></p>
+    </div>
   </div>
 
   <script type="module">
     import { db, ensureAnonAuth, Fire } from "./firebase.js";
-
     const { doc, getDoc, setDoc } = Fire;
 
     const pinEl = document.getElementById("pin");
@@ -48,7 +81,7 @@
     const showPin = document.getElementById("showPin");
 
     function say(text, type) {
-      msgEl.className = type === "err" ? "err" : "ok";
+      msgEl.className = "msg " + (type === "err" ? "err" : "ok");
       msgEl.textContent = text;
     }
 
@@ -59,23 +92,17 @@
       if (!/^\d{6}$/.test(pin)) return say("Enter a 6-digit PIN.", "err");
       if (name.length < 2) return say("Enter your name (at least 2 letters).", "err");
 
-      // Make sure student has a Firebase identity
       const user = await ensureAnonAuth();
 
-      // 1) Find gameId from PIN
       const pinSnap = await getDoc(doc(db, "pins", pin));
-      if (!pinSnap.exists()) return say("PIN not found. Check the number on the projector.", "err");
+      if (!pinSnap.exists()) return say("PIN not found. Check the projector.", "err");
 
       const { gameId } = pinSnap.data();
 
-      // 2) Create/update player doc inside that game
       await setDoc(doc(db, "games", gameId, "players", user.uid), {
-        name,
-        score: 0,
-        lastAnsweredIndex: -1
+        name, score: 0, lastAnsweredIndex: -1
       }, { merge: true });
 
-      // UI success
       joinBox.style.display = "none";
       joinedBox.style.display = "block";
       showName.textContent = name;

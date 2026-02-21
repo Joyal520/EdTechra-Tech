@@ -4,36 +4,98 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ElectraTech Live Quiz — Host</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; margin: 24px; }
-    .box { padding: 16px; border: 2px solid #ddd; border-radius: 12px; max-width: 720px; }
-    button { padding: 10px 14px; font-size: 16px; cursor: pointer; }
-    #pin { font-size: 44px; font-weight: 800; letter-spacing: 4px; margin: 12px 0; }
-    ol { padding-left: 20px; }
-    .muted { color: #666; }
+    :root{
+      --bg:#0b1220; --card:rgba(255,255,255,.08); --border:rgba(255,255,255,.14);
+      --text:#eaf0ff; --muted:rgba(234,240,255,.7);
+      --accent:#6d5efc; --accent2:#22d3ee;
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:"Plus Jakarta Sans",system-ui,Arial; color:var(--text);
+      background: radial-gradient(1200px 600px at 20% 10%, rgba(109,94,252,.35), transparent 60%),
+                  radial-gradient(1000px 500px at 80% 20%, rgba(34,211,238,.25), transparent 55%),
+                  linear-gradient(180deg, #070b14, var(--bg));
+      min-height:100vh;
+      display:flex; align-items:center; justify-content:center; padding:24px;
+    }
+    .wrap{width:min(980px,100%);}
+    .top{display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap; justify-content:space-between}
+    .brand h1{margin:0; font-size:34px; letter-spacing:.2px}
+    .brand p{margin:8px 0 0; color:var(--muted)}
+    .card{
+      margin-top:18px; padding:18px; border-radius:var(--radius);
+      background:var(--card); border:1px solid var(--border);
+      box-shadow: 0 20px 50px rgba(0,0,0,.35);
+      backdrop-filter: blur(10px);
+    }
+    .grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:18px}
+    @media (max-width: 860px){.grid{grid-template-columns:1fr}}
+    .btn{
+      appearance:none; border:0; cursor:pointer;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      color:white; font-weight:800; font-size:16px; padding:14px 16px;
+      border-radius:14px; width:100%;
+      box-shadow: 0 12px 30px rgba(109,94,252,.35);
+      transition: transform .12s ease;
+    }
+    .btn:hover{transform: translateY(-1px)}
+    .pin{
+      font-size:54px; font-weight:800; letter-spacing:8px; margin:10px 0 0;
+      background: rgba(0,0,0,.25); border:1px dashed rgba(255,255,255,.25);
+      padding:14px 16px; border-radius:16px; text-align:center;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px; border-radius:999px;
+      background: rgba(34,211,238,.12); border:1px solid rgba(34,211,238,.25);
+      color: #bff6ff; font-weight:700; font-size:13px;
+    }
+    .muted{color:var(--muted); font-size:14px}
+    ol{margin:10px 0 0; padding-left:20px}
+    li{padding:8px 0; border-bottom:1px solid rgba(255,255,255,.08)}
+    .rightBox{display:flex; flex-direction:column; gap:12px}
   </style>
 </head>
 <body>
-  <h1>ElectraTech Live Quiz — Host (Teacher)</h1>
-
-  <div class="box">
-    <p class="muted">Step: Click "Create Game". Then show the PIN on the projector. Students join with their phones.</p>
-
-    <button id="createBtn">Create Game</button>
-
-    <div id="gameArea" style="display:none;">
-      <p>Game PIN:</p>
-      <div id="pin">------</div>
-
-      <h2>Leaderboard</h2>
-      <p class="muted">This will update live when students join.</p>
-      <ol id="leaderboard"></ol>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <h1>ElectraTech Live Quiz — Host</h1>
+        <p>Projector screen. Create a game, show the PIN, watch the leaderboard update live.</p>
+      </div>
+      <span class="pill">⚡ Real-time leaderboard</span>
     </div>
+
+    <div class="card grid">
+      <div>
+        <h2 style="margin:0 0 6px;">1) Create a Game</h2>
+        <p class="muted" style="margin:0 0 14px;">Click the button. A 6-digit PIN will appear. Students join on their phones.</p>
+        <button class="btn" id="createBtn">Create Game</button>
+
+        <div id="gameArea" style="display:none; margin-top:16px;">
+          <div class="muted">Game PIN</div>
+          <div class="pin" id="pin">------</div>
+          <div class="muted" style="margin-top:10px;">Student join link: <b>/livequiz/join.html</b></div>
+        </div>
+      </div>
+
+      <div class="rightBox">
+        <h2 style="margin:0;">Leaderboard</h2>
+        <p class="muted" style="margin:0;">Updates as students join.</p>
+        <ol id="leaderboard"></ol>
+      </div>
+    </div>
+
+    <p class="muted" style="margin-top:14px;">If the button doesn’t work, you are likely opening the file locally. Run it via GitHub Pages or a local server.</p>
   </div>
 
   <script type="module">
     import { db, ensureAnonAuth, TS, Fire } from "./firebase.js";
-
     const { doc, setDoc, collection, query, orderBy, onSnapshot } = Fire;
 
     const createBtn = document.getElementById("createBtn");
@@ -41,41 +103,25 @@
     const pinBox = document.getElementById("pin");
     const leaderboardEl = document.getElementById("leaderboard");
 
-    function makePin() {
-      return String(Math.floor(100000 + Math.random() * 900000)); // 6 digits
-    }
-
-    function makeGameId() {
-      return crypto.randomUUID();
-    }
+    function makePin() { return String(Math.floor(100000 + Math.random() * 900000)); }
+    function makeGameId() { return crypto.randomUUID(); }
 
     createBtn.addEventListener("click", async () => {
-      // Ensure teacher has a Firebase identity
       const user = await ensureAnonAuth();
 
       const pin = makePin();
       const gameId = makeGameId();
 
-      // 1) Create game document
       await setDoc(doc(db, "games", gameId), {
-        pin,
-        status: "lobby",
-        currentQuestionIndex: -1,
-        createdAt: TS(),
-        hostUid: user.uid
+        pin, status: "lobby", currentQuestionIndex: -1, createdAt: TS(), hostUid: user.uid
       });
-
-      // 2) Create pin lookup doc (so students can find the game by PIN)
       await setDoc(doc(db, "pins", pin), { gameId });
 
-      // UI
       pinBox.textContent = pin;
       gameArea.style.display = "block";
 
-      // 3) Live leaderboard listener
       const playersRef = collection(db, "games", gameId, "players");
       const qPlayers = query(playersRef, orderBy("score", "desc"));
-
       onSnapshot(qPlayers, (snap) => {
         leaderboardEl.innerHTML = "";
         if (snap.empty) {
@@ -84,7 +130,6 @@
           leaderboardEl.appendChild(li);
           return;
         }
-
         snap.forEach((d) => {
           const p = d.data();
           const li = document.createElement("li");
